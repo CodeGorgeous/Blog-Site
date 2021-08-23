@@ -1,24 +1,15 @@
 # blog_web
 
-## Project setup
-```
-pnpm install
-```
+## CodeGorgeous的博客站点
 
-### Compiles and hot-reloads for development
-```
-pnpm run serve
-```
+> [演示地址](http://www.codegorgeous.top)
 
-### Compiles and minifies for production
-```
-pnpm run build
-```
+**技术栈**
 
-### Lints and fixes files
-```
-pnpm run lint
-```
+> Vue
 
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+> Vuex
+
+> VueRoute
+
+> ElementUI
