@@ -1,2 +1,2 @@
-const route = []
-export default route
+const route = [];
+export default route;
