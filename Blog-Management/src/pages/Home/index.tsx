@@ -13,7 +13,7 @@ const Component: React.FC = (props) => {
         <Header><Head /></Header>
         <Layout>
           <Sider><Side /></Sider>
-          <Content>{props.children}</Content>
+          <Content className={style['home-content']}>{props.children}</Content>
         </Layout>
       </Layout>
     </div>  

@@ -45,10 +45,6 @@ const Component: React.FC = () => {
                         key="/blog/put"
                         icon={<ToolOutlined />}
                     >修改博客</Menu.Item>
-                    <Menu.Item
-                        key="/blog/delete"
-                        icon={<RestOutlined />}
-                    >删除博客</Menu.Item>
                 </Menu.SubMenu>
                 <Menu.SubMenu
                     key="image"

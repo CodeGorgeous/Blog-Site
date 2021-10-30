@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Input, Button } from 'antd'
 import style from './index.less'
 import { UserOutlined, LockOutlined, ContainerOutlined } from '@ant-design/icons'
@@ -10,6 +10,12 @@ const Component: React.FC = () => {
     const [userName, setUserName] = useState('')
     const [userPassword, setUserPassword] = useState('')
     const [invitation, setInvitation] = useState('')
+
+    useEffect(() => {
+        setUserName('')
+        setUserPassword('')
+        setInvitation('')
+    }, [state])
 
     return (
         <div className={style['login-container']}>
@@ -29,11 +35,10 @@ const Component: React.FC = () => {
                         value={userName}
                         onChange={e => setUserName(e.target.value)}
                     />
-                    <Input
+                    <Input.Password
                         className={style['login-input']}
                         size="large"
                         placeholder="密码"
-                        type={'password'}
                         prefix={<LockOutlined />}
                         value={userPassword}
                         onChange={e => setUserPassword(e.target.value)}

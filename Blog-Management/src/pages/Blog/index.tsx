@@ -1,12 +1,7 @@
 import React from 'react'
 
 const Component: React.FC = (props) => {
-    return (
-        <div>
-            博客
-            {props.children}
-        </div>
-    )
+    return (<>{props.children}</>)
 }
 
 export default Component

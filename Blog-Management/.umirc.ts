@@ -33,9 +33,6 @@ export default defineConfig({
               path: '/blog/add',
               component: '@/pages/Blog/add'
             }, {
-              path: '/blog/delete',
-              component: '@/pages/Blog/delete'
-            }, {
               path: '/blog/put',
               component: '@/pages/Blog/put'
             }, {
