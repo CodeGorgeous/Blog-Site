@@ -11,11 +11,12 @@ interface User {
  * @returns 
  */
 export async function userSignIn(data: User) {
-    return await instance.post('/user', {
+    return await instance('/user', {
+        method: 'POST',
         headers: {
             'Content-Type': 'application/json'
         },
-        data: data
+        data
     })
 }
 
@@ -31,7 +32,8 @@ interface UserR {
  * @returns 
  */
 export async function userRegister(data: UserR) {
-    return await instance.post('/users/register', {
+    return await instance('/user/register', {
+        method: 'POST',
         headers: {
             'Content-Type': 'application/json'
         },

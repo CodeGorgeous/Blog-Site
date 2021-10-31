@@ -7,7 +7,9 @@ import instance from "@/utils/axios";
  * @returns 
  */
 export async function getAllBlogs() {
-    return await instance.get('/blog')
+    return await instance('/blog', {
+        method: 'GET'
+    })
 }
 
 interface Blog {
@@ -16,7 +18,7 @@ interface Blog {
     url: string,
     author: string,
     codeUrl: string,
-    tags: string[],
+    tags: string,
     text: string
 }
 
@@ -26,7 +28,8 @@ interface Blog {
  * @returns 
  */
 export async function postBlog(data: Blog) {
-    return await instance.post('/blog', {
+    return await instance('/blog', {
+        method: "POST",
         headers: {
             'Content-Type': 'application/json'
         },
@@ -34,13 +37,19 @@ export async function postBlog(data: Blog) {
     })
 }
 
+interface BlogModify extends Blog{
+    id: number
+}
+
+
 /**
  * 修改博客
  * @param data 
  * @returns 
  */
-export async function putBlog(data: Blog) {
-    return await instance.put('/blog', {
+export async function putBlog(data: BlogModify) {
+    return await instance('/blog', {
+        method: 'PUT',
         headers: {
             'Content-Type': 'application/json'
         },
@@ -54,7 +63,8 @@ export async function putBlog(data: Blog) {
  * @returns 
  */
 export async function deleteBlog(data: number) {
-    return await instance.delete('/blog', {
+    return await instance('/blog', {
+        method: "DELETE",
         data: data
     })
 }

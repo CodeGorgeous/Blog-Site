@@ -15,6 +15,7 @@ export default defineConfig({
     }, {
       path: '/',
       component: '@/pages/Home/index',
+      wrappers: ['@//wrappers/ifLogin.tsx'],
       routes: [
         {
           path: '/',
@@ -49,4 +50,5 @@ export default defineConfig({
   ],
   fastRefresh: {},
   antd: {},
+  dva: {}
 });

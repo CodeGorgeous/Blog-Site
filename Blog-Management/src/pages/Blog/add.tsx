@@ -3,6 +3,7 @@ import { Card, Row, Col, Input, Button, Select, DatePicker, Modal } from 'antd'
 import style from './add.less'
 import { CloudUploadOutlined, CloudSyncOutlined } from '@ant-design/icons'
 import moment from 'moment'
+import { postBlog } from '@/api/blog'
 
 const Component: React.FC = () => {
 
@@ -31,10 +32,12 @@ const Component: React.FC = () => {
                             url: blogUrl,
                             author: blogAuthor,
                             codeUrl: sourceCodeUrl,
-                            tags: blogTags,
+                            tags: blogTags.join('|'),
                             text: blogText
                         }
-                        console.log(blog)
+                        postBlog(blog).then(resp => {
+                            console.log(resp)
+                        })
                     }}
                 >保存</Button>
                 <Button
@@ -125,13 +128,13 @@ const Component: React.FC = () => {
                     <Col
                         className={style.input}
                         style={{
-                            width: '600px'
+                            width: '800px'
                         }}
                     >
                         <Input.TextArea
-                            allowClear={true}
-                            autoSize={true}
+                            className={style['card-textArea']}
                             value={blogText}
+                            showCount={true}
                             onChange={(e) => {
                                 setBlogText(e.target.value)
                             }}

@@ -1,9 +1,15 @@
 import React, { useState } from 'react'
 import { Avatar, Button, Drawer } from 'antd';
-import { history } from 'umi'
+import { history, connect } from 'umi'
 import style from './index.less'
 
-const Component:React.FC = () => {
+interface Props {
+    user?: any
+    onSignOut?: any
+    children?: any
+}
+
+const Component:React.FC = (props: Props) => {
 
     const [Lock, setLock] = useState(false)
 
@@ -30,14 +36,16 @@ const Component:React.FC = () => {
                     onClose={() => setLock(!Lock)}
                     visible={Lock}
                 >
-                    <p>用户名: CodeGorgeous</p>
-                    <p>用户权限等级: 6</p>
+                    <p>uid: {props.user.id}</p>
+                    <p>用户名: {props.user.name}</p>
+                    <p>用户权限等级: {props.user.powerLevel}</p>
+                    <p>专属邀请码: {props.user.spreadCode}</p>
                     <p></p>
                     <p>
                         <Button
                             type={"primary"}
                             onClick={() => {
-                                history.push('/login')
+                                props.onSignOut && props.onSignOut()
                             }}
                             danger
                         >登出</Button>
@@ -48,4 +56,16 @@ const Component:React.FC = () => {
     )
 }
 
-export default Component
+export default connect((state: any) => {
+    return {
+        user: state.user
+    }
+}, (dispatch: any) => {
+    return {
+        onSignOut() {
+            dispatch({
+                type: 'user/asyncSignOut'
+            })
+        }
+    }
+})(Component)

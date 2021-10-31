@@ -1,11 +1,17 @@
 import React, { useState, useEffect } from 'react'
-import { Input, Button } from 'antd'
+import { Input, Button, message } from 'antd'
 import style from './index.less'
 import { UserOutlined, LockOutlined, ContainerOutlined } from '@ant-design/icons'
-import { history } from 'umi'
+import { history, connect } from 'umi'
+import { userSignIn, userRegister } from '@/api/user'
 
-const Component: React.FC = () => {
+interface Props {
+    onSignIn?: (payload: User) => void
+    children?: any
+}
 
+const Component: React.FC = (props: Props) => {
+    
     const [state, setState] = useState('login')
     const [userName, setUserName] = useState('')
     const [userPassword, setUserPassword] = useState('')
@@ -77,8 +83,10 @@ const Component: React.FC = () => {
                             size={"large"}
                             ghost
                             onClick={() => {
-                                console.log('登录...开始验证账号')
-                                history.push('/')
+                                props.onSignIn && props.onSignIn({
+                                    userName,
+                                    userPassword
+                                })
                             }}
                         >
                             登录
@@ -91,8 +99,18 @@ const Component: React.FC = () => {
                             size={"large"}
                             ghost
                             onClick={() => {
-                                console.log('注册...开始验证账号')
-                                setState('login')
+                                userRegister({
+                                    userName,
+                                    userPassword,
+                                    invitationCode: invitation
+                                }).then(resp => {
+                                    if (resp.data.state === 'success') {
+                                        message.success('注册成功')
+                                        setState('login')
+                                    } else {
+                                        message.error(`注册失败, 失败原因: ${resp.data.msg}`)
+                                    }
+                                })
                             }}
                         >
                             注册
@@ -104,4 +122,20 @@ const Component: React.FC = () => {
     )
 }
 
-export default Component
+interface User {
+    userName: string
+    userPassword: string
+}
+
+export default connect((state: any) => {
+    return {}
+}, (dispatch: any) => {
+    return {
+        onSignIn(payload: User) {
+            dispatch({
+                type: 'user/asyncSignIn',
+                payload: payload
+            })
+        }
+    }
+})(Component)

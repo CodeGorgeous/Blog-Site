@@ -11,16 +11,10 @@ import { history } from 'umi'
 
 const Component: React.FC = () => {
     
-    const [path, setPath] = useState(history.location.pathname)
-
-    useEffect(() => {
-        setPath(history.location.pathname)
-    }, [history.location.pathname])
-
     return (
         <div>
             <Menu
-                defaultSelectedKeys={[path]}
+                defaultSelectedKeys={['/blog/list']}
                 defaultOpenKeys={['blog']}
                 mode="inline"
                 theme="dark"
