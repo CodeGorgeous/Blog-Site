@@ -37,8 +37,9 @@ export async function postBlog(data: Blog) {
     })
 }
 
-interface BlogModify extends Blog{
+interface BlogModify {
     id: number
+    text: string
 }
 
 
@@ -62,9 +63,25 @@ export async function putBlog(data: BlogModify) {
  * @param data 
  * @returns 
  */
-export async function deleteBlog(data: number) {
+export async function deleteBlog(id: number) {
     return await instance('/blog', {
         method: "DELETE",
-        data: data
+        params: {
+            id
+        }
+    })
+}
+
+/**
+ * 查询一篇博客
+ * @param id 
+ * @returns 
+ */
+export async function getBlog(id: number) {
+    return await instance('/blog/search', {
+        method: "GET",
+        params: {
+            id
+        }
     })
 }

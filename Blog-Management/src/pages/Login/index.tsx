@@ -17,10 +17,32 @@ const Component: React.FC = (props: Props) => {
     const [userPassword, setUserPassword] = useState('')
     const [invitation, setInvitation] = useState('')
 
+    function userLogin() {
+        // 校验
+        if (!userName) {
+            return message.error('请填写您的用户名!')
+        }
+        if (!userPassword) {
+            return message.error('请填写您的密码!')
+        }
+        props.onSignIn && props.onSignIn({
+            userName,
+            userPassword
+        })
+        setUserName('')
+        setUserPassword('')
+        setInvitation('')
+    }
+
+
     useEffect(() => {
         setUserName('')
         setUserPassword('')
         setInvitation('')
+        return () => {
+            // 组件销毁时调用自动该函数
+            
+        }
     }, [state])
 
     return (
@@ -83,10 +105,7 @@ const Component: React.FC = (props: Props) => {
                             size={"large"}
                             ghost
                             onClick={() => {
-                                props.onSignIn && props.onSignIn({
-                                    userName,
-                                    userPassword
-                                })
+                                userLogin()
                             }}
                         >
                             登录

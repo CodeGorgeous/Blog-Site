@@ -1,7 +1,9 @@
-import React from 'react'
-import { Card, Row, Col, Image, Tag, Button, Modal, Tooltip } from 'antd'
+import React, { useState, useEffect } from 'react'
+import { Card, Row, Col, Image, Tag, Button, Modal, Tooltip, message } from 'antd'
 import style from './list.less'
 import { DeleteOutlined, SearchOutlined, ToolOutlined } from '@ant-design/icons'
+import { getAllBlogs, deleteBlog } from '@/api/blog'
+import { history } from 'umi'
 
 // 模拟数据
 
@@ -40,23 +42,33 @@ const { confirm } = Modal;
 
 const Component: React.FC = () => {
 
+    const [data, setData] = useState([])
+    const [lock, setLock] = useState(false)
+
+    useEffect(() => {
+        getAllBlogs().then(resp => {
+            setData(resp.data.data.list)
+        })        
+    }, [lock])
+
     // 这里需要拿到列表数据
-    const list = data.map((item, index) => {
-        const newTags = item.tags.map((item, index) => {
-            return <Tag key={index}>{item}</Tag>
+    const list = data.map((item: any, index: number) => {
+
+        const newTags = item.tags.split('|').map((it: any, index: number) => {
+            return <Tag key={index}>{it}</Tag>
         })
         return (<Card key={item.id} hoverable className={style.card}>
             <Row className={style.row}>
                 <Col className={style['card-left']}>
-                    <Image className={style['card-image']} width={200} height={200} src={item.url}/>
+                    <Image className={style['card-image']} width={200} height={200} src={item.occupyImg}/>
                 </Col>
                 <Col className={style['card-right']}>
                     <Row>
                         <Col className={`${style['card-col']} ${style['card-title']}`}>{item.name}</Col>
                         <Col className={`${style['card-col']} ${style['card-id']}`}>文章编号: {item.id}</Col>
-                        <Col className={`${style['card-col']} ${style['card-timer']}`}>发布时间: {item.timer}</Col>
+                        <Col className={`${style['card-col']} ${style['card-timer']}`}>发布时间: {item.createTimer}</Col>
                         <Col className={`${style['card-col']} ${style['card-author']}`}>作者: {item.author}</Col>
-                        <Col className={`${style['card-col']} ${style['card-codeUrl']}`}>源码地址: <a href={item.codeUrl}>{item.codeUrl}</a></Col>
+                        <Col className={`${style['card-col']} ${style['card-codeUrl']}`}>源码地址: <a href={item.githubUrl === '暂无' ? '#' : item.githubUrl}>{item.githubUrl}</a></Col>
                         <Col className={`${style['card-col']} ${style['card-tags']}`}>
                             标签: {newTags}
                         </Col>
@@ -69,7 +81,7 @@ const Component: React.FC = () => {
                                     ghost
                                     size="small"
                                     onClick={() => {
-                                        
+                                        history.push('/blog/lock', item)
                                     }}
                                 />
                             </Tooltip>
@@ -81,7 +93,7 @@ const Component: React.FC = () => {
                                     ghost
                                     size="small"
                                     onClick={() => {
-                                        
+                                        history.push('/blog/put', item)
                                     }}
                                 />
                             </Tooltip>
@@ -98,7 +110,14 @@ const Component: React.FC = () => {
                                             title: '删除确认',
                                             content: `是否确定删除${item.name}这篇文章?`,
                                             onOk() {
-                                                console.log(`已经成功删除${item.id}博客`)
+                                                deleteBlog(item.id).then(resp => {
+                                                    if (resp.data.state === 'success') {
+                                                        setLock(!lock)
+                                                        message.success('删除成功')
+                                                    } else {
+                                                        message.error(resp.data.msg)
+                                                    }
+                                                })
                                             },
                                             cancelText: '取消',
                                             okText: '确定'

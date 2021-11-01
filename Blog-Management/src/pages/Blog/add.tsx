@@ -1,11 +1,17 @@
 import React, { useState } from 'react'
-import { Card, Row, Col, Input, Button, Select, DatePicker, Modal } from 'antd'
+import { Card, Row, Col, Input, Button, Select, DatePicker, Modal, message, Tooltip } from 'antd'
 import style from './add.less'
-import { CloudUploadOutlined, CloudSyncOutlined } from '@ant-design/icons'
+import { CloudUploadOutlined, CloudSyncOutlined, ToolOutlined } from '@ant-design/icons'
+import { history, connect } from 'umi'
 import moment from 'moment'
 import { postBlog } from '@/api/blog'
 
-const Component: React.FC = () => {
+interface Props {
+    children?: any
+    user?: any
+}
+
+const Component: React.FC = (props: Props) => {
 
     const [blogName, setBlogName] = useState('')
     const [blogTimer, setBlogTimer] = useState('')
@@ -19,7 +25,7 @@ const Component: React.FC = () => {
 
 
     return (
-        <Row>
+        <Row className={style['add-container']}>
             <Card className={style.card} hoverable>
                 <Button
                     icon={<CloudUploadOutlined />}
@@ -36,7 +42,19 @@ const Component: React.FC = () => {
                             text: blogText
                         }
                         postBlog(blog).then(resp => {
-                            console.log(resp)
+                            if (resp.data.state === 'success') {
+                                message.success('新增成功')
+                                history.push('/blog/list')
+                                setBlogName('')
+                                setBlogTimer('')
+                                setBlogUrl('')
+                                setBlogAuthor('')
+                                setSourceCodeUrl('')
+                                setBlogTags([])
+                                setBlogText('')
+                            } else {
+                                message.success('新增失败, 请重新尝试')
+                            }
                         })
                     }}
                 >保存</Button>
@@ -82,6 +100,7 @@ const Component: React.FC = () => {
                         <DatePicker
                             className={style.input}
                             format={'YYYY-MM-DD'}
+                            placeholder={""}
                             value={blogTimer ? moment(blogTimer, 'YYYY-MM-DD') : null}
                             onChange={(date, dateString) => {
                                 setBlogTimer(dateString)
@@ -91,15 +110,48 @@ const Component: React.FC = () => {
                 </Row>
                 <Row className={style.row}>
                     <Col className={style.span}>展示图url:</Col>
-                    <Col className={style.input}><Input value={blogUrl} onChange={e => setBlogUrl(e.target.value)}/></Col>
+                    <Col className={style.input}><Input allowClear={true} value={blogUrl} onChange={e => setBlogUrl(e.target.value)}/></Col>
+                    <Col>
+                        <Tooltip placement="top" title="使用账户默认图片">
+                            <Button
+                                className={style['input-tip']}
+                                icon={<ToolOutlined />}
+                                onClick={() => {
+                                    setBlogUrl(props.user.imgUrl)
+                                }}
+                            />
+                        </Tooltip>
+                    </Col>
                 </Row>
                 <Row className={style.row}>
                     <Col className={style.span}>文章作者:</Col>
-                    <Col className={style.input}><Input value={blogAuthor} onChange={e => setBlogAuthor(e.target.value)}/></Col>
+                    <Col className={style.input}><Input allowClear={true} value={blogAuthor} onChange={e => setBlogAuthor(e.target.value)}/></Col>
+                    <Col>
+                        <Tooltip placement="top" title="使用用户名">
+                            <Button
+                                className={style['input-tip']}
+                                icon={<ToolOutlined />}
+                                onClick={() => {
+                                    setBlogAuthor(props.user.name)
+                                }}
+                            />
+                        </Tooltip>
+                    </Col>
                 </Row>
                 <Row className={style.row}>
                     <Col className={style.span}>源码地址:</Col>
-                    <Col className={style.input}><Input value={sourceCodeUrl} onChange={e => setSourceCodeUrl(e.target.value)}/></Col>
+                    <Col className={style.input}><Input allowClear={true} value={sourceCodeUrl} onChange={e => setSourceCodeUrl(e.target.value)}/></Col>
+                    <Col>
+                        <Tooltip placement="top" title="使用默认设置">
+                            <Button
+                                className={style['input-tip']}
+                                icon={<ToolOutlined />}
+                                onClick={() => {
+                                    setSourceCodeUrl('暂无')
+                                }}
+                            />
+                        </Tooltip>
+                    </Col>
                 </Row>
                 <Row className={style.row}>
                     <Col className={style.span}>文章标签:</Col>
@@ -125,12 +177,7 @@ const Component: React.FC = () => {
                 </Row>
                 <Row className={style.row}>
                     <Col className={style.span}>文章内容:</Col>
-                    <Col
-                        className={style.input}
-                        style={{
-                            width: '800px'
-                        }}
-                    >
+                    <Col className={style['card-textArea-container']}>
                         <Input.TextArea
                             className={style['card-textArea']}
                             value={blogText}
@@ -146,4 +193,8 @@ const Component: React.FC = () => {
     )
 }
 
-export default Component
+export default connect((state: any) => {
+    return {
+        user: state.user
+    }
+}, () => {return {}})(Component)

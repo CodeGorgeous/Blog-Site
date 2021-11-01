@@ -8,6 +8,7 @@ interface User {
     password: string
     spreadCode: string
     powerLevel: number
+    imgUrl: string
 }
 
 interface UserLogin {
@@ -22,6 +23,7 @@ export default {
         password: '',
         spreadCode: '',
         powerLevel: 0,
+        imgUrl: '',
         isLogin: false
     },
     reducers: {
@@ -63,7 +65,8 @@ export default {
                         name: result.data.data.name,
                         password: result.data.data.password,
                         spreadCode: result.data.data.spreadCode,
-                        powerLevel: result.data.data.powerLevel
+                        powerLevel: result.data.data.powerLevel,
+                        imgUrl: result.data.data.occupyImgUrl
                     }
                 })
                 yield effect.call(history.push, '/')

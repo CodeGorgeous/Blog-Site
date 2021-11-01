@@ -29,11 +29,11 @@ Blog.init({
         type: DataTypes.STRING,
         allowNull: false
     },
-    markdownText: {
+    markdownName: {
         type: DataTypes.STRING,
         allowNull: false
     },
-    htmlText: {
+    htmlName: {
         type: DataTypes.STRING,
         allowNull: false
     }

@@ -37,6 +37,29 @@ export default defineConfig({
               path: '/blog/put',
               component: '@/pages/Blog/put'
             }, {
+              path: '/blog/lock',
+              component: '@/pages/Blog/lock'
+            }, {
+              redirect: '/404'
+            }
+          ]
+        }, {
+          path: '/user',
+          component: '@/pages/User',
+          routes: [
+            {
+              path: '/user',
+              redirect: '/user/list'
+            }, {
+              path: '/user/list',
+              component: '@/pages/User/list'
+            }, {
+              path: '/user/alterUser',
+              component: '@/pages/User/alterUser'
+            }, {
+              path: '/user/alterPassword',
+              component: '@/pages/User/alterPassword'
+            }, {
               redirect: '/404'
             }
           ]

@@ -1,21 +1,21 @@
 import React, { useState, useEffect } from 'react'
-import { Input, Row, Col, Card, Button, message } from 'antd'
-import style from './put.less'
-import { FileSearchOutlined, CloudUploadOutlined } from '@ant-design/icons'
-import { history } from 'umi' 
-import { putBlog, getBlog } from '@/api/blog'
+import { Card, Row, Col, Input, Button, message } from 'antd'
+import { FileSearchOutlined } from '@ant-design/icons'
+import style from './lock.less'
+import { history } from 'umi'
+import { getBlog } from '@/api/blog'
 
-const Component: React.FC = () => {
+const Component:React.FC = () => {
     const blogMessage: any = history.location.state
 
     const [id, setId] = useState('')
-    const [text, setText] = useState('')
     const [lock, setLock] = useState(false)
+    const [html, setHtml] = useState('')
 
     useEffect(() => {
         if (blogMessage) {
             setId(blogMessage.id)
-            setText(blogMessage.markdownText),
+            setHtml(blogMessage.htmlText)
             setLock(true)
         }
     }, [])
@@ -43,7 +43,7 @@ const Component: React.FC = () => {
                                 }
                                 getBlog(+id).then(resp => {
                                     if (resp.data.state === 'success') {
-                                        setText(resp.data.data.markdownText)
+                                        setHtml(resp.data.data.htmlText)
                                         setLock(true)
                                         message.success('查询成功')
                                     } else {
@@ -53,28 +53,6 @@ const Component: React.FC = () => {
                             }}
                         >查询</Button>
                     </Col>
-                    <Col style={{
-                        display: lock ? 'flex' : 'none'
-                    }}>
-                        <Button
-                            className={style['card-button']}
-                            type={"primary"}
-                            icon={<CloudUploadOutlined />}
-                            onClick={() => {
-                                putBlog({
-                                    id: blogMessage.id ? blogMessage.id : +id,
-                                    text
-                                }).then(resp => {
-                                    if (resp.data.state === 'success') {
-                                        message.success('修改成功')
-                                        history.push('/blog/list')
-                                    } else {
-                                        message.error(resp.data.msg)
-                                    }
-                                })
-                            }}
-                        >保存</Button>
-                    </Col>
                 </Row>
             </Card>
             <Card
@@ -83,14 +61,9 @@ const Component: React.FC = () => {
                     display: lock ? 'inline-block' : 'flex'
                 }}
             >
-                <Input.TextArea
-                    className={style['card-textArea']}
-                    value={text}
-                    showCount={true}
-                    style={{
-                        display: lock ? 'block' : 'none'
-                    }}
-                    onChange={e => setText(e.target.value)}
+                <div
+                    className={style['card-html-text']}
+                    dangerouslySetInnerHTML={{__html: html}}
                 />
                 <span
                     className={style['card-text']}
