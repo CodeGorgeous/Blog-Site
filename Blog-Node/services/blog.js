@@ -1,4 +1,5 @@
 const Blog = require('../models/blog')
+const User = require('../models/user')
 const { createResp } = require('../utils/createResp.js')
 const marked = require('marked')
 const { v4 } = require('uuid')
@@ -26,9 +27,17 @@ module.exports = {
         }
     },
     // 新增博客
-    async postBlogs(name, timer, url, author, codeUrl, tags, text) {
+    async postBlogs(name, timer, url, author, codeUrl, tags, text, uid) {
         if (!name || !timer || !url || !author || !tags) {
             return createResp('fail', '信息缺失', {})
+        }
+        const newResult = await User.findOne({
+            where: {
+                spreadCode: uid
+            }
+        })
+        if (!newResult) {
+            return createResp('fail', '用户uid不正确', {})
         }
         const uuid = v4().slice(0, 6);
         // 利用转换markdown为html
@@ -54,12 +63,20 @@ module.exports = {
         }
     },
     // 修改博客
-    async putBlog(text, id) {
+    async putBlog(text, id, uid) {
+        const newResult = await User.findOne({
+            where: {
+                spreadCode: uid
+            }
+        });
+        if (!newResult) {
+            return createResp('fail', '用户uid不正确', {})
+        }
         const result = await Blog.findOne({
             where: {
                 id
             }
-        })
+        });
         if (result) {
             const html = marked(text);
             // 则进行更改
@@ -72,7 +89,15 @@ module.exports = {
         }
     },
     // 删除博客
-    async deleteBlog(id) {
+    async deleteBlog(id, uid) {
+        const newResult = await User.findOne({
+            where: {
+                spreadCode: uid
+            }
+        })
+        if (!newResult) {
+            return createResp('fail', '用户uid不正确', {})
+        }
         // 先看一遍该id数据行是否存在
         let result = await Blog.findOne({
             where: {
