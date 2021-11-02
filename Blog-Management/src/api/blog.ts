@@ -3,7 +3,6 @@ import instance from "@/utils/axios";
 
 /**
  * 获取博客
- * 此处鉴权由前端进行
  * @returns 
  */
 export async function getAllBlogs() {
@@ -19,7 +18,8 @@ interface Blog {
     author: string,
     codeUrl: string,
     tags: string,
-    text: string
+    text: string,
+    uid: string
 }
 
 /**
@@ -39,6 +39,7 @@ export async function postBlog(data: Blog) {
 
 interface BlogModify {
     id: number
+    uid: string
     text: string
 }
 
@@ -58,17 +59,20 @@ export async function putBlog(data: BlogModify) {
     })
 }
 
+interface BlogDelete {
+    id: number
+    uid: string
+}
+
 /**
  * 删除一篇博客
  * @param data 
  * @returns 
  */
-export async function deleteBlog(id: number) {
+export async function deleteBlog(params: BlogDelete) {
     return await instance('/blog', {
         method: "DELETE",
-        params: {
-            id
-        }
+        params
     })
 }
 

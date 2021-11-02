@@ -3,44 +3,16 @@ import { Card, Row, Col, Image, Tag, Button, Modal, Tooltip, message } from 'ant
 import style from './list.less'
 import { DeleteOutlined, SearchOutlined, ToolOutlined } from '@ant-design/icons'
 import { getAllBlogs, deleteBlog } from '@/api/blog'
-import { history } from 'umi'
-
-// 模拟数据
-
-const data = [
-    {
-        id: 1,
-        name: '博客1',
-        timer: '2021-10-21',
-        url: 'http://qiniu.codegorgeous.top/login.webp',
-        author: 'CodeGorgeous',
-        codeUrl: 'http://qiniu.codegorgeous.top/login.webp',
-        tags: ['Js', 'Css', 'Note'],
-        text: '博客1内容'
-    }, {
-        id: 2,
-        name: '博客2',
-        timer: '2021-10-21',
-        url: 'http://qiniu.codegorgeous.top/login.webp',
-        author: 'CodeGorgeous',
-        codeUrl: 'http://qiniu.codegorgeous.top/login.webp',
-        tags: ['Js', 'Css', 'Note'],
-        text: '博客2内容'
-    }, {
-        id: 3,
-        name: '博客3',
-        timer: '2021-10-21',
-        url: 'http://qiniu.codegorgeous.top/login.webp',
-        author: 'CodeGorgeous',
-        codeUrl: 'http://qiniu.codegorgeous.top/login.webp',
-        tags: ['Js', 'Css', 'Note'],
-        text: '博客3内容'
-    }
-]
+import { history, connect } from 'umi'
 
 const { confirm } = Modal;
 
-const Component: React.FC = () => {
+interface Props {
+    user?: any
+    children?: any
+}
+
+const Component: React.FC = (props: Props) => {
 
     const [data, setData] = useState([])
     const [lock, setLock] = useState(false)
@@ -48,7 +20,7 @@ const Component: React.FC = () => {
     useEffect(() => {
         getAllBlogs().then(resp => {
             setData(resp.data.data.list)
-        })        
+        })
     }, [lock])
 
     // 这里需要拿到列表数据
@@ -106,11 +78,15 @@ const Component: React.FC = () => {
                                     danger
                                     size="small"
                                     onClick={() => {
+                                        if (props.user.powerLevel <= 1) return message.error('删除失败: 用户权限不足')
                                         confirm({
                                             title: '删除确认',
                                             content: `是否确定删除${item.name}这篇文章?`,
                                             onOk() {
-                                                deleteBlog(item.id).then(resp => {
+                                                deleteBlog({
+                                                    id: item.id,
+                                                    uid: props.user.spreadCode
+                                                }).then(resp => {
                                                     if (resp.data.state === 'success') {
                                                         setLock(!lock)
                                                         message.success('删除成功')
@@ -139,4 +115,8 @@ const Component: React.FC = () => {
     )
 }
 
-export default Component
+export default connect((state: any) => {
+    return {
+        user: state.user
+    }
+}, () => ({}))(Component)

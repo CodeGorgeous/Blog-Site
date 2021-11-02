@@ -29,9 +29,6 @@ const Component: React.FC = (props: Props) => {
             userName,
             userPassword
         })
-        setUserName('')
-        setUserPassword('')
-        setInvitation('')
     }
 
 
@@ -84,16 +81,15 @@ const Component: React.FC = (props: Props) => {
                     />
                     <p
                         className={style['login-tips']}
-                        style={{
-                            display: state === 'login' ? 'block' : 'none'
-                        }}
                     >
                         <span
                             onClick={() => {
-                                setState('register')
+                                if (state === 'register') return setState('login')
+                                if (state === 'login') return setState('register')
                             }}
                         >
-                            还没有账号? 点击这里进行注册
+                            { state === 'login' ? '还没有账号? 点击这里进行注册' : '已经有账号? 点击这里进行登录' }
+                            
                         </span>
                     </p>
                     <p className={style['login-buttons']}>

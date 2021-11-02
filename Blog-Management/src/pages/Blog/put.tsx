@@ -2,10 +2,16 @@ import React, { useState, useEffect } from 'react'
 import { Input, Row, Col, Card, Button, message } from 'antd'
 import style from './put.less'
 import { FileSearchOutlined, CloudUploadOutlined } from '@ant-design/icons'
-import { history } from 'umi' 
+import { history, connect } from 'umi' 
 import { putBlog, getBlog } from '@/api/blog'
+import user from '@/models/user'
 
-const Component: React.FC = () => {
+interface Props {
+    user?: any
+    children?: any
+}
+
+const Component: React.FC = (props: Props) => {
     const blogMessage: any = history.location.state
 
     const [id, setId] = useState('')
@@ -61,8 +67,13 @@ const Component: React.FC = () => {
                             type={"primary"}
                             icon={<CloudUploadOutlined />}
                             onClick={() => {
+                                // 判断权限
+                                if (props.user.powerLevel <= 1) { // 权限等级不满足
+                                    return message.error('无法进行修改: 当前用户权限不足')
+                                }
                                 putBlog({
                                     id: blogMessage.id ? blogMessage.id : +id,
+                                    uid: props.user.spreadCode,
                                     text
                                 }).then(resp => {
                                     if (resp.data.state === 'success') {
@@ -105,4 +116,10 @@ const Component: React.FC = () => {
     )
 }
 
-export default Component
+export default connect((state: any) => {
+    return {
+        user: state.user
+    }
+}, () => {
+    return {}
+})(Component)

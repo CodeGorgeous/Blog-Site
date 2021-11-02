@@ -44,6 +44,23 @@ export default defineConfig({
             }
           ]
         }, {
+          path: '/image',
+          component: '@/pages/Image/index',
+          routes: [
+            {
+              path: '/',
+              redirect: '/image/list'
+            }, {
+              path: '/image/list',
+              component: '@/pages/Image/list'
+            }, {
+              path: '/image/add',
+              component: '@/pages/Image/add'
+            }, {
+              redirect: '/404'
+            }
+          ]
+        }, {
           path: '/user',
           component: '@/pages/User',
           routes: [
@@ -56,9 +73,6 @@ export default defineConfig({
             }, {
               path: '/user/alterUser',
               component: '@/pages/User/alterUser'
-            }, {
-              path: '/user/alterPassword',
-              component: '@/pages/User/alterPassword'
             }, {
               redirect: '/404'
             }

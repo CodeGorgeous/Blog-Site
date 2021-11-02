@@ -5,7 +5,7 @@ const instance = axios.create({
 })
 
 instance.interceptors.request.use((config) => {
-    if (config.method === 'post') {
+    if (config.method === 'POST' || config.method === 'PUT') {
         config.data = JSON.stringify(config.data)
     }
     return config

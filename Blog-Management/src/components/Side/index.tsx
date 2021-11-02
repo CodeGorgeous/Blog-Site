@@ -61,28 +61,20 @@ const Component: React.FC = () => {
                         key="/image/add"
                         icon={<ToTopOutlined />}
                     >新增图片</Menu.Item>
-                    <Menu.Item
-                        key="/image/delete"
-                        icon={<RestOutlined />}
-                    >删除图片</Menu.Item>
                 </Menu.SubMenu>
                 <Menu.SubMenu
                     key="user"
-                    title="用户管理(开发中)"
+                    title="用户管理"
                     icon={<UserOutlined />}
                 >
                     <Menu.Item
                         key="/user/list"
                         icon={<TeamOutlined />}
-                    >修改信息</Menu.Item>
+                    >用户列表</Menu.Item>
                     <Menu.Item
                         key="/user/alterUser"
                         icon={<ToolOutlined />}
                     >修改信息</Menu.Item>
-                    <Menu.Item
-                        key="/user/alterPassword"
-                        icon={<KeyOutlined />}
-                    >修改密码</Menu.Item>
                 </Menu.SubMenu>
             </Menu>
         </div>

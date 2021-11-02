@@ -23,7 +23,6 @@ const Component: React.FC = (props: Props) => {
 
     const { confirm } = Modal;
 
-
     return (
         <Row className={style['add-container']}>
             <Card className={style.card} hoverable>
@@ -32,6 +31,7 @@ const Component: React.FC = (props: Props) => {
                     className={style.button}
                     type={"primary"}
                     onClick={() => {
+                        if (props.user.powerLevel <= 1) return message.error('新增失败: 用户权限不足')
                         const blog = {
                             name: blogName,
                             timer: blogTimer,
@@ -39,7 +39,8 @@ const Component: React.FC = (props: Props) => {
                             author: blogAuthor,
                             codeUrl: sourceCodeUrl,
                             tags: blogTags.join('|'),
-                            text: blogText
+                            text: blogText,
+                            uid: props.user.spreadCode
                         }
                         postBlog(blog).then(resp => {
                             if (resp.data.state === 'success') {

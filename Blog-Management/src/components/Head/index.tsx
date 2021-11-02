@@ -36,7 +36,7 @@ const Component:React.FC = (props: Props) => {
                     onClose={() => setLock(!Lock)}
                     visible={Lock}
                 >
-                    <p>uid: {props.user.id}</p>
+                    <p>用户id: {props.user.id}</p>
                     <p>用户名: {props.user.name}</p>
                     <p>用户权限等级: {props.user.powerLevel}</p>
                     <p>专属邀请码: {props.user.spreadCode}</p>

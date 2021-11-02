@@ -1,11 +1,13 @@
 import React from 'react'
 
-const Component = () => {
+const Component: React.FC = () => {
     return (
         <div>
-            更改密码
+            图片列表
         </div>
     )
 }
 
 export default Component
+
+
