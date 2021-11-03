@@ -11,7 +11,6 @@ async function start() {
     // }
     await sequelize.authenticate();
     console.log('数据库链接成功')
-    console.log('开始数据库操作')
     await require('./init')
 }
 

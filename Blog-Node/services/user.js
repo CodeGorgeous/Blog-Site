@@ -23,8 +23,8 @@ module.exports = {
         if (!name || !password || !code) {
             return createResp('fail', '用户名/密码/邀请码不能为空', {})
         } else {
-            let result
-                // 万能邀请码
+            let result;
+            // 万能邀请码
             if (code === '167519') {
                 result = await User.findOne({
                     where: {

@@ -11,6 +11,7 @@ app.use(require("./middleware/errorMiddleware.js"));
 
 app.use("/api/user", require("./api/user.js"));
 app.use("/api/blog", require("./api/blog.js"));
+app.use("/api/image", require("./api/image.js"));
 
 app.listen(2550, () => {
     console.log(`开始监听接口`);
