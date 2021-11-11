@@ -63,6 +63,24 @@ const Component: React.FC = () => {
                     >新增图片</Menu.Item>
                 </Menu.SubMenu>
                 <Menu.SubMenu
+                    key="resources"
+                    title="资源管理(开发中)"
+                    icon={<ReadOutlined />}
+                >
+                    <Menu.Item
+                        key="/resources/list"
+                        icon={<BarsOutlined />}
+                    >资源列表</Menu.Item>
+                    <Menu.Item
+                        key="/resources/add"
+                        icon={<ToTopOutlined />}
+                    >新增功能</Menu.Item>
+                    <Menu.Item
+                        key="/resources/alterResources"
+                        icon={<ToTopOutlined />}
+                    >修改资源信息</Menu.Item>
+                </Menu.SubMenu>
+                <Menu.SubMenu
                     key="user"
                     title="用户管理"
                     icon={<UserOutlined />}

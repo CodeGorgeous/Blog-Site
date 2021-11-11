@@ -4,14 +4,17 @@ export default defineConfig({
   nodeModulesTransform: {
     type: 'none',
   },
+  title: '后台管理中心',
   routes: [
     {
       path: '/login',
       exact: true,
       component: '@/pages/Login/index',
+      title: '登录'
     },  {
       path: '/404',
-      component: '@/pages/NotFound/index'
+      component: '@/pages/NotFound/index',
+      title: '404 NotFound'
     }, {
       path: '/',
       component: '@/pages/Home/index',
@@ -29,16 +32,20 @@ export default defineConfig({
               redirect: '/blog/list'
             }, {
               path: '/blog/list',
-              component: '@/pages/Blog/list'
+              component: '@/pages/Blog/list',
+              title: '博客列表'
             }, {
               path: '/blog/add',
-              component: '@/pages/Blog/add'
+              component: '@/pages/Blog/add',
+              title: '新增博客'
             }, {
               path: '/blog/put',
-              component: '@/pages/Blog/put'
+              component: '@/pages/Blog/put',
+              title: '修改博客'
             }, {
               path: '/blog/lock',
-              component: '@/pages/Blog/lock'
+              component: '@/pages/Blog/lock',
+              title: '查看博客'
             }, {
               redirect: '/404'
             }
@@ -52,10 +59,12 @@ export default defineConfig({
               redirect: '/image/list'
             }, {
               path: '/image/list',
-              component: '@/pages/Image/list'
+              component: '@/pages/Image/list',
+              title: '图片列表'
             }, {
               path: '/image/add',
-              component: '@/pages/Image/add'
+              component: '@/pages/Image/add',
+              title: '新增图片'
             }, {
               redirect: '/404'
             }
@@ -69,10 +78,37 @@ export default defineConfig({
               redirect: '/user/list'
             }, {
               path: '/user/list',
-              component: '@/pages/User/list'
+              component: '@/pages/User/list',
+              title: '用户列表'
             }, {
               path: '/user/alterUser',
-              component: '@/pages/User/alterUser'
+              component: '@/pages/User/alterUser',
+              title: '修改信息'
+            }, {
+              redirect: '/404'
+            }
+          ]
+        }, {
+          path: '/resources',
+          component: '@/pages/Resources',
+          title: '资源管理',
+          routes: [
+            {
+              path: '/',
+              redirect: '/resources/list',
+            },
+            {
+              path: '/resources/list',
+              component: '@/pages/Resources/list',
+              title: '资源列表'
+            }, {
+              path: '/resources/add',
+              component: '@/pages/Resources/add',
+              title: '新增功能'
+            }, {
+              path: '/resources/alterResources',
+              component: '@/pages/Resources/alterResources',
+              title: '修改资源信息'
             }, {
               redirect: '/404'
             }
