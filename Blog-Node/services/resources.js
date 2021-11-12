@@ -86,12 +86,9 @@ module.exports = {
     async getResources(id) {
         try {
             if (!id) return createResp('fail', '缺少分类id', {})
-            const result = await ResourcesType.findAll({
-                include: [{
-                    model: Resources
-                }],
+            const result = await Resources.findAll({
                 where: {
-                    id
+                    resources_id: id
                 }
             })
             if (!result) return createResp('fail', '查询失败', {})

@@ -1,0 +1,47 @@
+.collapse-container {
+    width: 100%;
+    height: 100%;
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+.panel {
+}
+
+.card {
+    display: inline-block;
+    margin: 5px 10px;
+}
+
+.card-box {
+    width: 435px;
+    display: flex;
+    flex-wrap: nowrap;
+    box-sizing: border-box;
+}
+
+.card-left {
+    display: inline-block;
+    margin-right: 5px;
+}
+
+.card-right {
+    width: 280px;
+    display: inline-block;
+    height: 100%;
+    vertical-align: top;
+    p {
+        margin: 3px 0;
+    }
+}
+
+.card-introduce {
+    display:-webkit-box;/**对象作为伸缩盒子模型展示**/
+    -webkit-box-orient:vertical;/**设置或检索伸缩盒子对象的子元素的排列方式**/
+    -webkit-line-clamp:2;/**显示的行数**/
+    overflow:hidden;
+}
+
+.card-button {
+    margin: 0 3px;
+}
