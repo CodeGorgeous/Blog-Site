@@ -18,7 +18,7 @@ router.post('/', async(req, res) => {
 })
 
 router.post('/type', async(req, res) => {
-    const result = await resourcesService.createResourcesType(req.body.name, req.body.uid, req.body.uid)
+    const result = await resourcesService.createResourcesType(req.body.name, req.body.id, req.body.uid)
     res.send(result)
 })
 

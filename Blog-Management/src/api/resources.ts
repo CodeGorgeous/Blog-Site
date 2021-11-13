@@ -45,12 +45,13 @@ export async function postClassification(data: Classification) {
 
 interface ResourcesType {
     name: string
+    id: number
     uid: string
 }
 
 // 增加小分类
 export async function postResourcesType(data: ResourcesType) {
-    return await instance('/resources', {
+    return await instance('/resources/type', {
         method: 'post',
         headers: {
             'Content-Type': 'application/json'
@@ -71,7 +72,7 @@ interface Resources {
 
 // 增加资源
 export async function postResources(data: Resources) {
-    return await instance('/resources', {
+    return await instance('/resources/mes', {
         method: 'post',
         headers: {
             'Content-Type': 'application/json'

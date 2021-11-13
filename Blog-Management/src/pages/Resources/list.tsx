@@ -20,13 +20,13 @@ const Component = (props: Props) => {
 
     useEffect(() => {
         getAllResourcesType().then(resp => {
+            resp.data.data.sort()
             setList(resp.data.data)
         })
         return () => {
             
         }
     }, [])
-
     const vNode = list.map((item: any) => {
         let vNode: any = [];
         if (item.ResourcesTypes.length > 0) {
