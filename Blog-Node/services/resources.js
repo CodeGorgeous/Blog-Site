@@ -97,7 +97,7 @@ module.exports = {
             return createResp('fail', '未知错误', error)
         }
     },
-    // 获取所有分类
+    // 获取所有资源
     async getAllResources(uid) {
         try {
             let result = await User.findOne({
@@ -109,6 +109,83 @@ module.exports = {
             result = await Resources.findAll()
             if (!result) return createResp('fail', '查询失败', {})
             return createResp('success', '查询成功', result)
+        } catch (error) {
+            return createResp('fail', '未知错误', error)
+        }
+    },
+    // 根据资源id查询资源
+    async getSearchResources(id, uid) {
+        try {
+            let result = await User.findOne({
+                where: {
+                    spreadCode: uid
+                }
+            })
+            if (!result) return createResp('fail', '该操作人不存在', {})
+            result = await Resources.findOne({
+                where: {
+                    id
+                }
+            })
+            if (!result) return createResp('fail', '未找到该资源', {})
+            return createResp('success', '查询成功', result)
+        } catch (error) {
+            return createResp('fail', '未知错误', error)
+        }
+    },
+    // 修改资源信息
+    async putResource(id, name, url, image, introduce, tags, resources_id, uid) {
+        try {
+            let result = await User.findOne({
+                where: {
+                    spreadCode: uid
+                }
+            })
+            if (!result) return createResp('fail', '该操作人不存在', {})
+                // 修改数据库操作
+            result = Resources.update({
+                name,
+                url,
+                image,
+                introduce,
+                tags,
+                resources_id
+            }, {
+                where: {
+                    id
+                }
+            })
+            if (!result) return createResp('fail', '修改失败', {})
+            return createResp('success', '修改成功', {})
+        } catch (error) {
+            return createResp('fail', '未知错误', error)
+        }
+    },
+    // 删除某个资源
+    async deleteResource(id, uid) {
+        try {
+            let result = await User.findOne({
+                where: {
+                    spreadCode: uid
+                }
+            })
+            if (!result) return createResp('fail', '该操作人不存在', {})
+
+            // 看这个资源数据是否存在
+            result = await Resources.findOne({
+                where: {
+                    id
+                }
+            })
+            if (!result) return createResp('fail', '该资源不存在', {})
+
+            result = await Resources.destroy({
+                where: {
+                    id
+                }
+            })
+            if (!result) return createResp('fail', '删除失败', {})
+            return createResp('success', '删除成功', {})
         } catch (error) {
             return createResp('fail', '未知错误', error)
         }

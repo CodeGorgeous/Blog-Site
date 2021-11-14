@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { Row, Col, Collapse, Card, Image, Tag, Tooltip, Button, Modal, message } from 'antd'
-import { getAllResourcesType, getResources } from '@/api'
+import { getAllResourcesType, getResources, deleteResource } from '@/api'
 import style from './css/list.less'
 import { ToolOutlined, DeleteOutlined } from '@ant-design/icons'
 import { history, connect } from 'umi'
@@ -15,8 +15,8 @@ interface Props {
 
 const Component = (props: Props) => {
 
-    const [text, setText] = useState('Hello Umi!')
     const [list, setList] = useState([])
+    const [lock, setLock] = useState(false)
 
     useEffect(() => {
         getAllResourcesType().then(resp => {
@@ -26,7 +26,7 @@ const Component = (props: Props) => {
         return () => {
             
         }
-    }, [])
+    }, [lock])
     const vNode = list.map((item: any) => {
         let vNode: any = [];
         if (item.ResourcesTypes.length > 0) {
@@ -58,7 +58,7 @@ const Component = (props: Props) => {
                                 >
                                     <p>资源名: {t.name}</p>
                                     <p className={style['card-introduce']}>资源描述: {t.introduce}</p>
-                                    <p>资源地址: <a href={t.url}>{t.url}</a></p>
+                                    <p>资源地址: <a href={t.url} target="_blank" >{t.url}</a></p>
                                     <p>标签: {tagsNode}</p>
                                     <p>
                                         操作: <Tooltip placement="top" title="修改">
@@ -87,7 +87,17 @@ const Component = (props: Props) => {
                                                         title: '删除确认',
                                                         content: `是否确定删除${t.name}这个资源?`,
                                                         onOk() {
-                                                            console.log('删除成功')
+                                                            deleteResource({
+                                                                id: t.id,
+                                                                uid: props.user.spreadCode
+                                                            }).then(resp => {
+                                                                if (resp.data.state === 'success') {
+                                                                    setLock(!lock)
+                                                                    return message.success('删除成功')
+                                                                } else {
+                                                                    return message.error(resp.data.msg)
+                                                                }
+                                                            })
                                                         },
                                                         cancelText: '取消',
                                                         okText: '确定'
@@ -123,15 +133,14 @@ const Component = (props: Props) => {
         )
     })
 
-
     return (
-        <Row>
+        <div className={style['list-container']}>
             <Collapse
                 className={style['collapse-container']}
             >
                 {vNode}
             </Collapse>
-        </Row>
+        </div>
     )
 }
 

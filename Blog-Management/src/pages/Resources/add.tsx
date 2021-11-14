@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react'
 import style from './css/add.less'
-import { Row, Col, Card, Button, Input, Select, message } from 'antd'
-import { getAllResourcesType, postClassification, postResourcesType, postResources } from '../../api/index'
+import { Row, Col, Card, Button, Input, Select, message, Tooltip } from 'antd'
+import { getAllResourcesType, postClassification, postResourcesType, postResources, } from '../../api/index'
 import { connect } from 'umi'
+import { ToolOutlined } from '@ant-design/icons'
 
 const { Option } = Select
 
@@ -188,6 +189,11 @@ const Component = (props: Props) => {
                                 postResources(data).then(resp => {
                                     if (resp.data.state === 'success') {
                                         setLock(!lock)
+                                        setResourcesName('')
+                                        setResourcesUrl('')
+                                        setResourcesImage('')
+                                        setResourcesIntroduce('')
+                                        setResourcesTags([])
                                         return message.success('新增资源成功!')
                                     } else {
                                         return message.error(`新增资源失败!`)
@@ -217,6 +223,7 @@ const Component = (props: Props) => {
                                 资源名称:
                             </span>
                             <Input
+                                allowClear
                                 value={resourcesName}
                                 className={style['card-type-input']}
                                 onChange={(e) => {
@@ -229,6 +236,7 @@ const Component = (props: Props) => {
                                 资源地址:
                             </span>
                             <Input
+                                allowClear
                                 value={resourcesUrl}
                                 className={style['card-type-input']}
                                 onChange={(e) => {
@@ -241,18 +249,29 @@ const Component = (props: Props) => {
                                 资源图片:
                             </span>
                             <Input
+                                allowClear
                                 value={resourcesImage}
                                 className={style['card-type-input']}
                                 onChange={(e) => {
                                     setResourcesImage(e.target.value)
                                 }}
                             />
+                            <Tooltip placement="top" title="使用账户默认图片">
+                                <Button
+                                    className={style['input-tip']}
+                                    icon={<ToolOutlined />}
+                                    onClick={() => {
+                                        setResourcesImage(props.user.imgUrl)
+                                    }}
+                                />
+                            </Tooltip>
                         </label>
                         <label className={style['card-label']}>
                             <span className={style['card-span']}>
                                 资源描述:
                             </span>
                             <Input
+                                allowClear
                                 value={resourcesIntroduce}
                                 className={style['card-type-input']}
                                 onChange={(e) => {

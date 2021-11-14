@@ -161,6 +161,7 @@ const Component: React.FC = (props: Props) => {
                             className={style.button}
                             type={"primary"}
                             onClick={() => {
+                                if (props.user.spreadCode !== 10) return message.error('请联系管理员进行修改权限!')
                                 modifyMessage({
                                     powerLevel: level
                                 })

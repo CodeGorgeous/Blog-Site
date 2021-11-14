@@ -53,6 +53,7 @@ const Component: React.FC = (props: Props) => {
                 <h1>欢迎{state === 'login' ? '登录' : '注册'}</h1>
                 <div className={style['login-box']}>
                     <Input
+                        allowClear
                         className={style['login-input']}
                         size="large"
                         placeholder="用户名"

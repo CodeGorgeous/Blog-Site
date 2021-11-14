@@ -80,3 +80,54 @@ export async function postResources(data: Resources) {
         data
     })
 }
+
+interface Search {
+    id: number
+    uid: string
+}
+
+// 根据id查询资源
+export async function getSearchResource(params: Search) {
+    return await instance('/resources/search', {
+        method: 'get',
+        params
+    })
+}
+
+interface updateResource {
+    id: number
+    name: string
+    url: string
+    image: string
+    introduce: string
+    tags: string
+    typeId: number
+    uid: string
+}
+
+/**
+ * 修改资源
+ * @param data 
+ * @returns 
+ */
+export async function putResource(data: updateResource) {
+    return await instance('/resources/mes', {
+        method: 'put',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        data
+    })
+}
+
+interface deleteResource {
+    id: number
+    uid: string
+}
+
+export async function deleteResource(params: deleteResource) {
+    return await instance('/resources/mes', {
+        method: 'delete',
+        params
+    })
+}
