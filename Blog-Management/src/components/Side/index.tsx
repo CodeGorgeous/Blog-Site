@@ -9,7 +9,9 @@ import {
     SearchOutlined,
     TeamOutlined,
     UserOutlined,
-    KeyOutlined
+    KeyOutlined,
+    FileImageOutlined,
+    FolderOpenOutlined
 } from '@ant-design/icons';
 import { history } from 'umi'
 
@@ -51,7 +53,7 @@ const Component: React.FC = () => {
                 <Menu.SubMenu
                     key="image"
                     title="图片管理(开发中)"
-                    icon={<ReadOutlined />}
+                    icon={<FileImageOutlined />}
                 >
                     <Menu.Item
                         key="/image/list"
@@ -64,8 +66,8 @@ const Component: React.FC = () => {
                 </Menu.SubMenu>
                 <Menu.SubMenu
                     key="resources"
-                    title="资源管理(开发中)"
-                    icon={<ReadOutlined />}
+                    title="资源管理"
+                    icon={<FolderOpenOutlined />}
                 >
                     <Menu.Item
                         key="/resources/list"

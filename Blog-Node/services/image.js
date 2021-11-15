@@ -2,6 +2,10 @@ const Image = require('../models/image')
 const ImageTypes = require('../models/imageTypes')
 const User = require('../models/user')
 const { createResp } = require('../utils/createResp.js')
+const { token, url } = require('../utils/qiniu')
+const { v4 } = require('uuid')
+const { resolve } = require('path')
+const fs = require('fs')
 
 module.exports = {
     // 创建图片类型
@@ -51,21 +55,60 @@ module.exports = {
         }
     },
     // 增加一张图片
-    async createImage(name, imgUrl, typeId, uid) {
+    async createImage(name, imgBase64, typeId, uid) {
         try {
             let result = await User.findOne({
                 where: {
                     spreadCode: uid
                 }
             })
-            if (!result) return createResp('fail', '该操作人不存在', {})
-            result = await Image.create({
-                name,
-                imgUrl,
-                'type_id': typeId
+            if (!result) return createResp('fail', '该操作人不存在', {});
+            // 把拿到的文件转储为一张图片
+            const imageName = v4().slice(0, 6);
+            // 得到图片类型
+            let imageType;
+            if (imgBase64.match(/^data:image\/\w+;base64,/)) { // 判断传递的是否为图片base64
+                let data = imgBase64.match(/^data:image\/\w+;base64,/)[0]
+                data = data.replace(/data:image\//, "")
+                imageType = data.replace(/;base64,/, "")
+            } else {
+                return createResp('fail', '数据不符合规范', {})
+            }
+            // 拿到文件名
+            const fileName = `${imageName}.${imageType}`
+                // 得到消除过头部数据的图片base64编码
+            const base64 = imgBase64.replace(/^data:image\/\w+;base64,/, "");
+            // base64转为Buffer进行存储
+            const imageBuffer = new Buffer(base64, 'base64')
+            fs.writeFileSync(resolve(__dirname, '..', 'resources', 'image', fileName), imageBuffer);
+            // 七牛云文件直传
+            const config = new qiniu.conf.Config();
+            // 设置存储空间所在的地区
+            config.zone = qiniu.zone.Zone_z2;
+            // 设置路径为转出的图片路径
+            const file = resolve(__dirname, '..', 'resources', 'image', fileName)
+            const formUploader = new qiniu.form_up.FormUploader(config);
+            const putExtra = new qiniu.form_up.PutExtra();
+            formUploader.putFile(token, fileName, file, putExtra, function(respErr, respBody, respInfo) {
+                if (respErr) {
+                    return createResp('fail', '上传错误', respErr)
+                }
+                if (respInfo.statusCode == 200) {
+                    // 成功后拿到路径
+                    const imageUrl = url + fileName;
+                    // 将路径放到数据库中
+                    result = await Image.create({
+                        name,
+                        imgUrl: imageUrl,
+                        'type_id': typeId
+                    })
+                    if (!result) return createResp('fail', '新增失败', {})
+                    return createResp('success', '新增成功', {})
+                } else {
+                    return createResp('fail', '上传失败', respInfo.statusCode)
+                }
             })
-            if (!result) return createResp('fail', '新增失败', {})
-            return createResp('success', '新增成功', {})
+
         } catch (error) {
             return createResp('fail', '未知错误', error)
         }

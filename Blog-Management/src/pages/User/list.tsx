@@ -28,7 +28,7 @@ const Component: React.FC = (props: Props) => {
 
     const newList = list.map((item: any, index) => {
         return (
-            <Card className={style['card-container']} key={index}>
+            <Card className={style['card-container']} key={index} hoverable>
                 <Row>
                     <Col className={style['card-left']}>
                         <Image className={style['card-image']} width={150} height={150} src={item.occupyImgUrl}/>
@@ -61,7 +61,7 @@ const Component: React.FC = (props: Props) => {
     return (
         <div className={style['user-list-container']}>
             <Row>
-                <Card className={style['search-card']}>
+                <Card className={style['search-card']} hoverable>
                     <Col className={`${style['search-card-col']}`}>
                         <Input
                             className={style['search-input']}

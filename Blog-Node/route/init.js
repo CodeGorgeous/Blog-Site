@@ -13,6 +13,7 @@ app.use("/api/user", require("./api/user.js"));
 app.use("/api/blog", require("./api/blog.js"));
 app.use("/api/image", require("./api/image.js"));
 app.use("/api/resources", require("./api/resources.js"));
+app.use("/api/qiniu", require("./api/qiniu.js"));
 
 app.listen(2550, () => {
     console.log(`开始监听接口`);
