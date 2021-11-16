@@ -2,7 +2,7 @@ const Image = require('../models/image')
 const ImageTypes = require('../models/imageTypes')
 const User = require('../models/user')
 const { createResp } = require('../utils/createResp.js')
-const { token, url } = require('../utils/qiniu')
+const { token, url, fileUpload } = require('../utils/qiniu')
 const { v4 } = require('uuid')
 const { resolve } = require('path')
 const fs = require('fs')
@@ -39,14 +39,7 @@ module.exports = {
     // 获取所有图片类型
     async getAllTypes(uid) {
         try {
-            // 查看该uid是否合法
-            let result = await User.findOne({
-                where: {
-                    spreadCode: uid
-                }
-            })
-            if (!result) return createResp('fail', '该操作人不存在', {})
-                // 获取所有类型
+            // 获取所有类型
             result = await ImageTypes.findAll()
             if (!result) return createResp('fail', '查询失败', {})
             return createResp('success', '查询成功', result)
@@ -55,7 +48,7 @@ module.exports = {
         }
     },
     // 增加一张图片
-    async createImage(name, imgBase64, typeId, uid) {
+    async createImage(data, typeId, uid) {
         try {
             let result = await User.findOne({
                 where: {
@@ -63,66 +56,59 @@ module.exports = {
                 }
             })
             if (!result) return createResp('fail', '该操作人不存在', {});
-            // 把拿到的文件转储为一张图片
-            const imageName = v4().slice(0, 6);
-            // 得到图片类型
-            let imageType;
-            if (imgBase64.match(/^data:image\/\w+;base64,/)) { // 判断传递的是否为图片base64
-                let data = imgBase64.match(/^data:image\/\w+;base64,/)[0]
-                data = data.replace(/data:image\//, "")
-                imageType = data.replace(/;base64,/, "")
-            } else {
-                return createResp('fail', '数据不符合规范', {})
-            }
-            // 拿到文件名
-            const fileName = `${imageName}.${imageType}`
-                // 得到消除过头部数据的图片base64编码
-            const base64 = imgBase64.replace(/^data:image\/\w+;base64,/, "");
-            // base64转为Buffer进行存储
-            const imageBuffer = new Buffer(base64, 'base64')
-            fs.writeFileSync(resolve(__dirname, '..', 'resources', 'image', fileName), imageBuffer);
-            // 七牛云文件直传
-            const config = new qiniu.conf.Config();
-            // 设置存储空间所在的地区
-            config.zone = qiniu.zone.Zone_z2;
-            // 设置路径为转出的图片路径
-            const file = resolve(__dirname, '..', 'resources', 'image', fileName)
-            const formUploader = new qiniu.form_up.FormUploader(config);
-            const putExtra = new qiniu.form_up.PutExtra();
-            formUploader.putFile(token, fileName, file, putExtra, function(respErr, respBody, respInfo) {
-                if (respErr) {
-                    return createResp('fail', '上传错误', respErr)
-                }
-                if (respInfo.statusCode == 200) {
-                    // 成功后拿到路径
-                    const imageUrl = url + fileName;
-                    // 将路径放到数据库中
-                    result = await Image.create({
-                        name,
-                        imgUrl: imageUrl,
-                        'type_id': typeId
+            // 用于记录上传图片时发生的错误
+            let uploadedMessage = []
+            data.forEach((item) => {
+                // 拿到存储在七牛云上的文件名称
+                const fileName = getFileName(item.imageBase64);
+                // 文件暂时转储到/resources/image文件夹下
+                imageStorage(fileName, item.imageBase64);
+                // 文件路径
+                const filePath = resolve(__dirname, '..', 'resources', 'image', fileName);
+                // 上传至七牛云
+                fileUpload(fileName, filePath, async(error, body, info) => {
+                    if (error) return uploadedMessage.push({
+                        file: item.name,
+                        msg: '七牛云上传错误',
+                        error
                     })
-                    if (!result) return createResp('fail', '新增失败', {})
-                    return createResp('success', '新增成功', {})
-                } else {
-                    return createResp('fail', '上传失败', respInfo.statusCode)
-                }
-            })
+                    if (info.statusCode == 200) {
+                        // 表示上传成功
+                        const imgUrl = url + fileName
+                        const result = await Image.create({
+                            name: item.name,
+                            qiniuName: fileName,
+                            imgUrl,
+                            type_id: typeId
+                        })
+                        if (!result) return uploadedMessage.push({
+                            file: item.name,
+                            msg: '数据库新增数据失败'
+                        })
+                    } else {
+                        return uploadedMessage.push({
+                            file: item.name,
+                            msg: '七牛云上传失败',
+                            error: info.statusCode
+                        })
+                    }
+                });
+                // 把暂时转储的文件删除, 避免文件积累
+                fs.unlinkSync(filePath)
+            });
 
+            // 总结是否循环上传发生错误
+            if (uploadedMessage.length !== 0) return createResp('fail', '新增失败', uploadedMessage)
+            return createResp('success', '新增成功', {})
         } catch (error) {
             return createResp('fail', '未知错误', error)
         }
     },
     // 获取所有图片
-    async getAllImage(uid) {
+    async getAllImage() {
         try {
-            let result = await User.findOne({
-                where: {
-                    spreadCode: uid
-                }
-            })
-            if (!result) return createResp('fail', '该操作人不存在', {})
-            result = await Image.findAndCountAll()
+            let result = await Image.findAndCountAll()
+            if (!result) return createResp('fail', '查询失败', {})
             return createResp('success', '查询成功', result)
         } catch (error) {
             return createResp('fail', '未知错误', error)
@@ -131,12 +117,6 @@ module.exports = {
     // 联表查询图片
     async searchImage(type, uid) {
         try {
-            let result = await User.findOne({
-                where: {
-                    spreadCode: uid
-                }
-            })
-            if (!result) return createResp('fail', '该操作人不存在', {})
             result = await Image.findAll({
                 include: [{
                     model: ImageTypes,
@@ -150,4 +130,32 @@ module.exports = {
             return createResp('fail', '未知错误', error)
         }
     }
+}
+
+/**
+ * 根据文件base64编码生成一个随机文件名
+ * @param {*} base64 
+ * @returns 
+ */
+function getFileName(base64) {
+    const imageName = v4().slice(0, 6);
+    let imageSuffix = '';
+    if (base64.match(/^data:image\/\w+;base64,/)) {
+        let data = base64.match(/^data:image\/\w+;base64,/)[0]
+        data = data.replace(/data:image\//, "")
+        imageSuffix = data.replace(/;base64,/, "")
+        return `${imageName}.${imageSuffix}`
+    } else { // 不符合图片规范返回undefined
+        return
+    }
+}
+
+// 图片存储
+function imageStorage(name, data) {
+    // 拿到文件的base64编码
+    const base64 = data.replace(/^data:image\/\w+;base64,/, "");
+    // base64转码为Buffer
+    const buffer = new Buffer.from(base64, 'base64');
+    // 暂时存储图片
+    fs.writeFileSync(resolve(__dirname, '..', 'resources', 'image', name), buffer);
 }

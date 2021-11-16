@@ -4,7 +4,7 @@ const imageService = require('../../services/image')
 
 // 获取所有类型
 router.get('/type', async(req, res) => {
-    const result = await imageService.getAllTypes(req.query.uid)
+    const result = await imageService.getAllTypes()
     res.send(result)
 })
 
@@ -16,19 +16,19 @@ router.post('/type', async(req, res) => {
 
 // 增加图片
 router.post('/', async(req, res) => {
-    const result = await imageService.createImage(req.body.name, req.body.url, req.body.type, req.body.uid)
+    const result = await imageService.createImage(req.body.image, req.body.type, req.body.uid)
     res.send(result)
 })
 
 // 获取所有图片
 router.get('/', async(req, res) => {
-    const result = await imageService.getAllImage(req.query.uid)
+    const result = await imageService.getAllImage()
     res.send(result)
 })
 
 // 按照图片类型获取图片
 router.get('/search', async(req, res) => {
-    const result = await imageService.searchImage(req.query.type, req.query.uid)
+    const result = await imageService.searchImage(req.query.type)
     res.send(result)
 })
 

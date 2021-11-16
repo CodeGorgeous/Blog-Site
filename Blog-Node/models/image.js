@@ -11,6 +11,10 @@ Image.init({
         type: DataTypes.STRING,
         allowNull: false
     },
+    qiniuName: {
+        type: DataTypes.STRING,
+        allowNull: false
+    },
     // 图片url
     imgUrl: {
         type: DataTypes.STRING,

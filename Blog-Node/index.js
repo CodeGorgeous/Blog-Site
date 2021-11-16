@@ -10,6 +10,5 @@ async function start() {
     }
 }
 
-require('./utils/qiniu')
 
 start()
