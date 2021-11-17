@@ -1,13 +1,16 @@
-import React, { useState } from 'react'
-import { Row, Col, Card, Upload, Modal, Button, message } from 'antd'
+import React, { useState, useEffect } from 'react'
+import { Row, Col, Card, Upload, Modal, Button, message, Select } from 'antd'
 import { PlusOutlined } from '@ant-design/icons'
 import { connect, history } from 'umi'
-import { postImage } from '@/api'
+import { postImage, getImageType } from '@/api'
+import style from './css/add.less'
 
 interface Props {
     user?: any
     children?: any
 }
+
+const { Option } = Select
 
 const Component: React.FC = (props: Props) => {
 
@@ -15,6 +18,20 @@ const Component: React.FC = (props: Props) => {
     const [previewVisible, setPreviewVisible] = useState(false)
     const [previewTitle, setPreviewTitle] = useState('')
     const [previewImage, setPreviewImage] = useState('')
+    const [typeList, setTypeList] = useState<any>([])
+    const [selectType, setSelectType] = useState(1)
+
+    useEffect(() => {
+        getImageType().then(resp => {
+            setTypeList(resp.data.data)
+        })
+    }, [])
+
+    const vTypeNode = typeList.map((item: any) => {
+        return (
+            <Option key={item.id} value={item.id}>{item.type}</Option>
+        )
+    })
 
     // 获取图片base64格式数据
     const getBase64 = (file: any) => {
@@ -29,7 +46,19 @@ const Component: React.FC = (props: Props) => {
     return (
         <div>
             <Col>
-                <Card>
+                <Card className={style['card-container']} hoverable>
+                    <span className={style['card-type']}>
+                        <span className={style['card-type-text']}>分类:</span>
+                        <Select
+                            value={selectType}
+                            style={{ width: 120 }}
+                            onChange={(key) => {
+                                setSelectType(key)
+                            }}
+                        >
+                            {vTypeNode}
+                        </Select>
+                    </span>
                     <Button
                         type="primary"
                         onClick={async() => {
@@ -42,12 +71,12 @@ const Component: React.FC = (props: Props) => {
                             }))
                             const mes = {
                                 image,
-                                type: 1,
+                                type: selectType,
                                 uid: props.user.spreadCode
                             }
                             postImage(mes).then(resp => {
                                 if (resp.data.state === 'success') {
-                                    history.push('/image/list')
+                                    // history.push('/image/list')
                                     return message.success('新增成功!')
                                 } else {
                                     return message.error(`新增失败: 失败原因: ${resp.data.msg}`)
@@ -60,7 +89,7 @@ const Component: React.FC = (props: Props) => {
                 </Card>
             </Col>
             <Col>
-                <Card>
+                <Card className={style['card-container']} hoverable>
                     <Upload
                         listType="picture-card"
                         fileList={fileList}

@@ -2,7 +2,7 @@ const Image = require('../models/image')
 const ImageTypes = require('../models/imageTypes')
 const User = require('../models/user')
 const { createResp } = require('../utils/createResp.js')
-const { token, url, fileUpload } = require('../utils/qiniu')
+const { token, url, fileUpload, deleteFile } = require('../utils/qiniu')
 const { v4 } = require('uuid')
 const { resolve } = require('path')
 const fs = require('fs')
@@ -37,7 +37,7 @@ module.exports = {
         }
     },
     // 获取所有图片类型
-    async getAllTypes(uid) {
+    async getAllTypes() {
         try {
             // 获取所有类型
             result = await ImageTypes.findAll()
@@ -115,7 +115,7 @@ module.exports = {
         }
     },
     // 联表查询图片
-    async searchImage(type, uid) {
+    async searchImage(type) {
         try {
             result = await Image.findAll({
                 include: [{
@@ -126,6 +126,46 @@ module.exports = {
                 }]
             })
             return createResp('success', '查询成功', result)
+        } catch (error) {
+            return createResp('fail', '未知错误', error)
+        }
+    },
+    // 删除一张图片
+    async deleteImage(id, uid) {
+        try {
+            let result = await User.findOne({
+                where: {
+                    spreadCode: uid
+                }
+            })
+            if (!result) return createResp('fail', '该操作人不存在', {})
+                // 找到数据库中对应的数据条目
+            result = await Image.findOne({
+                where: {
+                    id
+                }
+            })
+            if (!result) return createResp('fail', '未找到该资源', {})
+            const data = result.dataValues;
+            let error = null
+            await deleteFile(data.qiniuName, async(err, body, info) => {
+                if (err) {
+                    error = err
+                } else {
+                    if (info.statusCode === 200) {
+                        // 删除数据库中的数据
+                        result = await Image.destroy({
+                            where: {
+                                id
+                            }
+                        });
+                    } else {
+                        error = info
+                    }
+                }
+            });
+            if (error) return createResp('fail', '七牛云文件删除失败', error);
+            return createResp('success', '删除成功', {});
         } catch (error) {
             return createResp('fail', '未知错误', error)
         }

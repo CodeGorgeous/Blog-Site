@@ -76,3 +76,19 @@ export async function searchImage(type: number) {
     })
 }
 
+interface DeleteImage {
+    id: number
+    uid: string
+}
+
+/**
+ * 删除一张图片
+ * @param params 
+ * @returns 
+ */
+export async function deleteImage(params: DeleteImage) {
+    return await instance('/image', {
+        method: 'delete',
+        params
+    })
+}

@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react'
 import { connect } from 'umi'
-import { Col, Card, Select, Image, Button, Tooltip, message } from 'antd'
+import { Col, Card, Select, Image, Button, Tooltip, message, Modal } from 'antd'
 import style from './css/list.less'
-import { getAllImage, getImageType, searchImage } from '@/api'
+import { getAllImage, getImageType, searchImage, deleteImage } from '@/api'
 import { ToolOutlined, DeleteColumnOutlined } from '@ant-design/icons'
 import ClipboardJS from 'clipboard'
 
@@ -12,6 +12,7 @@ interface Props {
 }
 
 const { Option } = Select
+const { confirm } = Modal;
 
 const Component: React.FC = (props: Props) => {
     // 图片分类
@@ -91,7 +92,26 @@ const Component: React.FC = (props: Props) => {
                             className={style['input-tip']}
                             icon={<DeleteColumnOutlined />}
                             onClick={() => {
-                                
+                                if (props.user.powerLevel <= 1) return message.error('删除失败: 用户权限不足')
+                                confirm({
+                                    title: '删除确认',
+                                    content: `是否确定删除${item.name}这张图片?`,
+                                    onOk() {
+                                        deleteImage({
+                                            id: item.id,
+                                            uid: props.user.spreadCode
+                                        }).then(resp => {
+                                            if (resp.data.state === 'success') {
+                                                setLock(!lock)
+                                                message.success('删除成功')
+                                            } else {
+                                                message.error(resp.data.msg)
+                                            }
+                                        })
+                                    },
+                                    cancelText: '取消',
+                                    okText: '确定'
+                                })
                             }}
                         />
                     </Tooltip>
@@ -99,6 +119,7 @@ const Component: React.FC = (props: Props) => {
             </Card>
         )
     })
+    
     return (
         <div>
             <Col>

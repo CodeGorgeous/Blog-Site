@@ -32,4 +32,10 @@ router.get('/search', async(req, res) => {
     res.send(result)
 })
 
+// 删除图片
+router.delete('/', async(req, res) => {
+    const result = await imageService.deleteImage(req.query.id, req.query.uid)
+    res.send(result)
+})
+
 module.exports = router

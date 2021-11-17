@@ -5,8 +5,8 @@ const mac = new qiniu.auth.digest.Mac(accessKey, secretKey)
 const options = {
     scope: 'codegorgeous-images'
 }
-const putPolicy = new qiniu.rs.PutPolicy(options)
-    // 拿到token
+const putPolicy = new qiniu.rs.PutPolicy(options);
+// 拿到token
 const token = putPolicy.uploadToken(mac)
 
 // 七牛云文件直传
@@ -17,7 +17,15 @@ const putExtra = new qiniu.form_up.PutExtra();
 const formUploader = new qiniu.form_up.FormUploader(config);
 
 function fileUpload(fileName, filePath, callback) {
-    formUploader.putFile(token, fileName, filePath, putExtra, async function(error, body, info) {
+    formUploader.putFile(token, fileName, filePath, putExtra, function(error, body, info) {
+        callback(error, body, info)
+    })
+}
+
+const bucketManager = new qiniu.rs.BucketManager(mac, config);
+
+function deleteFile(fileName, callback) {
+    bucketManager.delete('codegorgeous-images', fileName, (error, body, info) => {
         callback(error, body, info)
     })
 }
@@ -25,5 +33,6 @@ function fileUpload(fileName, filePath, callback) {
 module.exports = {
     token,
     url: 'http://qiniu.codegorgeous.top/',
-    fileUpload
+    fileUpload,
+    deleteFile
 }
