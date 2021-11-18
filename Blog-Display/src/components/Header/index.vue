@@ -1,59 +1,109 @@
 <template>
     <div className="header-container">
-        <el-affix
-            :offset='0'
+        <el-menu
+            default-active="/home"
+            class="menu-container"
+            mode="horizontal"
+            :router="true"
+            :style="{
+                display: docWidth > 576 ? 'flex' : 'none'
+            }"
         >
-            <el-menu
-                class="menu-container"
-                mode="horizontal"
-                :router="true"
+            
+            <el-menu-item
+                index="/home"
             >
-                
-                <el-menu-item
-                    index="/home"
-                >
-                    <el-icon><home-filled /></el-icon>首页
-                </el-menu-item>
-                <el-menu-item
-                    index="/blog"
-                >
-                    <el-icon><notebook /></el-icon>博客
-                </el-menu-item>
-                <el-menu-item
-                    index="/file"
-                >
-                    <el-icon><files /></el-icon>文档
-                </el-menu-item>
-                <el-menu-item
-                    index="/image"
-                >
-                    <el-icon><money /></el-icon>相册
-                </el-menu-item>
-                <el-menu-item
-                    index="/github"
-                >
-                    <el-icon><top-right /></el-icon>GitHub
-                </el-menu-item>
-                <el-menu-item
-                    index="/about"
-                >
-                    <el-icon><comment /></el-icon>关于
-                </el-menu-item>
-            </el-menu>
-        </el-affix>
+                <el-icon><HomeFilled /></el-icon>首页
+            </el-menu-item>
+            <el-menu-item
+                index="/blog"
+            >
+                <el-icon><Notebook /></el-icon>博客
+            </el-menu-item>
+            <el-menu-item
+                index="/image"
+            >
+                <el-icon><Money /></el-icon>相册
+            </el-menu-item>
+            <el-menu-item
+                index="/about"
+            >
+                <el-icon><Comment /></el-icon>关于
+            </el-menu-item>
+        </el-menu>
+        <el-dropdown
+            class="media-menu-container"
+            :style="{
+                display: docWidth > 576 ? 'none' : 'flex'
+            }"
+        >
+            <span class="el-dropdown-link">
+                <el-icon size="30"><Menu /></el-icon>
+            </span>
+            <template #dropdown>
+                <el-dropdown-menu>
+                    <el-dropdown-item>
+                        <router-link
+                            class="media-link-item"
+                            to="/home"
+                        >
+                            首页
+                        </router-link>
+                    </el-dropdown-item>
+                    <el-dropdown-item>
+                        <router-link
+                            class="media-link-item"
+                            to="/blog"
+                        >
+                            博客
+                        </router-link>
+                    </el-dropdown-item>
+                    <el-dropdown-item>
+                        <router-link
+                            class="media-link-item"
+                            to="/image"
+                        >
+                            相册
+                        </router-link>
+                    </el-dropdown-item>
+                    <el-dropdown-item>
+                        <router-link
+                            class="media-link-item"
+                            to="/about"
+                        >
+                            关于
+                        </router-link>
+                    </el-dropdown-item>
+                </el-dropdown-menu>
+            </template>
+        </el-dropdown>
     </div>
 </template>
 
 <script lang='ts'>
-    import { defineComponent, reactive, toRefs, ref, watchEffect } from 'vue'
+    import { defineComponent, reactive, toRefs, ref, watchEffect, onMounted, onUnmounted } from 'vue'
     import * as icons from '@element-plus/icons'
     export default defineComponent({
         components: {
             ...icons
         },
         setup (props, context) {
-            
+            const docWidth = ref(document.body.clientWidth)
+
+            const handleSizeChange = () => {
+                docWidth.value = document.body.clientWidth
+            }
+
+            onMounted(() => {
+                window.addEventListener('resize', handleSizeChange)
+            })
+
+            onUnmounted(() => {
+                window.removeEventListener('resize', handleSizeChange)
+            })
+
             return {
+                docWidth
             }
         }
     })
@@ -66,11 +116,23 @@
 }
 
 .menu-container {
-    width: 100%;
-    height: 100%;
     justify-content: flex-end;
     background: none;
     border: none;
+    padding: 0 10px 0 0;
+}
+
+.media-menu-container {
+    font-size: 25px;
+    color: #fff;
+    justify-content: flex-end;
+    padding: 10px 10px 0 0;
+    cursor: pointer;
+}
+
+.media-link-item {
+    color: #abcdef;
+    text-decoration: none;
 }
 
 </style>

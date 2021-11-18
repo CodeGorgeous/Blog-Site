@@ -23,7 +23,9 @@
             Mouse
         },
         setup (props, context) {
-            const bgImage = ref('http://qiniu.codegorgeous.top/login.webp')
+            const bgImage = ref()
+            let image1: string = 'https://img2.baidu.com/it/u=3492081780,1765429063&fm=26&fmt=auto'
+            let image2: string = 'http://qiniu.codegorgeous.top/login.webp'
             const text =ref('')
 
             setTimeout(async () => {
@@ -48,9 +50,9 @@
             const handleSizeChange = () => {
                 docWidth.value = document.body.clientWidth
                     if (docWidth.value < 576) {
-                        bgImage.value = 'https://img2.baidu.com/it/u=3492081780,1765429063&fm=26&fmt=auto'
+                        bgImage.value = image1
                     } else {
-                        bgImage.value = 'http://qiniu.codegorgeous.top/login.webp'
+                        bgImage.value = image2
                     }
             }
             handleSizeChange()

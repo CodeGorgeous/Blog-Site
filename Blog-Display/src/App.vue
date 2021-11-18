@@ -1,10 +1,12 @@
 <template>
-  <div class="main-container">
-    <div class="header-container">
+  <div class="main-container" @scroll="handleScroll" ref="main">
+    <div
+      class="header-container"
+      :style="{
+        opacity: lock ? '0' : '1'
+      }"
+    >
       <Header />
-    </div>
-    <div class="carousel-container">
-      <Carousel />
     </div>
     <div class="content-container">
       <router-view />
@@ -15,17 +17,25 @@
 <script lang="ts">
   import { defineComponent, reactive, toRefs, ref, watchEffect } from 'vue'
   import Header from './components/Header/index.vue'
-  import Carousel from './components/Carousel/index.vue'
 
   export default defineComponent({
     components: {
-      Header,
-      Carousel
+      Header
     },
     setup (props, context) {
-      
+      const lock = ref(false)
+      const handleScroll = (e: any) => {
+        if (main.value.scrollTop > 200) {
+          lock.value = true
+        } else {
+          lock.value = false
+        }
+      }
+      const main: any = ref(null)
       return {
-        
+        handleScroll,
+        main,
+        lock
       }
     }
   })
@@ -33,23 +43,24 @@
 
 <style scoped>
 .main-container {
-  width: 100%;
-  height: 100%;
+  width: 100vw;
+  height: 100vh;
+  overflow-x: hidden;
+  overflow-y: auto;
 }
 
 .header-container {
-  width: 100%;
-  position: absolute;
-  z-index: 1000;
+  width: 100vw;
+  height: 60px;
+  position: fixed;
+  z-index: 1;
+  transition: opacity 0.5s ease-in-out;
 }
 
-.carousel-container {
-  position: absolute;
-  left: 0;
-  top: 0;
+.content-container {
   width: 100%;
-  height: 100vh;
-  background: #abcdef;
+  position: relative;
+  top: 0;
 }
 
 </style>

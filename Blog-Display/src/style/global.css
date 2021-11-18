@@ -3,11 +3,25 @@
     padding: 0;
 }
 
+*::selection {
+    background: #abcdef;
+    color: #fff;
+}
+
 html,
 body,
 #app {
-    width: 100%;
-    height: 100%;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+}
+
+body {
+    background: #eee;
+}
+
+#app {
+    display: inline-block;
 }
 
 .el-menu-item {
@@ -16,4 +30,8 @@ body,
 
 .el-menu-item {
     background: none !important;
+}
+
+.el-card__body {
+    padding: 0 !important;
 }
