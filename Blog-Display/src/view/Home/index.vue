@@ -1,7 +1,7 @@
 <template>
     <div class="home-container">
         <div class="home-diagram">
-            <Diagram />
+            <Diagram :main="main"/>
         </div>
         <div class="home-content-container">
             <div class="main">
@@ -12,6 +12,7 @@
                     :key="item.id"
                     @click="handleClick(item)"
                 >
+                    
                     <div class="card-image">
                         <el-image
                             style="width: 100%; height: 100%"
@@ -58,10 +59,11 @@
 </template>
 
 <script lang='ts'>
-    import { defineComponent, reactive, toRefs, ref, watchEffect } from 'vue'
+    import { defineComponent, reactive, toRefs, ref, watchEffect, PropType } from 'vue'
     import Diagram from '../../components/Diagram/index.vue'
     import Footer from '../../components/Footer/index.vue'
     import { UserFilled, Checked } from '@element-plus/icons'
+    import { useRouter } from 'vue-router'
 
     export default defineComponent({
         components: {
@@ -70,8 +72,15 @@
             UserFilled,
             Checked
         },
+        props: {
+            main: {
+                type: Object as PropType<any>,
+                required: true
+            }
+        },
         setup (props, context) {
-            
+
+            const router = useRouter()
             const blogList: any = ref([
                 {
                     id: 1,
@@ -109,12 +118,19 @@
             ])
 
             const handleClick = (item: any) => {
-                console.log(item)
+                router.push({
+                    path: '/message',
+                    query: {
+                        id: item.id
+                    }
+                })
+                
             }
 
             return {
                 blogList,
-                handleClick
+                handleClick,
+                main: props.main
             }
         }
     })
@@ -154,7 +170,7 @@
 }
 
 .card-item:hover {
-    transform: translateY(10px);
+    transform: translateY(15px) rotate(1deg);
 }
 
 .card-image {

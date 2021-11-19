@@ -6,10 +6,45 @@
         opacity: lock ? '0' : '1'
       }"
     >
-      <Header />
+      <Header/>
     </div>
     <div class="content-container">
-      <router-view />
+      <router-view :main="main"/>
+    </div>
+    <div
+      class="menu-container"
+    >
+      <div class="icon-container">
+        <div class="icon-main">
+          <el-icon
+            class="icon-item"
+            :size="20"
+            @click="handleClick"
+            :style="{
+              opacity: lock ? '1' : '0',
+              cursor: lock ? 'pointer' : 'default',
+              transition: 'transform 0.5s ease-in-out, opacity 0.5s ease-in-out',
+              transform: styleLock ? 'rotate(0deg)' : 'rotate(-135deg)'
+            }"
+          >
+            <CloseBold />
+          </el-icon>
+        </div>
+        <div class="icon-items">
+          <el-icon
+            class="icon-item icon-show"
+            :size="20"
+            :style="{
+              bottom: styleLock ? '45px' : '0',
+              opacity: lock || styleLock ? 1 : 0
+            }"
+            @click="handleChangScroll"
+          >
+            <CaretTop />
+          </el-icon>
+        </div>
+      </div>
+
     </div>
   </div>
 </template>
@@ -17,10 +52,14 @@
 <script lang="ts">
   import { defineComponent, reactive, toRefs, ref, watchEffect } from 'vue'
   import Header from './components/Header/index.vue'
+  import { CloseBold, Briefcase, CaretTop } from '@element-plus/icons'
 
   export default defineComponent({
     components: {
-      Header
+      Header,
+      CloseBold,
+      Briefcase,
+      CaretTop
     },
     setup (props, context) {
       const lock = ref(false)
@@ -32,10 +71,36 @@
         }
       }
       const main: any = ref(null)
+
+      const styleLock = ref(false)
+      const handleClick = () => {
+        if (!lock.value) return
+        styleLock.value = !styleLock.value
+      }
+
+      const handleChangScroll = () => {
+        const timer = 100;
+        const index = 10;
+        const distance = main.value.scrollTop/index
+        const timing =  setInterval(() => {
+          main.value.scrollTop -= distance
+          if (main.value.scrollTop < 0) {
+            main.value.scrollTop = 0
+          }
+        }, timer/index)
+        setTimeout(() => {
+          clearInterval(timing)
+        }, timer)
+        styleLock.value = false
+      }
+
       return {
         handleScroll,
         main,
-        lock
+        lock,
+        handleClick,
+        styleLock,
+        handleChangScroll
       }
     }
   })
@@ -63,4 +128,47 @@
   top: 0;
 }
 
+.menu-container {
+  position: fixed;
+  bottom: 40px;
+  right: 50px;
+  color: #fff;
+}
+
+.icon-container {
+  position: relative;
+  z-index: 10;
+}
+
+.icon-main {
+  position: relative;
+  left: 0;
+  top: 0;
+  z-index: 100;
+}
+
+.icon-items {
+  position: relative;
+}
+
+.icon-show {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  z-index: 1;
+  opacity: 0;
+  transition: bottom 0.5s ease-in-out, opacity 0.5s ease-in-out;
+}
+
+.icon-item {
+  width: 40px;
+  height: 40px;
+  background: #33333D;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50%;
+  margin: 5px 0;
+  cursor: pointer;
+}
 </style>

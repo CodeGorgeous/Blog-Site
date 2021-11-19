@@ -1,6 +1,6 @@
 <template>
     <div>
-        博客
+        分类
     </div>
 </template>
 

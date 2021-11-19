@@ -16,9 +16,9 @@
                 <el-icon><HomeFilled /></el-icon>首页
             </el-menu-item>
             <el-menu-item
-                index="/blog"
+                index="/type"
             >
-                <el-icon><Notebook /></el-icon>博客
+                <el-icon><Notebook /></el-icon>分类
             </el-menu-item>
             <el-menu-item
                 index="/image"
@@ -53,9 +53,9 @@
                     <el-dropdown-item>
                         <router-link
                             class="media-link-item"
-                            to="/blog"
+                            to="/type"
                         >
-                            博客
+                            分类
                         </router-link>
                     </el-dropdown-item>
                     <el-dropdown-item>
@@ -81,24 +81,24 @@
 </template>
 
 <script lang='ts'>
-    import { defineComponent, reactive, toRefs, ref, watchEffect, onMounted, onUnmounted } from 'vue'
+    import { defineComponent, reactive, toRefs, ref, watchEffect, onMounted, onUnmounted, PropType } from 'vue'
     import * as icons from '@element-plus/icons'
     export default defineComponent({
         components: {
             ...icons
         },
         setup (props, context) {
-            const docWidth = ref(document.body.clientWidth)
 
-            const handleSizeChange = () => {
+            const docWidth = ref(document.body.clientWidth)
+            const handleSizeChange = (): void => {
                 docWidth.value = document.body.clientWidth
             }
 
-            onMounted(() => {
+            onMounted((): void => {
                 window.addEventListener('resize', handleSizeChange)
             })
 
-            onUnmounted(() => {
+            onUnmounted((): void => {
                 window.removeEventListener('resize', handleSizeChange)
             })
 
@@ -133,6 +133,10 @@
 .media-link-item {
     color: #abcdef;
     text-decoration: none;
+}
+
+.el-dropdown-link {
+    color: #ccc;
 }
 
 </style>

@@ -6,7 +6,11 @@
         >
         </el-image>
         <div className="icon-container">
-            <el-icon class="icon" :size="40"><Mouse /></el-icon>
+            <el-icon
+                class="icon"
+                :size="40"
+                @click="handleClick"
+            ><Mouse /></el-icon>
         </div>
         <div class="title">
             {{text}}
@@ -16,13 +20,20 @@
 </template>
 
 <script lang='ts'>
-    import { defineComponent, reactive, toRefs, ref, watchEffect, onMounted, onUnmounted } from 'vue'
+    import { defineComponent, PropType, ref, watchEffect, onMounted, onUnmounted } from 'vue'
     import { Mouse } from '@element-plus/icons'  
     export default defineComponent({
         components: {
             Mouse
         },
+        
+        props: {
+            main: {
+                required: true
+            }
+        },
         setup (props, context) {
+
             const bgImage = ref()
             let image1: string = 'https://img2.baidu.com/it/u=3492081780,1765429063&fm=26&fmt=auto'
             let image2: string = 'http://qiniu.codegorgeous.top/login.webp'
@@ -64,9 +75,23 @@
                 window.removeEventListener('resize', handleSizeChange)
             })
 
+            const handleClick = (() => {
+                const oDiv: any = props.main
+                const time = 200
+                const index = 10
+                const distance = document.body.scrollHeight/index
+                const timer = setInterval(() => {
+                    oDiv.scrollTop += distance
+                }, time/index)
+                setTimeout(() => {
+                    clearInterval(timer)
+                }, time)
+            })
+
             return {
                 bgImage,
-                text
+                text,
+                handleClick
             }
         }
     })

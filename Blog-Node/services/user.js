@@ -55,7 +55,6 @@ module.exports = {
                     spreadCode: v4().slice(0, 6),
                     occupyImgUrl: 'http://qiniu.codegorgeous.top/loading.gif'
                 })
-                console.log('执行', result)
                 return createResp('success', '注册成功', result)
             }
         }
