@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { Card, Row, Col, Input, Button, message } from 'antd'
 import { FileSearchOutlined } from '@ant-design/icons'
-import style from './lock.less'
+import style from './css/lock.less'
 import { history } from 'umi'
 import { getBlog } from '@/api/blog'
 

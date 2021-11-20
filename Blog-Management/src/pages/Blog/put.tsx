@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { Input, Row, Col, Card, Button, message } from 'antd'
-import style from './put.less'
+import style from './css/put.less'
 import { FileSearchOutlined, CloudUploadOutlined } from '@ant-design/icons'
 import { history, connect } from 'umi' 
 import { putBlog, getBlog } from '@/api/blog'
@@ -72,7 +72,7 @@ const Component: React.FC = (props: Props) => {
                                     return message.error('无法进行修改: 当前用户权限不足')
                                 }
                                 putBlog({
-                                    id: blogMessage.id ? blogMessage.id : +id,
+                                    id: blogMessage ? blogMessage.id : +id,
                                     uid: props.user.spreadCode,
                                     text
                                 }).then(resp => {

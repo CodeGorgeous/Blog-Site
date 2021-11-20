@@ -47,6 +47,10 @@ export default defineConfig({
               component: '@/pages/Blog/lock',
               title: '查看博客'
             }, {
+              path: '/blog/type',
+              component: '@/pages/Blog/type',
+              title: '新增分类'
+            }, {
               redirect: '/404'
             }
           ]

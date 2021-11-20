@@ -9,15 +9,26 @@
             </p>
             <p class="time">by CodeGorgeous | © 2021 - 2021</p>
             <p class="record">豫ICP备2021018590号</p>
+            <p><el-icon><Bottom /></el-icon>欢迎关注A-SOUL<el-icon><Bottom /></el-icon></p>
+            <p>
+                <a href="https://space.bilibili.com/672342685" class="a-soul queen">乃琳Queen</a>
+                <a href="https://space.bilibili.com/672328094" class="a-soul dianna">嘉然今天吃什么</a>
+                <a href="https://space.bilibili.com/351609538" class="a-soul carol">珈乐Carol</a>
+                <a href="https://space.bilibili.com/672353429" class="a-soul kira">贝拉kira</a>
+                <a href="https://space.bilibili.com/672346917" class="a-soul awwaw">向晚大魔王</a>
+            </p>
         </div>
     </div>
 </template>
 
 <script lang='ts'>
     import { defineComponent, reactive, toRefs, ref, watchEffect } from 'vue'
+    import { Bottom } from '@element-plus/icons'
 
     export default defineComponent({
-        components: {},
+        components: {
+            Bottom
+        },
         setup (props, context) {
             
             return {
@@ -30,7 +41,7 @@
 <style scoped>
 .footer-container {
     width: 100%;
-    height: 150px;
+    height: 170px;
     margin-top: 50px;
     text-align: center;
 }
@@ -88,10 +99,36 @@
     color: #333;
 }
 
-@media (max-width: 375px) {
+@media (max-width: 576px) {
     .main-container {
         width: 300px;
     }
+}
+
+.a-soul {
+    text-decoration: none;
+    margin: 0 5px;
+    color: #333;
+    transition: color 0.5s linear;
+}
+.queen:hover {
+    color: #A9BBE3;
+}
+
+.dianna:hover {
+    color: #F9C7D5;
+}
+
+.carol:hover {
+    color: #6453BD;
+}
+
+.kira:hover {
+    color: #FDBEB8;
+}
+
+.awwaw:hover {
+    color: #28E5FF;
 }
 
 </style>

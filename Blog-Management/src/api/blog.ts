@@ -12,14 +12,16 @@ export async function getAllBlogs() {
 }
 
 interface Blog {
-    name: string,
-    timer: string,
-    url: string,
-    author: string,
-    codeUrl: string,
-    tags: string,
-    text: string,
+    name: string
+    timer: string
+    url: string
+    author: string
+    codeUrl: string
+    tags: string
+    text: string
     uid: string
+    introduce: string
+    typeId: number
 }
 
 /**
@@ -82,10 +84,41 @@ export async function deleteBlog(params: BlogDelete) {
  * @returns 
  */
 export async function getBlog(id: number) {
-    return await instance('/blog/search', {
+    return await instance('/blog/searchId', {
         method: "GET",
         params: {
             id
         }
     })
 }
+
+/**
+ * 获取所有博客分类
+ * @returns 
+ */
+export async function getBlogType() {
+    return await instance('/blog/type', {
+        method: "GET",
+    })
+}
+
+interface BlogType {
+    typeName: string
+    uid: string
+}
+
+/**
+ * 新增博客分类
+ * @returns 
+ */
+export async function postBlogType(data: BlogType) {
+    return await instance('/blog/type', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        data
+    })
+}
+
+

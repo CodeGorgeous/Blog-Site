@@ -1,5 +1,6 @@
 const Blog = require('../models/blog')
 const User = require('../models/user')
+const BlogType = require('../models/blogType')
 const { createResp } = require('../utils/createResp.js')
 const marked = require('marked')
 const { v4 } = require('uuid')
@@ -7,6 +8,36 @@ const fs = require('fs')
 const { resolve } = require('path')
 
 module.exports = {
+    // 获取全部博客类型
+    async getAllBlogTypes() {
+        try {
+            let result = await BlogType.findAll()
+            if (!result) return createResp('fail', '获取失败', {})
+            return createResp('success', '获取成功', result)
+        } catch (error) {
+            return createResp('fail', '未知错误', error)
+        }
+    },
+    // 新增博客分类
+    async postBlogType(typeName, uid) {
+        try {
+            let result = await User.findOne({
+                where: {
+                    spreadCode: uid
+                }
+            });
+            if (!result) return createResp('fail', '该操作人不存在', {})
+
+            result = await BlogType.create({
+                typeName
+            })
+
+            if (!result) return createResp('fail', '新增失败', {})
+            return createResp('success', '新增成功', {})
+        } catch (error) {
+
+        }
+    },
     // 获取全部博客
     async getAllBlogs() {
         const result = await Blog.findAndCountAll()
@@ -27,8 +58,8 @@ module.exports = {
         }
     },
     // 新增博客
-    async postBlogs(name, timer, url, author, codeUrl, tags, text, uid) {
-        if (!name || !timer || !url || !author || !tags) {
+    async postBlogs(name, introduce, timer, url, author, codeUrl, tags, text, typeId, uid) {
+        if (!name || !timer || !url || !author || !tags || !introduce || !typeId) {
             return createResp('fail', '信息缺失', {})
         }
         const newResult = await User.findOne({
@@ -48,13 +79,15 @@ module.exports = {
         fs.writeFileSync(resolve(__dirname, '..', 'resources', 'html', `${uuid}.html`), html)
         const result = await Blog.create({
             name,
+            introduce,
             createTimer: timer,
             occupyImg: url,
             author,
             githubUrl: codeUrl,
             tags,
             markdownName: uuid + '.md',
-            htmlName: uuid + '.html'
+            htmlName: uuid + '.html',
+            type_id: typeId
         })
         if (result) {
             return createResp('success', '新增成功', {})
@@ -141,6 +174,33 @@ module.exports = {
             return createResp('success', '查询成功', newData)
         } else { // 未找到
             return createResp('fail', `未找到ID为${id}的博客`, {})
+        }
+    },
+    // 根据博客分类查询博客
+    async searchTypeBlog(typeId) {
+        try {
+            let result = await Blog.findAll({
+                where: {
+                    type_id: typeId
+                }
+            })
+            if (!result) return createResp('fail', '获取失败', {})
+            return createResp('success', '获取成功', result)
+        } catch (error) {
+            return createResp('fail', '未知错误', error)
+        }
+    },
+    // 分页查询博客
+    async pageGetBlog(page = 1, limit = 2) {
+        try {
+            let result = await Blog.findAndCountAll({
+                offset: (page - 1) * limit,
+                limit: +limit
+            })
+            if (!result) return createResp('fail', '获取失败', {})
+            return createResp('success', '获取成功', result)
+        } catch (error) {
+            return createResp('fail', '未知错误', error)
         }
     }
 }

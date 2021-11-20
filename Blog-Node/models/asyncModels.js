@@ -4,6 +4,20 @@ const Image = require('./image')
 const ResourcesType = require('./resourcesType')
 const Resources = require('./resources')
 const Classification = require('./classification')
+const Blog = require('./blog')
+const BlogType = require('./blogType')
+
+// 一篇博客只能归档到一种博客类型
+Blog.belongsTo(BlogType, {
+    foreignKey: 'type_id',
+    sourceKey: 'id'
+})
+
+// 一种博客类型可以有多篇博客
+BlogType.hasMany(Blog, {
+    foreignKey: 'type_id',
+    sourceKey: 'id'
+})
 
 // 一张照片能归属到一种图片类型中
 Image.belongsTo(ImageTypes, {

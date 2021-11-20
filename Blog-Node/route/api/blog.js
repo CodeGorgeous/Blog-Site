@@ -2,6 +2,18 @@ const express = require('express');
 const router = express.Router()
 const blogService = require('../../services/blog')
 
+// 获取所有博客类型
+router.get('/type', async(req, res) => {
+    const result = await blogService.getAllBlogTypes()
+    res.send(result)
+})
+
+// 新增博客类型
+router.post('/type', async(req, res) => {
+    const result = await blogService.postBlogType(req.body.typeName, req.body.uid)
+    res.send(result)
+})
+
 // 获取所有博客
 router.get('/', async(req, res) => {
     const result = await blogService.getAllBlogs()
@@ -11,7 +23,7 @@ router.get('/', async(req, res) => {
 // 新增一篇博客
 router.post('/', async(req, res) => {
     const body = req.body
-    const result = await blogService.postBlogs(body.name, body.timer, body.url, body.author, body.codeUrl, body.tags, body.text, body.uid)
+    const result = await blogService.postBlogs(body.name, body.introduce, body.timer, body.url, body.author, body.codeUrl, body.tags, body.text, body.typeId, body.uid)
     res.send(result)
 })
 
@@ -28,9 +40,21 @@ router.delete('/', async(req, res) => {
     res.send(result)
 })
 
-// 查询一篇博客
-router.get('/search', async(req, res) => {
+// 根据博客id查询博客
+router.get('/searchId', async(req, res) => {
     const result = await blogService.searchBlog(req.query.id)
+    res.send(result)
+})
+
+// 分页查询
+router.get('/page', async(req, res) => {
+    const result = await blogService.pageGetBlog(req.query.page, req.query.limit)
+    res.send(result)
+})
+
+// 根据博客分类查询博客
+router.get('/searchType', async(req, res) => {
+    const result = await blogService.searchTypeBlog(req.query.typeId)
     res.send(result)
 })
 

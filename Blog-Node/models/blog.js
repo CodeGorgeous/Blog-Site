@@ -9,6 +9,10 @@ Blog.init({
         type: DataTypes.STRING,
         allowNull: false
     },
+    introduce: {
+        type: DataTypes.STRING,
+        allowNull: false
+    },
     createTimer: {
         type: DataTypes.STRING,
         allowNull: false

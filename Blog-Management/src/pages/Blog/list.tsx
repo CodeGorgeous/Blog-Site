@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { Card, Row, Col, Image, Tag, Button, Modal, Tooltip, message } from 'antd'
-import style from './list.less'
+import style from './css/list.less'
 import { DeleteOutlined, SearchOutlined, ToolOutlined } from '@ant-design/icons'
 import { getAllBlogs, deleteBlog } from '@/api/blog'
 import { history, connect } from 'umi'

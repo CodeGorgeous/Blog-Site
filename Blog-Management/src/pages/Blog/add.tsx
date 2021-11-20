@@ -1,18 +1,22 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Card, Row, Col, Input, Button, Select, DatePicker, Modal, message, Tooltip } from 'antd'
-import style from './add.less'
+import style from './css/add.less'
 import { CloudUploadOutlined, CloudSyncOutlined, ToolOutlined } from '@ant-design/icons'
 import { history, connect } from 'umi'
 import moment from 'moment'
-import { postBlog } from '@/api/blog'
+import { postBlog, getBlogType } from '@/api/index'
 
 interface Props {
     children?: any
     user?: any
 }
 
-const Component: React.FC = (props: Props) => {
+const { confirm } = Modal;
 
+const Component: React.FC = (props: Props) => {
+    // 博客所有分类
+    const [typeList, setTypeList] = useState<any>([])
+    // 博客信息
     const [blogName, setBlogName] = useState('')
     const [blogTimer, setBlogTimer] = useState('')
     const [blogUrl, setBlogUrl] = useState('')
@@ -20,8 +24,18 @@ const Component: React.FC = (props: Props) => {
     const [sourceCodeUrl, setSourceCodeUrl] = useState('')
     const [blogTags, setBlogTags] = useState<any[]>([])
     const [blogText, setBlogText] = useState('')
+    const [blogIntroduce, setBlogIntroduce] = useState('')
+    const [blogKey, setBlogKey] = useState(1)
 
-    const { confirm } = Modal;
+    useEffect(() => {
+        getBlogType().then(resp => {
+            setTypeList(resp.data.data)
+        })
+    }, [])
+
+    const vNode = typeList.map((item: any) => {
+        return (<Select.Option value={item.id} key={item.id}>{item.typeName}</Select.Option>)
+    })
 
     return (
         <Row className={style['add-container']}>
@@ -40,8 +54,11 @@ const Component: React.FC = (props: Props) => {
                             codeUrl: sourceCodeUrl,
                             tags: blogTags.join('|'),
                             text: blogText,
-                            uid: props.user.spreadCode
+                            uid: props.user.spreadCode,
+                            introduce: blogIntroduce,
+                            typeId: blogKey
                         }
+                        console.log(blog)
                         postBlog(blog).then(resp => {
                             if (resp.data.state === 'success') {
                                 message.success('新增成功')
@@ -53,6 +70,7 @@ const Component: React.FC = (props: Props) => {
                                 setSourceCodeUrl('')
                                 setBlogTags([])
                                 setBlogText('')
+                                setBlogIntroduce('')
                             } else {
                                 message.success('新增失败, 请重新尝试')
                             }
@@ -92,8 +110,26 @@ const Component: React.FC = (props: Props) => {
                 }}
             >
                 <Row className={style.row}>
+                    <Col className={style.span}>文章分类:</Col>
+                    <Col >
+                        <Select
+                            defaultValue={blogKey}
+                            className={style.input}
+                            onChange={(key) => {
+                                setBlogKey(key)
+                            }}
+                        >
+                            {vNode}
+                        </Select>
+                    </Col>
+                </Row>
+                <Row className={style.row}>
                     <Col className={style.span}>文章名称:</Col>
                     <Col className={style.input}><Input value={blogName} onChange={e => setBlogName(e.target.value)}/></Col>
+                </Row>
+                <Row className={style.row}>
+                    <Col className={style.span}>文章描述:</Col>
+                    <Col className={style.input}><Input value={blogIntroduce} onChange={e => setBlogIntroduce(e.target.value)}/></Col>
                 </Row>
                 <Row className={style.row}>
                     <Col className={style.span}>文章时间:</Col>
@@ -160,7 +196,6 @@ const Component: React.FC = (props: Props) => {
                         <Select
                             mode="tags"
                             className={style.input}
-                            // value={blogTags}
                             onSelect={(key) => {
                                 setBlogTags([...blogTags, key])
                             }}
@@ -170,9 +205,6 @@ const Component: React.FC = (props: Props) => {
                                 setBlogTags([...tags])
                             }}
                         >
-                            <Select.Option value={'JavaScript'}>JavaScript</Select.Option>
-                            <Select.Option value={'学习笔记'}>学习笔记</Select.Option>
-                            <Select.Option value={'技术深入探究'}>技术深入探究</Select.Option>
                         </Select>
                     </Col>
                 </Row>

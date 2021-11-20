@@ -51,6 +51,14 @@
                     </div>
                 </el-card>
             </div>
+            <el-pagination
+                class="pagination-container"
+                :page-size="limit"
+                background
+                layout="prev, pager, next"
+                :total="total"
+                @currentChange="handleChangePage"
+            />
         </div>
         <div class="footer-container">
             <Footer />
@@ -64,6 +72,8 @@
     import Footer from '../../components/Footer/index.vue'
     import { UserFilled, Checked } from '@element-plus/icons'
     import { useRouter } from 'vue-router'
+    import { pageGetBlog } from '../../api/index'
+    import { ElMessage } from 'element-plus'
 
     export default defineComponent({
         components: {
@@ -78,59 +88,62 @@
                 required: true
             }
         },
-        setup (props, context) {
+        setup (props: any, context) {
 
             const router = useRouter()
-            const blogList: any = ref([
-                {
-                    id: 1,
-                    occupyImg: 'https://img2.baidu.com/it/u=889478167,649977661&fm=26&fmt=auto',
-                    name: '标题1',
-                    author: 'cg',
-                    createTimer: '2020-11-01',
-                    tags: ['javascript', '学习', '探索'],
-                    introduce: '这是一段描述!这是一段描述!这是一段描述!'
-                }, {
-                    id: 2,
-                    occupyImg: 'https://img2.baidu.com/it/u=889478167,649977661&fm=26&fmt=auto',
-                    name: '标题2',
-                    author: 'cg',
-                    createTimer: '2020-11-01',
-                    tags: ['javascript', '学习'],
-                    introduce: '这是一段描述!这是一段描述!这是一段描述!'
-                }, {
-                    id: 3,
-                    occupyImg: 'https://img2.baidu.com/it/u=889478167,649977661&fm=26&fmt=auto',
-                    name: '标题3',
-                    author: 'cg',
-                    createTimer: '2020-11-01',
-                    tags: ['javascript',  '探索'],
-                    introduce: '这是一段描述!这是一段描述!这是一段描述!!这是一段描述!!这是一段描述!!这是一段描述!!这是一段描述!!这是一段描述!!这是一段描述!!这是一段描述!!这是一段描述!!这是一段描述!!这是一段描述!!这是一段描述!!这是一段描述!!这是一段描述!'
-                }, {
-                    id: 4,
-                    occupyImg: 'https://img2.baidu.com/it/u=889478167,649977661&fm=26&fmt=auto',
-                    name: '标题4',
-                    author: 'cg',
-                    createTimer: '2020-11-01',
-                    tags: ['javascript', '学习', '探索'],
-                    introduce: '这是一段描述!这是一段描述!这是一段描述!!这是一段描述!!这是一段描述!!这是一段描述!!这是一段描述!'
-                }, 
-            ])
-
+            const blogList: any = ref([])
             const handleClick = (item: any) => {
                 router.push({
-                    path: '/message',
+                    name: 'BlogMessage',
                     query: {
                         id: item.id
                     }
                 })
                 
+                props.main.scrollTop = 0
             }
+
+            // 当前页
+            const current = ref(1)
+            // 页容量
+            const limit = ref(6)
+            // 总页数
+            const total = ref(0)
+            // 当前页变化
+            const handleChangePage = (key: number) => {
+                current.value = key
+            }
+
+            watchEffect(() => {
+                pageGetBlog({
+                    page: current.value,
+                    limit: limit.value
+                }).then((resp: any) => {
+                    if (resp.state === 'success') {
+
+                        blogList.value = resp.data.rows.map((item: any) => {
+                            return {
+                                ...item,
+                                tags: item.tags.split('|')
+                            }
+                        })
+                        total.value = resp.data.count
+                    } else {
+                        ElMessage({
+                            type: 'error',
+                            message: '数据获取失败, 请刷新重新尝试!'
+                        })
+                    }
+                })
+            })
 
             return {
                 blogList,
                 handleClick,
-                main: props.main
+                main: props.main,
+                total,
+                limit,
+                handleChangePage
             }
         }
     })
@@ -150,6 +163,10 @@
 
 .home-content-container {
     width: 100vw;
+}
+
+.pagination-container {
+    text-align: center;
 }
 
 .main {
@@ -189,8 +206,9 @@
 }
 
 .card-content {
+    width: 100%;
     height: 120px;
-    display: inline-block;
+    display: block;
 }
 
 .card-title {

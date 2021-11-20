@@ -36,12 +36,25 @@
             :size="20"
             :style="{
               bottom: styleLock ? '45px' : '0',
-              opacity: lock || styleLock ? 1 : 0
+              opacity: styleLock ? 1 : 0
             }"
             @click="handleChangScroll"
           >
             <CaretTop />
           </el-icon>
+          <el-icon
+            class="icon-item icon-show"
+            :size="20"
+            :style="{
+              bottom: styleLock ? '90px' : '0',
+              opacity: styleLock ? 1 : 0
+            }"
+            @click="handleChangeVideo"
+          >
+            <VideoPause v-if="audeoSwitch"/>
+            <VideoPlay v-if="!audeoSwitch"/>
+          </el-icon>
+          <!-- <audio ref="audio" src="src/assets/music.mp3"></audio> -->
         </div>
       </div>
 
@@ -50,22 +63,25 @@
 </template>
 
 <script lang="ts">
-  import { defineComponent, reactive, toRefs, ref, watchEffect } from 'vue'
+  import { defineComponent, reactive, toRefs, ref, watchEffect, onMounted, onUnmounted } from 'vue'
   import Header from './components/Header/index.vue'
-  import { CloseBold, Briefcase, CaretTop } from '@element-plus/icons'
+  import { CloseBold, Briefcase, CaretTop, VideoPlay, VideoPause } from '@element-plus/icons'
 
   export default defineComponent({
     components: {
       Header,
       CloseBold,
       Briefcase,
-      CaretTop
+      CaretTop,
+      VideoPlay,
+      VideoPause
     },
     setup (props, context) {
       const lock = ref(false)
       const handleScroll = (e: any) => {
         if (main.value.scrollTop > 200) {
           lock.value = true
+          
         } else {
           lock.value = false
         }
@@ -94,13 +110,42 @@
         styleLock.value = false
       }
 
+      // 音频管理
+      const audioSwitch = ref(false)
+      // 音频资源
+      const audio: any = new Audio('src/assets/music.mp3')
+      // 控制播放和暂停
+      const handleChangeVideo = () => {
+        // 音频音量
+        audio.volume = 0.1
+        if (audioSwitch.value) {
+          audio.pause()
+        } else {
+          audio.play()
+        }
+        audioSwitch.value = !audioSwitch.value
+      }
+      // 音频重新播放
+      const audioEnd = () => {
+        console.log('播放完毕')
+        audio.load()
+        audio.play()
+      }
+
+      // 目前想要知道audio什么时候播完完毕, 播放完毕后重新播放音频
+      // ...
+      audio.addEventListener('ended', audioEnd)
+
       return {
         handleScroll,
         main,
         lock,
         handleClick,
         styleLock,
-        handleChangScroll
+        audeoSwitch: audioSwitch,
+        handleChangScroll,
+        handleChangeVideo,
+        audio
       }
     }
   })

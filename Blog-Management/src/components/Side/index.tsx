@@ -49,6 +49,10 @@ const Component: React.FC = () => {
                         key="/blog/lock"
                         icon={<SearchOutlined />}
                     >查看博客</Menu.Item>
+                    <Menu.Item
+                        key="/blog/type"
+                        icon={<SearchOutlined />}
+                    >新增分类</Menu.Item>
                 </Menu.SubMenu>
                 <Menu.SubMenu
                     key="image"
