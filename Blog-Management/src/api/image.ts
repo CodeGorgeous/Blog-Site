@@ -45,6 +45,7 @@ export async function getImageType() {
 interface ImageType {
     type: string
     uid: string
+    image: string
 }
 
 /**

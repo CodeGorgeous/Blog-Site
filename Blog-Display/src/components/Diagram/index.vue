@@ -1,11 +1,11 @@
 <template>
-    <div className="carousel-container">
+    <div class="carousel-container">
         <el-image
             class="carousel-image"
             :src="bgImage"
         >
         </el-image>
-        <div className="icon-container">
+        <div class="icon-container">
             <el-icon
                 class="icon"
                 :size="40"
@@ -15,6 +15,12 @@
         <div class="title">
             {{text}}
             <span class="underline">_</span>
+        </div>
+        <!-- 波浪图形 -->
+        <div class="wave">
+            <div class="w w1"></div>
+            <div class="w w2"></div>
+            <div class="w w3"></div>
         </div>
     </div>
 </template>
@@ -118,16 +124,27 @@
     position: absolute;
     bottom: 20px;
     left: 50%;
+    z-index: 100;
     -moz-user-select:none;/*火狐*/
     -webkit-user-select:none;/*webkit浏览器*/
     -ms-user-select:none;/*IE10*/
     -khtml-user-select:none;/*早期浏览器*/
-      user-select:none;
+    user-select:none;
+}
+
+@media (max-width: 576px) {
+    .icon-container {
+        bottom: 10px;
+    }
+
+    .icon {
+        font-size: 30px;
+    }
+
 }
 
 .icon {
     cursor: pointer;
-    color: #ccc;
     opacity: 0.7;
     transform: translate(-50%, 0);
     transition: all 0.5s ease-in-out;
@@ -136,7 +153,7 @@
 .icon:hover {
     transform: translate(-50%, 20%);
     opacity: 1;
-    color: #fff;
+    color: #abcdef;
 }
 
 .title {
@@ -163,5 +180,54 @@
         opacity: 1;
     }
 }
+
+/* 波浪 */
+.wave {
+    width: 100%;
+    height: 120px;
+    position: absolute;
+    bottom: -70px;
+    left: 0;
+}
+
+.w {
+    width: 500vw;
+    height: 500vw;
+    display: inline-block;
+    position: absolute;
+    border-radius: 47%;
+    background: #fff;
+}
+
+.w1 {
+    width: 600vw;
+    height: 600vw;
+    left: -250%;
+    animation: rotate 30s linear infinite;
+}
+
+.w2 {
+    left: -250%;
+    opacity: 0.8;
+    animation: rotate 30s ease-in 2s infinite;
+}
+
+.w3 {
+    left: -200%;
+    opacity: 0.7;
+    animation: rotate 30s ease-out 4s infinite;
+}
+
+@keyframes rotate {
+    0%{
+        transform:rotate(0deg)
+    }
+    100% {
+        transform:rotate(360deg)
+    }
+}
+
+
+
 
 </style>

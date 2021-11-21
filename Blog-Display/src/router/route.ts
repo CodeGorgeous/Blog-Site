@@ -14,6 +14,10 @@ const routes: any[] = [
         path: '/image',
         component: () => import('../view/Image/index.vue')
     }, {
+        path: '/imageMessage',
+        name: 'ImageMessage',
+        component: () => import('../view/ImageMessage/index.vue')
+    }, {
         path: '/about',
         component: () => import('../view/About/index.vue')
     }, {
@@ -25,8 +29,11 @@ const routes: any[] = [
         component: () => import('../view/TypeMessage/index.vue'),
         props: true
     }, {
-        path: '/*',
+        path: '/404',
         component: () => import('../view/404/index.vue')
+    }, {
+        path: '/:pathMatch(.*)',
+        redirect: '/404'
     }
 ];
 

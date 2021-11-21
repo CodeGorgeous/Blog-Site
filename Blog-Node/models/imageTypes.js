@@ -15,6 +15,11 @@ ImageTypes.init({
     uid: {
         type: DataTypes.STRING,
         allowNull: false
+    },
+    // 封面图
+    coverImage: {
+        type: DataTypes.STRING,
+        allowNull: false
     }
 }, {
     sequelize,

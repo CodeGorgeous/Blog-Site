@@ -2,10 +2,10 @@
     <div class="footer-container">
         <div class="main-container">
             <p class="icon">
-                <span class="icon-font qq">&#xe882;</span>
-                <span class="icon-font wechat">&#xe883;</span>
-                <span class="icon-font github">&#xe885;</span>
-                <span class="icon-font email">&#xe77e;</span>
+                <a href="tencent://message/?Menu=yes&uin=2460481461" target="_blank" class="icon-font qq">&#xe882;</a>
+                <a href="#" class="icon-font wechat">&#xe883;</a>
+                <a href="https://github.com/CodeGorgeous" target="_blank" class="icon-font github">&#xe885;</a>
+                <a href="mailto:2460481461@qq.com" target="_blank" class="icon-font email">&#xe77e;</a>
             </p>
             <p class="time">by CodeGorgeous | © 2021 - 2021</p>
             <p class="record">豫ICP备2021018590号</p>
@@ -71,6 +71,8 @@
     margin: 0 10px;
     cursor: pointer;
     transition: color 0.5s ease-out;
+    text-decoration: none;
+    color: #666;
 }
 
 .qq:hover {

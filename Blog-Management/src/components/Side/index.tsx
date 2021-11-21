@@ -67,6 +67,10 @@ const Component: React.FC = () => {
                         key="/image/add"
                         icon={<ToTopOutlined />}
                     >新增图片</Menu.Item>
+                    <Menu.Item
+                        key="/image/type"
+                        icon={<SearchOutlined />}
+                    >新增分类</Menu.Item>
                 </Menu.SubMenu>
                 <Menu.SubMenu
                     key="resources"

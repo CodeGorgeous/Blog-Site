@@ -1,7 +1,7 @@
 <template>
     <div className="header-container">
         <el-menu
-            default-active="/home"
+            :default-active="router"
             class="menu-container"
             mode="horizontal"
             :router="true"
@@ -81,13 +81,21 @@
 </template>
 
 <script lang='ts'>
-    import { defineComponent, reactive, toRefs, ref, watchEffect, onMounted, onUnmounted, PropType } from 'vue'
+    import { defineComponent, reactive, toRefs, ref, watchEffect, onMounted, onUnmounted, PropType, watch } from 'vue'
     import * as icons from '@element-plus/icons'
+    import { useRoute } from 'vue-router'
+
     export default defineComponent({
         components: {
             ...icons
         },
         setup (props, context) {
+            const route = useRoute()
+            const router = ref(route.path)
+
+            watchEffect(() => {
+                router.value = route.path
+            })
 
             const docWidth = ref(document.body.clientWidth)
             const handleSizeChange = (): void => {
@@ -103,7 +111,8 @@
             })
 
             return {
-                docWidth
+                docWidth,
+                router
             }
         }
     })

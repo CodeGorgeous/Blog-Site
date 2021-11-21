@@ -54,7 +54,6 @@
             <VideoPause v-if="audeoSwitch"/>
             <VideoPlay v-if="!audeoSwitch"/>
           </el-icon>
-          <!-- <audio ref="audio" src="src/assets/music.mp3"></audio> -->
         </div>
       </div>
 
@@ -216,4 +215,13 @@
   margin: 5px 0;
   cursor: pointer;
 }
+
+@media (max-width: 576px) {
+  .menu-container {
+    bottom: 10px;
+    right: 10px;
+  }
+}
+
+
 </style>

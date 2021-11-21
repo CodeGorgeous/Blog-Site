@@ -9,7 +9,7 @@ const fs = require('fs')
 
 module.exports = {
     // 创建图片类型
-    async createType(type, uid) {
+    async createType(type, image, uid) {
         try {
             // 查询是否已有该种类型
             let result = await ImageTypes.findOne({
@@ -27,7 +27,8 @@ module.exports = {
             if (!result) return createResp('fail', '该操作人不存在', {})
             result = await ImageTypes.create({
                 type,
-                uid
+                uid,
+                coverImage: image
             });
             // 查询是否创建成功
             if (!result) return createResp('fail', '创建失败', {})
@@ -40,7 +41,9 @@ module.exports = {
     async getAllTypes() {
         try {
             // 获取所有类型
-            result = await ImageTypes.findAll()
+            result = await ImageTypes.findAll({
+                attributes: ['id', 'type', 'coverImage']
+            })
             if (!result) return createResp('fail', '查询失败', {})
             return createResp('success', '查询成功', result)
         } catch (error) {

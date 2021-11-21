@@ -83,6 +83,7 @@
                 <p>内容区域</p>
             </div>
         </el-card>
+        <Footer />
     </div>
 </template>
 
@@ -90,11 +91,13 @@
     import { defineComponent, reactive, toRefs, ref, watchEffect } from 'vue'
     import { useRoute } from 'vue-router'
     import { Checked, UserFilled } from '@element-plus/icons'
+    import Footer from '../../components/Footer/index.vue'
 
     export default defineComponent({
         components: {
             Checked,
-            UserFilled
+            UserFilled,
+            Footer
         },
         setup (props, context) {
             const route: any = useRoute()

@@ -38,10 +38,10 @@
                 if (resp.state === 'success') {
                     typeList.value = resp.data
                 } else {
-                        ElMessage({
-                            type: 'error',
-                            message: '数据获取失败, 请刷新重新尝试!'
-                        })
+                    ElMessage({
+                        type: 'error',
+                        message: '数据获取失败, 请刷新重新尝试!'
+                    })
                 }
             })
 
