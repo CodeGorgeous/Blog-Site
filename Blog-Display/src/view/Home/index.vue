@@ -175,14 +175,14 @@
     padding: 50px 10px 0 10px;
     display: flex;
     flex-wrap: wrap;
-    justify-content: space-between;
+    justify-content: flex-start;
 }
 
 .card-item {
     display: inline-block;
     width: 360px;
     height: 400px;
-    margin: 20px 0;
+    margin: 15px 10px;
     cursor: pointer;
 }
 

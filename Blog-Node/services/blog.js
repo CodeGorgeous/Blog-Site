@@ -72,7 +72,9 @@ module.exports = {
         }
         const uuid = v4().slice(0, 6);
         // 利用转换markdown为html
-        const html = marked(text);
+        let html = marked(text);
+        // html上拼接样式
+        html += fs.readFileSync(resolve(__dirname, '..', 'resources', 'css', 'index.html'), 'utf-8');
         // 创建一个用于存储markdown和html的resources文件夹(这里进行了手动创建不进行自动化创建)
         // 在resources/markdown下创建markdown文件
         fs.writeFileSync(resolve(__dirname, '..', 'resources', 'markdown', `${uuid}.md`), text)
@@ -111,7 +113,9 @@ module.exports = {
             }
         });
         if (result) {
-            const html = marked(text);
+            let html = marked(text);
+            // html上拼接样式
+            html += fs.readFileSync(resolve(__dirname, '..', 'resources', 'css', 'index.html'), 'utf-8');
             // 则进行更改
             fs.writeFileSync(resolve(__dirname, '..', 'resources', 'markdown', `${result.dataValues.markdownName}`), text)
             fs.writeFileSync(resolve(__dirname, '..', 'resources', 'html', `${result.dataValues.htmlName}`), html)

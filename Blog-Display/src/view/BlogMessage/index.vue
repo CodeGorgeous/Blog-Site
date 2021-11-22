@@ -9,78 +9,29 @@
             >
                 <el-image
                     style="width: 100%; height: 100%;"
-                    src="https://img2.baidu.com/it/u=889478167,649977661&fm=26&fmt=auto"
+                    :src="blog.occupyImg"
                     fit="cover"
                 />
                 <div class="card-content">
-                    <p class="title">标题</p>
+                    <p class="title">{{blog.name}}</p>
                     <p>
                         <span class="card-time">
                             <el-icon>
                                 <Checked />
                             </el-icon>
-                            2021-10-11
+                            {{ blog.createTimer }}
                         </span>
                         <span class="card-author">
                             <el-icon><UserFilled /></el-icon>
-                            CodeGorgeous
+                            {{ blog.author }}
                         </span>
                     </p>
                 </div>
             </div>
             <div
                 class="card-text"
+                v-html="blog.htmlText"
             >
-                <p>内容区域</p>
-                <p>内容区域</p>
-                <p>内容区域</p>
-                <p>内容区域</p>
-                <p>内容区域</p>
-                <p>内容区域</p>
-                <p>内容区域</p>
-                <p>内容区域</p>
-                <p>内容区域</p>
-                <p>内容区域</p>
-                <p>内容区域</p>
-                <p>内容区域</p>
-                <p>内容区域</p>
-                <p>内容区域</p>
-                <p>内容区域</p>
-                <p>内容区域</p>
-                <p>内容区域</p>
-                <p>内容区域</p>
-                <p>内容区域</p>
-                <p>内容区域</p>
-                <p>内容区域</p>
-                <p>内容区域</p>
-                <p>内容区域</p>
-                <p>内容区域</p>
-                <p>内容区域</p>
-                <p>内容区域</p>
-                <p>内容区域</p>
-                <p>内容区域</p>
-                <p>内容区域</p>
-                <p>内容区域</p>
-                <p>内容区域</p>
-                <p>内容区域</p>
-                <p>内容区域</p>
-                <p>内容区域</p>
-                <p>内容区域</p>
-                <p>内容区域</p>
-                <p>内容区域</p>
-                <p>内容区域</p>
-                <p>内容区域</p>
-                <p>内容区域</p>
-                <p>内容区域</p>
-                <p>内容区域</p>
-                <p>内容区域</p>
-                <p>内容区域</p>
-                <p>内容区域</p>
-                <p>内容区域</p>
-                <p>内容区域</p>
-                <p>内容区域</p>
-                <p>内容区域</p>
-                <p>内容区域</p>
             </div>
         </el-card>
         <Footer />
@@ -92,6 +43,8 @@
     import { useRoute } from 'vue-router'
     import { Checked, UserFilled } from '@element-plus/icons'
     import Footer from '../../components/Footer/index.vue'
+    import { searchIdBlog } from '../../api/index'
+    import { ElMessage } from 'element-plus'
 
     export default defineComponent({
         components: {
@@ -103,17 +56,30 @@
             const route: any = useRoute()
             const id: any = ref(+route.query.id)
 
+            const blog: any = ref({})
+
             watchEffect(() => {
-                console.log('开始请求数据!', typeof id.value)
+                searchIdBlog(id.value).then((resp: any) => {
+                    if (resp.state === 'success') {
+                        blog.value = resp.data
+                    } else {
+                        ElMessage({
+                            type: 'error',
+                            message: '获取数据失败, 请刷新页面重新尝试!'
+                        })
+                    }
+                })
             })
 
             return {
+                blog
             }
         }
     })
 </script>
 
 <style scoped>
+
 .message-container {
     width: 100%;
     height: 100%;
@@ -136,8 +102,9 @@
 .card-content {
     position: absolute;
     bottom: 10px;
-    color: #fff;
+    color: #000;
     margin: 0 20px;
+    text-shadow: 2px 2px 3px #666;
 }
 
 .title {
@@ -145,7 +112,7 @@
 }
 
 .card-text {
-
+    padding: 0 10px;
 }
 
 @media (max-width: 576px) {

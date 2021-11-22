@@ -18,6 +18,8 @@
                 </p>
             </el-timeline-item>
         </el-timeline>
+        <NotContent v-if="lock"/>
+        <Footer />
     </div>
 </template>
 
@@ -26,14 +28,19 @@
     import { useRoute, useRouter } from 'vue-router'
     import { searchTypeBlog } from '../../api/index'
     import { ElMessage } from 'element-plus'
+    import Footer from '../../components/Footer/index.vue'
+    import NotContent from '../../components/NotContent/index.vue'
 
     export default defineComponent({
-        components: {},
+        components: {
+            Footer,
+            NotContent
+        },
         setup (props, context) {
             const route = useRoute()
             const router = useRouter()
             const id: any = ref(route.query.id)
-
+            const lock = ref(false)
             // 博客数据
             const blogList: any = ref([])
 
@@ -41,6 +48,9 @@
                 searchTypeBlog(id.value).then((resp: any) => {
                     if (resp.state === 'success') {
                         blogList.value = resp.data
+                        if (resp.data.length <= 0) {
+                            lock.value = true
+                        }
                     } else {
                         ElMessage({
                             type: 'error',
@@ -61,7 +71,8 @@
 
             return {
                 blogList,
-                handleClick
+                handleClick,
+                lock
             }
         }
     })

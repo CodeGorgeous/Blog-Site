@@ -9,9 +9,10 @@ import {
     SearchOutlined,
     TeamOutlined,
     UserOutlined,
-    KeyOutlined,
     FileImageOutlined,
-    FolderOpenOutlined
+    FolderOpenOutlined,
+    SubnodeOutlined,
+    NotificationOutlined
 } from '@ant-design/icons';
 import { history } from 'umi'
 
@@ -51,12 +52,12 @@ const Component: React.FC = () => {
                     >查看博客</Menu.Item>
                     <Menu.Item
                         key="/blog/type"
-                        icon={<SearchOutlined />}
+                        icon={<ToTopOutlined />}
                     >新增分类</Menu.Item>
                 </Menu.SubMenu>
                 <Menu.SubMenu
                     key="image"
-                    title="图片管理(开发中)"
+                    title="图片管理"
                     icon={<FileImageOutlined />}
                 >
                     <Menu.Item
@@ -69,7 +70,7 @@ const Component: React.FC = () => {
                     >新增图片</Menu.Item>
                     <Menu.Item
                         key="/image/type"
-                        icon={<SearchOutlined />}
+                        icon={<ToTopOutlined />}
                     >新增分类</Menu.Item>
                 </Menu.SubMenu>
                 <Menu.SubMenu
@@ -87,8 +88,8 @@ const Component: React.FC = () => {
                     >新增功能</Menu.Item>
                     <Menu.Item
                         key="/resources/alterResources"
-                        icon={<ToTopOutlined />}
-                    >修改资源信息</Menu.Item>
+                        icon={<ToolOutlined />}
+                    >修改资源</Menu.Item>
                 </Menu.SubMenu>
                 <Menu.SubMenu
                     key="user"
@@ -103,6 +104,16 @@ const Component: React.FC = () => {
                         key="/user/alterUser"
                         icon={<ToolOutlined />}
                     >修改信息</Menu.Item>
+                </Menu.SubMenu>
+                <Menu.SubMenu
+                    key="other"
+                    title="其他管理"
+                    icon={<SubnodeOutlined />}
+                >
+                    <Menu.Item
+                        key="/other/title"
+                        icon={<NotificationOutlined />}
+                    >标语管理</Menu.Item>
                 </Menu.SubMenu>
             </Menu>
         </div>

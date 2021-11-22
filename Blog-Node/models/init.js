@@ -8,6 +8,7 @@ require('./image');
 require('./resourcesType');
 require('./resources');
 require('./classification');
+require('./title');
 
 (async function() {
     // 建立表关系

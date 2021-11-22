@@ -40,3 +40,17 @@ export async function searchTypeBlog(typeId: number) {
         }
     })
 }
+
+/**
+ * 根据博客id查询博客内容
+ * @param id 
+ * @returns 
+ */
+export async function searchIdBlog(id: number) {
+    return await instance('/blog/searchId', {
+        method: 'get',
+        params: {
+            id
+        }
+    })
+}

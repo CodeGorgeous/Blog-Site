@@ -121,7 +121,7 @@ const Component: React.FC = (props: Props) => {
     })
     
     return (
-        <div>
+        <div className={style['list-container']}>
             <Col>
                 <Card
                     className={style['card-container']}
@@ -138,7 +138,7 @@ const Component: React.FC = (props: Props) => {
                     </Select>
                 </Card>
             </Col>
-            <Col>
+            <Col className={style['card-col']}>
                 <Card
                     className={style['card-container']}
                     hoverable

@@ -10,6 +10,7 @@ router.get('/type', async(req, res) => {
 
 // 增加类型
 router.post('/type', async(req, res) => {
+    console.log(req.body)
     const result = await imageService.createType(req.body.type, req.body.image, req.body.uid)
     res.send(result)
 })

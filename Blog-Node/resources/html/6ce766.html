@@ -1,0 +1,761 @@
+<h1 id="vue3"><a href="https://v3.cn.vuejs.org/">Vue3</a></h1>
+<h2 id="vite构建工具"><a href="https://cn.vitejs.dev/">Vite构建工具</a></h2>
+<h3 id="可以构建vuereact等项目">可以构建vue/react等项目</h3>
+<h3 id="命令-pnpm-create-vite-快速搭建项目">命令: pnpm create vite 快速搭建项目</h3>
+<h2 id="vue3重大变化">Vue3重大变化</h2>
+<ul>
+<li>创建Vue应用<ul>
+<li>Vue2<ul>
+<li><code>import Vue from &#39;vue&#39; const app = new Vue();  app.$mount(&#39;#app&#39;)</code></li>
+</ul>
+</li>
+<li>vue3<ul>
+<li><code>import { createApp } from &#39;vue&#39; createApp(组件).mount(#app)</code></li>
+</ul>
+</li>
+</ul>
+</li>
+<li>组件内的this指向不同<ul>
+<li>vue2<ul>
+<li>指向的是组件实例对象</li>
+</ul>
+</li>
+<li>vue3<ul>
+<li>指向的是一个代理(Proxy(Es6版本后新增))</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>组件内使用setup()函数对功能进行更加清晰的划分<ul>
+<li><pre><code>    export default defineComponent({
+        setup() {
+            // setup函数在所有生命周期钩子前运行
+            // 内部this为undefined
+            // ref能够将数据变为响应式
+            let countRef = ref(0);
+                    
+            const increase = () =&gt; {
+                countRef.value ++
+            }
+            // 减少
+            const decrease = () =&gt; {
+                countRef.value --
+            }
+
+            // 需要返回
+            return {
+                countRef,
+                increase,
+                decrease
+            }
+        }
+    })
+</code></pre>
+</li>
+</ul>
+</li>
+<li>生命周期<ul>
+<li>vue2的beforeDestroy和destroyed在vue3中变为beforeUnmount和unmounted</li>
+<li>vue3新增生命周期renderTracked和renderTriggered</li>
+<li>renderTracked<ul>
+<li>收集依赖时会触发, 每有一个依赖被收集就会触发一次, 参数e是一个对象, 其内含有该次所收集的依赖数据</li>
+</ul>
+</li>
+<li>renderTriggered<ul>
+<li>当依赖发生改变时会触发, 每个依赖改变就会触发一次, 参数e是一个对象, 其内含有该次所改变的依赖</li>
+</ul>
+</li>
+<li><strong>Vue2生命周期图示</strong> <img src="https://cn.vuejs.org/images/lifecycle.png" alt="vue2生命周期"></li>
+<li><strong>Vue3生命周期图示</strong> <img src="https://v3.cn.vuejs.org/images/lifecycle.svg" alt="vue3生命周期"></li>
+</ul>
+</li>
+<li>v-model<ul>
+<li>vue2中v-model和.sync都能够实现数据双向绑定, 其两者功能有重复点</li>
+<li>vue3中只保留了v-model并对其进行了改变, 舍弃了.sync<ul>
+<li>v-model实现原理<ul>
+<li><pre><code>    // Parent.vue
+    &lt;MyComponent v-model=&quot;value&quot;/&gt;
+    // 具体写法:
+    &lt;MyComponent
+        :modelValue=&quot;value&quot;
+        @update:modelValue=&quot;value = $event&quot;
+    /&gt;
+    // 如果相对model的名字/事件名字进行改变
+    // 这样写的.trim需要在组件内props参数接受一个titleModifiers, 没有自定义名称时为modelModifiers是一个对象
+    &lt;MyComponent v-model:title.trim=&quot;value&quot;/&gt;
+    &lt;MyComponent
+        :title=&quot;value&quot;
+        @update:title=&quot;value = $event&quot;
+    /&gt;
+</code></pre>
+</li>
+</ul>
+</li>
+<li>这样可以作为.sync的替代也可以允许我们在自定义组件上有多个v-model</li>
+<li>v-model可以进行添加自定义修饰符</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>模板内可以有着多个根节点</li>
+<li>defineAsyncComponent<ul>
+<li>用于处理异步组件</li>
+<li><pre><code>    // 自己非常简单抽离的一个处理异步的函数
+    import { defineAsyncComponent } from &#39;vue&#39;
+    import Loading from &#39;../components/DemoThree/Loading.vue&#39;
+    import Error from &#39;../components/DemoThree/Error.vue&#39;
+    // callback必须返回一个promise
+    export function asyncComponent(callback) {
+        return defineAsyncComponent({
+            // 当加载完成
+            loader: callback,
+            // 加载中
+            loadingComponent: Loading,
+            errorComponent: Error
+        })
+    }
+</code></pre>
+</li>
+</ul>
+</li>
+<li>Suspense组件<ul>
+<li>和defineAsyncComponent有着类似的作用</li>
+<li>提供了两个插槽(default和fallback), default用于放置用于异步加载的组件, fallback用于处理加载异步组件时显示的加载组件</li>
+<li><pre><code>    &lt;template&gt;
+        &lt;suspense&gt;
+            &lt;template #default&gt;
+            &lt;todo-list /&gt;
+            &lt;/template&gt;
+            &lt;template #fallback&gt;
+            &lt;div&gt;
+                Loading...
+            &lt;/div&gt;
+            &lt;/template&gt;
+        &lt;/suspense&gt;
+    &lt;/template&gt;
+</code></pre>
+</li>
+</ul>
+</li>
+<li>reactivity api<ul>
+<li>数据响应式api</li>
+<li><code>import { reactive, readonly, ref, computed } from &#39;vue&#39;</code></li>
+<li>reactive<ul>
+<li>深度代理对象</li>
+<li>只能代理对象</li>
+<li><code>const val = reactive({})</code></li>
+</ul>
+</li>
+<li>readonly<ul>
+<li>深度代理对象, 但该对象为只读</li>
+<li>只能代理对象</li>
+<li><code>const val = readonly({})</code></li>
+</ul>
+</li>
+<li>ref<ul>
+<li>代理任何数据</li>
+<li>如果代理的为对象则ref会通过reactive进行代理, 如果是已经代理的数据则直接使用代理</li>
+<li><code>const val = ref(0)</code></li>
+<li>{..., value: xxx}</li>
+</ul>
+</li>
+<li>computed<ul>
+<li>根据函数内依赖的数据, 如果数据发生变化并重新运行该函数, 会得到一个响应式数据</li>
+<li><code>const val = computed(() =&gt; a + b)</code></li>
+<li>{..., value: xxx}</li>
+</ul>
+</li>
+<li>watchEffect<ul>
+<li>监控函数内依赖值发生变化, 则该函数会重新运行</li>
+<li><code>watchEffect(() =&gt; {console.log(a, b)})</code></li>
+<li>在这个例子中只有当a或者b的值发生变化时该函数才会重新运行</li>
+</ul>
+</li>
+<li>watch<ul>
+<li>能够能加具体的监听某个值是否发生变化</li>
+<li><pre><code>    // 监听单个数据
+    // 侦听一个 getter
+    const state = reactive({ count: 0 })
+    watch(() =&gt; state.count, (count, prevCount) =&gt; {
+            /* ... */
+        }
+    )
+
+    // 直接侦听一个 ref
+    const count = ref(0)
+    watch(count, (count, prevCount) =&gt; {
+        /* ... */
+    })
+    // 监听多个数据
+    watch([fooRef, barRef], ([foo, bar], [prevFoo, prevBar]) =&gt; {
+        /* ... */
+    })
+</code></pre>
+</li>
+</ul>
+</li>
+<li>isProxy<ul>
+<li>判断数据是否由reactive/readonly所创建的代理</li>
+</ul>
+</li>
+<li>isReactive<ul>
+<li>判断数据是否由reactive所创建的代理</li>
+</ul>
+</li>
+<li>isReadonly<ul>
+<li>判断数据是否由readonly所创建的代理</li>
+</ul>
+</li>
+<li>isRef<ul>
+<li>判断数据是否由ref所创建的代理</li>
+</ul>
+</li>
+<li>unref<ul>
+<li>当不清楚value是值还是本身是值时使用</li>
+<li>原理: <code>isRef(val) ? val.value : val</code></li>
+</ul>
+</li>
+<li>toRef<ul>
+<li>得到某个响应式对象的ref格式</li>
+<li><pre><code>    const obj = reactive({ a: 1, b: 2 })
+    const aRef = toRef(obj, &#39;a&#39;) // {..., value: 1}
+</code></pre>
+</li>
+</ul>
+</li>
+<li>toRefs<ul>
+<li>将某个响应式对象全部转换为ref格式</li>
+<li><pre><code>    const obj = reactive({ a: 1, b: 2 })
+    const objRefs = toRefs(obj) // {a: {..., value: 1}, b: {..., value: 2}}
+</code></pre>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>composition api</li>
+</ul>
+<h2 id="setup">setup(){}</h2>
+<ul>
+<li><strong>composition api</strong></li>
+<li>运行时间节点<ul>
+<li>在beforeCreate前运行</li>
+</ul>
+</li>
+<li>在setup内使用生命周期<ul>
+<li>从vue库中导出onBeforeMount/onMounted/onBeforeUpdate/onUpdated/onBeforeUnmount/onUnmounted/onErrorCaptured/onRenderTracked/onRenderTriggered/onActivated/onDeactivated</li>
+<li>因为setup就是围绕<strong>beforeCreated</strong>和<strong>created</strong>所展开的, 所以本来在<strong>beforeCreated</strong>和<strong>created</strong>内写的内容可以直接放在setup内</li>
+<li><code>onUpdated(() =&gt; {console.log(&#39;想做的事情)})</code></li>
+</ul>
+</li>
+<li>在setup中响应式追踪数据变化<ul>
+<li>从vue库中导出watchEffect</li>
+<li><code>watchEffect(() =&gt; console.log(count.value))</code></li>
+</ul>
+</li>
+<li>在setup中使用props<ul>
+<li>setup中第一个形参就是props, <strong>注意: 这个形参是不能进行Es6解构的, 会丢失其响应式</strong></li>
+<li><code>setup (props) {console.log(props)}</code></li>
+</ul>
+</li>
+<li>在setup中使用计算属性<ul>
+<li>从vue库中导出<strong>computed</strong>函数</li>
+<li><pre><code>    const newVal = computed(() =&gt; {
+        return countRef.value + countRef.value
+    })
+</code></pre>
+</li>
+</ul>
+</li>
+<li>在setup中抛出事件<ul>
+<li>setup中第二个参数就是context对象, 该对象内还有emit属性, 用于抛出事件, 该对象内还由slots、attrs</li>
+<li><code>setup (props, context) {console.log(context)}</code></li>
+</ul>
+</li>
+</ul>
+<h2 id="vite">Vite</h2>
+<ul>
+<li><h3 id="与vue-cli的区别">与vue-cli的区别</h3>
+<ul>
+<li>vue-cli是使用webpack进行打包然后才能够进行查看页面, 每次依赖项发生变动时都需要重新打包一次</li>
+<li>vite使用了另一种方式, 不在开始时进行打包, 只启动了一个服务器并把index.html发送, 并在需要哪些文件时, vite对其进行实时编译并发送给浏览器, 对其依赖的文件进行发送请求, 请求其依赖的文件实时编译后的资源, 不需要并不对其进行任何操作。 在改动一个模块后仅需要对其进行重新请求资源即可, 另外由于vite利用的是ESModule模块化, 因此在代码中不可以使用ComponentJs模块化</li>
+</ul>
+</li>
+</ul>
+<h2 id="vue3对于效率的提升">Vue3对于效率的提升</h2>
+<ul>
+<li>静态提升<ul>
+<li>静态节点提升<ul>
+<li>vue2打包模板页面时对于一些不会变化的节点仍对其每一次渲染都会运行一次<code>render () { createElement(&#39;div&#39;, null, &#39;Hello World&#39;) }</code>,
+  在vue3中则对其进行了优化, <code>const vNodeDiv = _createElementVNode(&#39;div&#39;, null, &#39;Hello World&#39;); render () { vNodeDiv }</code>, 这样对于一些不会变动的节点的运行编译效率就会大大提升, 省去许多编译静态节点的时间</li>
+</ul>
+</li>
+<li>静态属性提升<ul>
+<li>vue2中对于静态属性同静态节点一致</li>
+<li>vue3中也对于静态属性进行了单独的抽离, 并不会每一次都运行, <code>const vNodeDivAttr = { class: &#39;container&#39;, id: &#39;bar&#39; } render () { _createElementBlock(&#39;div&#39;, vNodeDivAttr, &#39;Hello World&#39;) }</code></li>
+</ul>
+</li>
+</ul>
+</li>
+<li>预字符串化<ul>
+<li>在连续且静态的节点达到10个(<strong>数量可能会随着版本迭代所改动</strong>)vue才会采用预字符串化进行编译, 在小于10个则直接使用的是静态节点提升</li>
+<li>vue2版本是编译为一大堆的</li>
+<li>vue3中遇到大量且连续的静态内容, 会将其编译为一个字符串</li>
+<li><pre><code>    // 连续且静态的节点达到10个
+    &lt;div&gt;
+        &lt;div&gt;1&lt;/div&gt;
+        &lt;div&gt;2&lt;/div&gt;
+        &lt;div&gt;3&lt;/div&gt;
+        &lt;div&gt;4&lt;/div&gt;
+        &lt;div&gt;5&lt;/div&gt;
+        &lt;div&gt;6&lt;/div&gt;
+        &lt;div&gt;7&lt;/div&gt;
+        &lt;div&gt;8&lt;/div&gt;
+        &lt;div&gt;9&lt;/div&gt;
+        &lt;div&gt;10&lt;/div&gt;
+    &lt;/div&gt;
+
+    // 预字符串化
+    const _hoisted_1 = /*#__PURE__*/_createStaticVNode(&quot;&lt;div&gt;1&lt;/div&gt;&lt;div&gt;2&lt;/div&gt;&lt;div&gt;3&lt;/div&gt;&lt;div&gt;4&lt;/div&gt;&lt;div&gt;5&lt;/div&gt;&lt;div&gt;6&lt;/div&gt;&lt;div&gt;7&lt;/div&gt;&lt;div&gt;8&lt;/div&gt;&lt;div&gt;9&lt;/div&gt;&lt;div&gt;10&lt;/div&gt;&quot;, 10)
+    
+    // 连续且静态的节点未达到10个
+    const _hoisted_1 = /*#__PURE__*/_createElementVNode(&quot;div&quot;, null, &quot;1&quot;, -1 /* HOISTED */)
+    // 此处省略...
+    const _hoisted_9 = /*#__PURE__*/_createElementVNode(&quot;div&quot;, null, &quot;9&quot;, -1 /* HOISTED */)
+    const _hoisted_10 = [_hoisted_1,_hoisted_2,_hoisted_3,_hoisted_4,_hoisted_5,_hoisted_6,_hoisted_7,_hoisted_8,_hoisted_9]
+</code></pre>
+</li>
+</ul>
+</li>
+<li>缓存事件处理函数<ul>
+<li>vue3对于自身不会变化的节点所携带的事件会对其进行缓存</li>
+<li><pre><code>    function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
+        return (_openBlock(), _createElementBlock(&quot;div&quot;, null, [
+            _createElementVNode(&quot;button&quot;, {
+            // 缓存事件放入_cache数组中
+            onClick: _cache[0] || (_cache[0] = (...args) =&gt; (_ctx.increase &amp;&amp; _ctx.increase(...args)))}, &quot;增加&quot;),
+            _createElementVNode(&quot;h1&quot;, null, _toDisplayString(_ctx.countRef), 1 /* TEXT */),
+            _createElementVNode(&quot;button&quot;, {
+            onClick: _cache[1] || (_cache[1] = (...args) =&gt; (_ctx.decrease &amp;&amp; _ctx.decrease(...args)))}, &quot;减少&quot;),
+            _createCommentVNode(&quot; &lt;DemoOne /&gt; &quot;)
+        ]))
+    }
+</code></pre>
+</li>
+</ul>
+</li>
+<li>虚拟树对比<ul>
+<li>vue3编译时会对动态的内容进行标记, <code>_createElementVNode(&quot;h1&quot;, null, _toDisplayString(_ctx.countRef), 1 /* TEXT */)</code>, 此处的<strong>1</strong>表示该节点是动态的节点(ps: 该数字所携带的意思并未清楚),  在更新对比虚拟树时跳过静态节点, 直接对比动态节点的更新变化, 这个动态节点称之为Block节点, 对比指的时找到block节点进行对比</li>
+</ul>
+</li>
+<li>单独节点对比<ul>
+<li>根据Block节点的标记进行单独节点的对比, 例如<code> _createElementVNode(&quot;h1&quot;, {class: _normalizeClass(_ctx.countRef)}, _toDisplayString(_ctx.countRef), 3 /* TEXT, CLASS */),</code>, 其中<code>/* TEXT, CLASS */</code>就会记录会动态的项</li>
+</ul>
+</li>
+</ul>
+<h2 id="为什么在vue3中取消了vue构造函数">为什么在vue3中取消了vue构造函数</h2>
+<ul>
+<li>原因<ul>
+<li>便于页面多个vue应用, vue2中使用插件, 插件就会影响到全部的vue应用, vue3中则可以进行分开处理</li>
+<li>vue2集成过多的功能, 不利于tree shaking优化打包体积(按需加载)</li>
+</ul>
+</li>
+</ul>
+<h2 id="数据响应式">数据响应式</h2>
+<ul>
+<li>vue2<ul>
+<li>Object.defineProperty</li>
+<li>需要递归其对象所有的属性进行设置其响应式</li>
+</ul>
+</li>
+<li>vue3<ul>
+<li>Proxy</li>
+<li>无需递归, 每次对数据的操作都必然会经过代理的get/set, 对于数据的访问是动态的</li>
+<li>Proxy可以监控到成员的更改</li>
+<li>Proxy的效率比Object.defineProperty更高</li>
+</ul>
+</li>
+</ul>
+<style>
+    body {
+        margin: 0 auto;
+        font-family: "ubuntu", "Tahoma", "Microsoft YaHei", arial, sans-serif;
+        color: #444444;
+        line-height: 1;
+        padding: 30px;
+    }
+    
+    img {
+        display: block;
+        max-width: 100%;
+        margin: 0 auto;
+    }
+    
+    @media screen and (min-width: 1000px) {
+        body {
+            width: 842px;
+            margin: 10px auto;
+        }
+    }
+    
+    h1,
+    h2,
+    h3,
+    h4 {
+        color: #111111;
+        font-weight: 400;
+        margin-top: 1em;
+    }
+    
+    h1,
+    h2,
+    h3,
+    h4,
+    h5 {
+        font-family: Georgia, Palatino, serif;
+    }
+    
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    dl {
+        margin-bottom: 16px;
+        padding: 0;
+    }
+    
+    p {
+        margin-top: 8px;
+        margin-bottom: 3px;
+    }
+    
+    h1 {
+        font-size: 48px;
+        line-height: 54px;
+    }
+    
+    h2 {
+        font-size: 36px;
+        line-height: 42px;
+    }
+    
+    h1,
+    h2 {
+        border-bottom: 1px solid #EFEAEA;
+        padding-bottom: 10px;
+    }
+    
+    h3 {
+        font-size: 24px;
+        line-height: 30px;
+    }
+    
+    h4 {
+        font-size: 21px;
+        line-height: 26px;
+    }
+    
+    h5 {
+        font-size: 18px;
+        line-height: 23px;
+    }
+    
+    a {
+        color: #0099ff;
+        margin: 0 2px;
+        padding: 0;
+        vertical-align: baseline;
+        text-decoration: none;
+    }
+    
+    a:hover {
+        text-decoration: none;
+        color: #ff6600;
+    }
+    
+    ul,
+    ol {
+        padding: 0;
+        padding-left: 18px;
+        margin: 0;
+    }
+    
+    li {
+        line-height: 24px;
+    }
+    
+    p,
+    ul,
+    ol {
+        font-size: 16px;
+        line-height: 24px;
+    }
+    
+    ol ol,
+    ul ol {
+        list-style-type: lower-roman;
+    }
+    
+    code,
+    pre {
+        font-family: Consolas, Monaco, Andale Mono, monospace;
+        background-color: #f7f7f7;
+        color: inherit;
+    }
+    
+    code {
+        font-family: Consolas, Monaco, Andale Mono, monospace;
+        margin: 0 2px;
+    }
+    
+    pre {
+        font-family: Consolas, Monaco, Andale Mono, monospace;
+        line-height: 1.7em;
+        overflow: auto;
+        padding: 6px 10px;
+        border-left: 5px solid #6CE26C;
+    }
+    
+    pre>code {
+        font-family: Consolas, Monaco, Andale Mono, monospace;
+        border: 0;
+        display: inline;
+        max-width: initial;
+        padding: 0;
+        margin: 0;
+        overflow: initial;
+        line-height: 1.6em;
+        font-size: .95em;
+        white-space: pre;
+        background: 0 0;
+    }
+    
+    code {
+        color: #666555;
+    }
+    
+    aside {
+        display: block;
+        float: right;
+        width: 390px;
+    }
+    
+    blockquote {
+        border-left: .5em solid #eee;
+        padding: 0 0 0 2em;
+        margin-left: 0;
+    }
+    
+    blockquote cite {
+        font-size: 14px;
+        line-height: 20px;
+        color: #bfbfbf;
+    }
+    
+    blockquote cite:before {
+        content: '\2014 \00A0';
+    }
+    
+    blockquote p {
+        color: #666;
+    }
+    
+    hr {
+        text-align: left;
+        color: #999;
+        height: 2px;
+        padding: 0;
+        margin: 16px 0;
+        background-color: #e7e7e7;
+        border: 0 none;
+    }
+    
+    dl {
+        padding: 0;
+    }
+    
+    dl dt {
+        padding: 10px 0;
+        margin-top: 16px;
+        font-size: 1em;
+        font-style: italic;
+        font-weight: bold;
+    }
+    
+    dl dd {
+        padding: 0 16px;
+        margin-bottom: 16px;
+    }
+    
+    dd {
+        margin-left: 0;
+    }
+    
+    table {
+        *border-collapse: collapse;
+        /* IE7 and lower */
+        border-spacing: 0;
+        width: 100%;
+    }
+    
+    table {
+        border: solid #ccc 1px;
+    }
+    
+    table thead {
+        background: #f7f7f7;
+    }
+    
+    table thead tr:hover {
+        background: #f7f7f7
+    }
+    
+    table tr:hover {
+        background: #fbf8e9;
+        -o-transition: all 0.1s ease-in-out;
+        -webkit-transition: all 0.1s ease-in-out;
+        -moz-transition: all 0.1s ease-in-out;
+        -ms-transition: all 0.1s ease-in-out;
+        transition: all 0.1s ease-in-out;
+    }
+    
+    table td,
+    .table th {
+        border-left: 1px solid #ccc;
+        border-top: 1px solid #ccc;
+        padding: 10px;
+        text-align: left;
+    }
+    
+    table th {
+        border-top: none;
+        text-shadow: 0 1px 0 rgba(255, 255, 255, .5);
+        padding: 5px;
+        border-left: 1px solid #ccc;
+    }
+    
+    table td:first-child,
+    table th:first-child {
+        border-left: none;
+    }
+    
+    body {
+        width: 100%;
+        height: 100%;
+        padding: 0 !important;
+    }
+    
+    .sidebar {
+        width: 300px;
+        height: 100%;
+        border-right: 1px solid #aaa;
+        position: fixed;
+        top: 0;
+        left: -300px;
+        box-shadow: 2px 0 5px 3px #aaa;
+        padding: 10px 0 0 0;
+        box-sizing: border-box;
+        transition: left 0.5s;
+    }
+    
+    .sidebar-title {
+        padding: 10px;
+        border-bottom: 1px solid #ccc;
+    }
+    
+    .sidebar-title a {
+        color: #000000;
+        font-weight: bold;
+    }
+    
+    .sidebar-title a:hover {
+        color: #666555;
+    }
+    
+    .sidebar-title .sidebar-github {
+        float: right;
+    }
+    
+    .sidebar-content {
+        width: 100%;
+        height: 100%;
+        box-sizing: border-box;
+        padding: 10px 0 0 20px;
+    }
+    
+    .sidebar-content div {
+        margin: 5px 0px;
+    }
+    
+    .sidebar-content div a {
+        display: inline-block;
+        font-size: 20px;
+        width: 100%;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    /* 内容区 */
+    
+    .markdown-box {
+        display: flex;
+        justify-content: center;
+    }
+    
+    .content {
+        display: inline-block;
+        box-sizing: border-box;
+        width: 80%;
+        height: 100%;
+        padding: 20px 20px 0 30px;
+        position: relative;
+        transition: margin-left 0.5s;
+        overflow-x: hidden;
+    }
+    
+    .loading-lock {
+        position: fixed;
+        top: 20px;
+        left: 20px;
+        padding: 7px 10px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        cursor: pointer;
+        box-shadow: 0 0 8px 1px #aaa;
+        transition: left 0.5s;
+        background: #FFFFFF;
+    }
+    
+    .loading-lock:active {
+        box-shadow: inset 0 0 8px 1px #aaa;
+    }
+    /* 回到顶部按钮样式 */
+    
+    .backTop {
+        width: 100px;
+        line-height: 50px;
+        text-align: center;
+        position: fixed;
+        bottom: 50px;
+        right: 50px;
+        display: none;
+        border-radius: 50%;
+        cursor: pointer;
+    }
+    
+    h1 {
+        margin-top: 0;
+        padding-top: 1em;
+    }
+    /* 表格内容居中 */
+    
+    .content table td[align="center"] {
+        text-align: center;
+    }
+    /* 表格内容靠右 */
+    
+    .content table td[align="right"] {
+        text-align: right;
+    }
+</style>

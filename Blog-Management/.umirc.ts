@@ -122,6 +122,21 @@ export default defineConfig({
             }
           ]
         }, {
+          path: '/other',
+          component: '@/pages/Other',
+          title: '其他管理',
+          routes: [
+            {
+              path: '/',
+              redirect: '/other/title',
+            },
+            {
+              path: '/other/title',
+              component: '@/pages/Other/title',
+              title: '标语管理'
+            }
+          ]
+        }, {
           redirect: '/404'
         }
       ]

@@ -80,9 +80,9 @@
       const handleScroll = (e: any) => {
         if (main.value.scrollTop > 200) {
           lock.value = true
-          
         } else {
           lock.value = false
+          styleLock.value = false
         }
       }
       const main: any = ref(null)
@@ -123,6 +123,7 @@
           audio.play()
         }
         audioSwitch.value = !audioSwitch.value
+        styleLock.value = false
       }
       // 音频重新播放
       const audioEnd = () => {

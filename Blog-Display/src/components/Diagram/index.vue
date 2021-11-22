@@ -21,6 +21,7 @@
             <div class="w w1"></div>
             <div class="w w2"></div>
             <div class="w w3"></div>
+            <div class="w w4"></div>
         </div>
     </div>
 </template>
@@ -195,27 +196,31 @@
     height: 500vw;
     display: inline-block;
     position: absolute;
-    border-radius: 47%;
+    left: -200%;
+    border-radius: 48%;
     background: #fff;
 }
 
 .w1 {
-    width: 600vw;
-    height: 600vw;
-    left: -250%;
     animation: rotate 30s linear infinite;
 }
 
 .w2 {
-    left: -250%;
     opacity: 0.8;
-    animation: rotate 30s ease-in 2s infinite;
+    border-radius: 47%;
+    animation: rotate 30s ease-out 2s infinite;
 }
 
 .w3 {
-    left: -200%;
     opacity: 0.7;
+    border-radius: 46%;
     animation: rotate 30s ease-out 4s infinite;
+}
+
+.w4 {
+    opacity: 0.6;
+    border-radius: 45%;
+    animation: rotate 30s ease-out 6s infinite;
 }
 
 @keyframes rotate {
