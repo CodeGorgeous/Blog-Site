@@ -24,7 +24,9 @@
               opacity: lock ? '1' : '0',
               cursor: lock ? 'pointer' : 'default',
               transition: 'transform 0.5s ease-in-out, opacity 0.5s ease-in-out',
-              transform: styleLock ? 'rotate(0deg)' : 'rotate(-135deg)'
+              transform: styleLock ? 'rotate(0deg)' : 'rotate(-135deg)',
+              background: bgState ? 'var(--icon-dark)' : 'var(--icon-bright)',
+              color: bgState ? 'var(--font-dark)' : 'var(--font-bright)'
             }"
           >
             <CloseBold />
@@ -36,7 +38,9 @@
             :size="20"
             :style="{
               bottom: styleLock ? '45px' : '0',
-              opacity: styleLock ? 1 : 0
+              opacity: styleLock ? 1 : 0,
+              background: bgState ? 'var(--icon-dark)' : 'var(--icon-bright)',
+              color: bgState ? 'var(--font-dark)' : 'var(--font-bright)'
             }"
             @click="handleChangScroll"
           >
@@ -47,12 +51,28 @@
             :size="20"
             :style="{
               bottom: styleLock ? '90px' : '0',
-              opacity: styleLock ? 1 : 0
+              opacity: styleLock ? 1 : 0,
+              background: bgState ? 'var(--icon-dark)' : 'var(--icon-bright)',
+              color: bgState ? 'var(--font-dark)' : 'var(--font-bright)'
             }"
             @click="handleChangeVideo"
           >
             <VideoPause v-if="audeoSwitch"/>
             <VideoPlay v-if="!audeoSwitch"/>
+          </el-icon>
+          <el-icon
+            class="icon-item icon-show"
+            :size="20"
+            :style="{
+              bottom: styleLock ? '135px' : '0',
+              opacity: styleLock ? 1 : 0,
+              background: bgState ? 'var(--icon-dark)' : 'var(--icon-bright)',
+              color: bgState ? 'var(--font-dark)' : 'var(--font-bright)'
+            }"
+            @click="handleChangeGlobal"
+          >
+            <Moon v-if="!bgState"/>
+            <MoonNight v-if="bgState"/>
           </el-icon>
         </div>
       </div>
@@ -64,7 +84,8 @@
 <script lang="ts">
   import { defineComponent, reactive, toRefs, ref, watchEffect, onMounted, onUnmounted } from 'vue'
   import Header from './components/Header/index.vue'
-  import { CloseBold, Briefcase, CaretTop, VideoPlay, VideoPause } from '@element-plus/icons'
+  import { CloseBold, Briefcase, CaretTop, VideoPlay, VideoPause, Moon, MoonNight } from '@element-plus/icons'
+  import { useStore } from 'vuex'
 
   export default defineComponent({
     components: {
@@ -73,9 +94,12 @@
       Briefcase,
       CaretTop,
       VideoPlay,
-      VideoPause
+      VideoPause,
+      Moon,
+      MoonNight
     },
     setup (props, context) {
+      const store = useStore()
       const lock = ref(false)
       const handleScroll = (e: any) => {
         if (main.value.scrollTop > 200) {
@@ -127,7 +151,6 @@
       }
       // 音频重新播放
       const audioEnd = () => {
-        console.log('播放完毕')
         audio.load()
         audio.play()
       }
@@ -135,6 +158,30 @@
       // 目前想要知道audio什么时候播完完毕, 播放完毕后重新播放音频
       // ...
       audio.addEventListener('ended', audioEnd)
+      // 
+      const bgState: any = ref(store.state.global.bgState)
+      watchEffect(() => {
+        bgState.value = store.state.global.bgState
+      })
+      // 根节点
+      const app: any = ref(null)
+      // 控制全局的颜色改变
+      const handleChangeGlobal = () => {
+        store.commit('global/changeBg')
+        
+        if (app.value) {
+          if (store.state.global.bgState) {
+            app.value.style.background = 'var(--bg-bright)'
+          } else {
+            app.value.style.background = 'var(--bg-dark)'
+          }
+          styleLock.value = false
+        }
+      }
+
+      onMounted(() => {
+        app.value = document.querySelector('#app')
+      })
 
       return {
         handleScroll,
@@ -145,7 +192,9 @@
         audeoSwitch: audioSwitch,
         handleChangScroll,
         handleChangeVideo,
-        audio
+        audio,
+        handleChangeGlobal,
+        bgState
       }
     }
   })
@@ -208,13 +257,13 @@
 .icon-item {
   width: 40px;
   height: 40px;
-  background: #33333D;
   display: flex;
   justify-content: center;
   align-items: center;
   border-radius: 50%;
   margin: 5px 0;
   cursor: pointer;
+  transition: all 0.5s;
 }
 
 @media (max-width: 576px) {

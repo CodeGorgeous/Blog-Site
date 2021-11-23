@@ -10,6 +10,9 @@
                 class="icon"
                 :size="40"
                 @click="handleClick"
+                :style="{
+                    color: bgState ? 'var(--font-bright)' : 'var(--font-dark)'
+                }"
             ><Mouse /></el-icon>
         </div>
         <div class="title">
@@ -18,10 +21,30 @@
         </div>
         <!-- 波浪图形 -->
         <div class="wave">
-            <div class="w w1"></div>
-            <div class="w w2"></div>
-            <div class="w w3"></div>
-            <div class="w w4"></div>
+            <div
+                class="w w1"
+                :style="{
+                    background: bgState ? 'var(--wave-bright)' : 'var(--wave-dark)'
+                }"
+            ></div>
+            <div
+                class="w w2"
+                :style="{
+                    background: bgState ? 'var(--wave-bright)' : 'var(--wave-dark)'
+                }"
+            ></div>
+            <div
+                class="w w3"
+                :style="{
+                    background: bgState ? 'var(--wave-bright)' : 'var(--wave-dark)'
+                }"
+            ></div>
+            <div
+                class="w w4"
+                :style="{
+                    background: bgState ? 'var(--wave-bright)' : 'var(--wave-dark)'
+                }"
+            ></div>
         </div>
     </div>
 </template>
@@ -29,6 +52,9 @@
 <script lang='ts'>
     import { defineComponent, PropType, ref, watchEffect, onMounted, onUnmounted } from 'vue'
     import { Mouse } from '@element-plus/icons'  
+    import { getTitle } from '../../api/index'
+    import { useStore } from 'vuex'
+
     export default defineComponent({
         components: {
             Mouse
@@ -40,20 +66,20 @@
             }
         },
         setup (props, context) {
+            const store = useStore()
 
             const bgImage = ref()
             let image1: string = 'https://img2.baidu.com/it/u=3492081780,1765429063&fm=26&fmt=auto'
             let image2: string = 'http://qiniu.codegorgeous.top/login.webp'
             const text =ref('')
-
-            setTimeout(async () => {
-                const conent: string = 'Hello World!'
+            getTitle().then(async(resp: any) => {
+                const conent: string = resp.data.title
                 for (let i = 0; i < conent.length; i++) {
                     const sliceText =  conent.slice(0, i+1)
                     text.value = sliceText
                     await delay(100)
                 }
-            }, 2000)
+            })
 
             const delay = (timer: number) => {
                 return new Promise((resolve, reject) => {
@@ -95,10 +121,18 @@
                 }, time)
             })
 
+            // 管理颜色
+            const bgState = ref(store.state.global.bgState)
+
+            watchEffect(() => {
+                bgState.value = store.state.global.bgState
+            })
+
             return {
                 bgImage,
                 text,
-                handleClick
+                handleClick,
+                bgState
             }
         }
     })
@@ -198,7 +232,7 @@
     position: absolute;
     left: -200%;
     border-radius: 48%;
-    background: #fff;
+    transition: background 1s;
 }
 
 .w1 {

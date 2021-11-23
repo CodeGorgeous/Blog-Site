@@ -8,6 +8,27 @@
     color: #fff;
 }
 
+
+/* 自定义颜色 */
+
+:root {
+    --bg-bright: #eee;
+    --bg-dark: #1E2128;
+    --scroll-color: #abcdef;
+    --wave-bright: #eee;
+    --wave-dark: #1E2128;
+    --font-bright: #666;
+    --font-dark: #fff;
+    --icon-bright: #fff;
+    --icon-dark: #1E2128;
+    --card-bright: #fff;
+    --card-dark: #2a2c31;
+    --menu-bright: #abcdef;
+    --menu-dark: #fff;
+    --card-message-bright: #fff;
+    --card-message-dark: #ddd;
+}
+
 html,
 body,
 #app {
@@ -17,7 +38,12 @@ body,
 }
 
 body {
-    background: #eee;
+    margin: 0 !important;
+}
+
+body #app {
+    background: var(--bg-bright);
+    transition: all 1s;
 }
 
 #app {
@@ -34,4 +60,9 @@ body {
 
 .el-card__body {
     padding: 0 !important;
+}
+
+::-webkit-scrollbar {
+    width: 0px;
+    height: 0px;
 }

@@ -11,6 +11,10 @@
                     v-for="item in blogList"
                     :key="item.id"
                     @click="handleClick(item)"
+                    :style="{
+                        background: bgState ? 'var(--card-bright)' : 'var(--card-dark)',
+                        color: bgState ? 'var(--font-bright)' : 'var(--font-dark)'
+                    }"
                 >
                     
                     <div class="card-image">
@@ -74,6 +78,7 @@
     import { useRouter } from 'vue-router'
     import { pageGetBlog } from '../../api/index'
     import { ElMessage } from 'element-plus'
+    import { useStore } from 'vuex'
 
     export default defineComponent({
         components: {
@@ -89,7 +94,6 @@
             }
         },
         setup (props: any, context) {
-
             const router = useRouter()
             const blogList: any = ref([])
             const handleClick = (item: any) => {
@@ -120,7 +124,7 @@
                     limit: limit.value
                 }).then((resp: any) => {
                     if (resp.state === 'success') {
-
+                        
                         blogList.value = resp.data.rows.map((item: any) => {
                             return {
                                 ...item,
@@ -137,13 +141,21 @@
                 })
             })
 
+            const store = useStore()
+            const bgState: any = ref(store.state.global.bgState)
+            watchEffect(() => {
+                bgState.value = store.state.global.bgState
+            })
+
+
             return {
                 blogList,
                 handleClick,
                 main: props.main,
                 total,
                 limit,
-                handleChangePage
+                handleChangePage,
+                bgState
             }
         }
     })
@@ -184,6 +196,7 @@
     height: 400px;
     margin: 15px 10px;
     cursor: pointer;
+    border: none !important;
 }
 
 .card-item:hover {
@@ -237,6 +250,7 @@
     overflow:hidden;
     margin: 5px 0;
     font-size: 14px;
+    padding: 0 5px 0 0;
 }
 
 .card-icon {

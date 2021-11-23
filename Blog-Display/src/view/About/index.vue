@@ -3,6 +3,9 @@
         <div class="about-card-container">
             <el-card
                 class="card"
+                :style="{
+                    background: bgState ? 'var(--card-message-bright)' : 'var(--card-message-dark)'
+                }"
             >
                 <div class="card-image">
                     <el-image
@@ -69,6 +72,7 @@
 
 <script lang='ts'>
     import { defineComponent, reactive, toRefs, ref, watchEffect } from 'vue'
+import { useStore } from 'vuex'
     import Footer from '../../components/Footer/index.vue'
 
     export default defineComponent({
@@ -76,9 +80,14 @@
             Footer
         },
         setup (props, context) {
-            
+
+            const store = useStore()
+            const bgState: any = ref(store.state.global.bgState)
+            watchEffect(() => {
+                bgState.value = store.state.global.bgState
+            })
             return {
-                
+                bgState
             }
         }
     })
@@ -98,6 +107,7 @@
 
 .card {
     width: 100%;
+    border: none !important;
 }
 
 .card-text {

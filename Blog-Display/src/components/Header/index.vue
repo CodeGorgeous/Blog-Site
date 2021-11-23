@@ -8,6 +8,7 @@
             :style="{
                 display: docWidth > 576 ? 'flex' : 'none'
             }"
+            :text-color="bgState ? 'var(--menu-bright)' : 'var(--menu-dark)'"
         >
             
             <el-menu-item
@@ -84,6 +85,7 @@
     import { defineComponent, reactive, toRefs, ref, watchEffect, onMounted, onUnmounted, PropType, watch } from 'vue'
     import * as icons from '@element-plus/icons'
     import { useRoute } from 'vue-router'
+    import { useStore } from 'vuex'
 
     export default defineComponent({
         components: {
@@ -110,9 +112,16 @@
                 window.removeEventListener('resize', handleSizeChange)
             })
 
+            const store = useStore()
+            const bgState: any = ref(store.state.global.bgState)
+            watchEffect(() => {
+                bgState.value = store.state.global.bgState
+            })
+
             return {
                 docWidth,
-                router
+                router,
+                bgState
             }
         }
     })

@@ -3,6 +3,9 @@
         <el-card
             class="card-container"
             shadow="always"
+            :style="{
+                background: bgState ? 'var(--card-message-bright)' : 'var(--card-message-dark)'
+            }"
         >
             <div
                 class="card-image"
@@ -45,6 +48,7 @@
     import Footer from '../../components/Footer/index.vue'
     import { searchIdBlog } from '../../api/index'
     import { ElMessage } from 'element-plus'
+    import { useStore } from 'vuex'
 
     export default defineComponent({
         components: {
@@ -53,11 +57,12 @@
             Footer
         },
         setup (props, context) {
+            const store = useStore()
             const route: any = useRoute()
             const id: any = ref(+route.query.id)
 
             const blog: any = ref({})
-
+            
             watchEffect(() => {
                 searchIdBlog(id.value).then((resp: any) => {
                     if (resp.state === 'success') {
@@ -71,8 +76,14 @@
                 })
             })
 
+            const bgState: any = ref(store.state.global.bgState)
+            watchEffect(() => {
+                bgState.value = store.state.global.bgState
+            })
+
             return {
-                blog
+                blog,
+                bgState
             }
         }
     })
@@ -90,6 +101,7 @@
     width: 40%;
     margin: 0 auto;
     min-width: 500px;
+    border: none !important;
 }
 
 .card-image {

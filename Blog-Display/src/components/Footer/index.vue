@@ -1,21 +1,97 @@
 <template>
     <div class="footer-container">
         <div class="main-container">
-            <p class="icon">
-                <a href="tencent://message/?Menu=yes&uin=2460481461" target="_blank" class="icon-font qq">&#xe882;</a>
-                <a href="#" class="icon-font wechat">&#xe883;</a>
-                <a href="https://github.com/CodeGorgeous" target="_blank" class="icon-font github">&#xe885;</a>
-                <a href="mailto:2460481461@qq.com" target="_blank" class="icon-font email">&#xe77e;</a>
+            <p
+            class="icon"
+            >
+                <a
+                    href="tencent://message/?Menu=yes&uin=2460481461"
+                    target="_blank"
+                    class="icon-font qq"
+                    :style="{
+                        color: bgState ? 'var(--font-bright)' : 'var(--font-dark)'
+                    }"
+                >&#xe882;</a>
+                <a
+                    href="#"
+                    class="icon-font wechat"
+                    :style="{
+                        color: bgState ? 'var(--font-bright)' : 'var(--font-dark)'
+                    }"
+                >&#xe883;</a>
+                <a
+                    href="https://github.com/CodeGorgeous"
+                    target="_blank"
+                    class="icon-font github"
+                    :style="{
+                        color: bgState ? 'var(--font-bright)' : 'var(--font-dark)'
+                    }"
+                >&#xe885;</a>
+                <a
+                    href="mailto:2460481461@qq.com"
+                    target="_blank"
+                    class="icon-font email"
+                    :style="{
+                        color: bgState ? 'var(--font-bright)' : 'var(--font-dark)'
+                    }"
+                >&#xe77e;</a>
             </p>
-            <p class="time">by CodeGorgeous | © 2021 - 2021</p>
-            <p class="record">豫ICP备2021018590号</p>
-            <p><el-icon><Bottom /></el-icon>欢迎关注A-SOUL<el-icon><Bottom /></el-icon></p>
+            <p
+                class="time"
+                :style="{
+                    color: bgState ? 'var(--font-bright)' : 'var(--font-dark)',
+                    transition: `color 0.5s linear`
+                }"
+            >by CodeGorgeous | © 2021 - 2021</p>
+            <p
+                class="record"
+                :style="{
+                    color: bgState ? 'var(--font-bright)' : 'var(--font-dark)',
+                    transition: `color 0.5s linear`
+                }"
+            >豫ICP备2021018590号</p>
+            <p
+                :style="{
+                    color: bgState ? 'var(--font-bright)' : 'var(--font-dark)',
+                    transition: `color 0.5s linear`
+                }"
+            ><el-icon><Bottom /></el-icon>欢迎关注A-SOUL<el-icon><Bottom /></el-icon></p>
             <p>
-                <a href="https://space.bilibili.com/672342685" class="a-soul queen">乃琳Queen</a>
-                <a href="https://space.bilibili.com/672328094" class="a-soul dianna">嘉然今天吃什么</a>
-                <a href="https://space.bilibili.com/351609538" class="a-soul carol">珈乐Carol</a>
-                <a href="https://space.bilibili.com/672353429" class="a-soul kira">贝拉kira</a>
-                <a href="https://space.bilibili.com/672346917" class="a-soul awwaw">向晚大魔王</a>
+                <a
+                    href="https://space.bilibili.com/672342685"
+                    class="a-soul queen"
+                    :style="{
+                        color: bgState ? 'var(--font-bright)' : 'var(--font-dark)'
+                    }"
+                >乃琳Queen</a>
+                <a
+                    href="https://space.bilibili.com/672328094"
+                    class="a-soul dianna"
+                    :style="{
+                        color: bgState ? 'var(--font-bright)' : 'var(--font-dark)'
+                    }"
+                >嘉然今天吃什么</a>
+                <a
+                    href="https://space.bilibili.com/351609538"
+                    class="a-soul carol"
+                    :style="{
+                        color: bgState ? 'var(--font-bright)' : 'var(--font-dark)'
+                    }"
+                >珈乐Carol</a>
+                <a
+                    href="https://space.bilibili.com/672353429"
+                    class="a-soul kira"
+                    :style="{
+                        color: bgState ? 'var(--font-bright)' : 'var(--font-dark)'
+                    }"
+                >贝拉kira</a>
+                <a
+                    href="https://space.bilibili.com/672346917"
+                    class="a-soul awwaw"
+                    :style="{
+                        color: bgState ? 'var(--font-bright)' : 'var(--font-dark)'
+                    }"
+                >向晚大魔王</a>
             </p>
         </div>
     </div>
@@ -24,15 +100,20 @@
 <script lang='ts'>
     import { defineComponent, reactive, toRefs, ref, watchEffect } from 'vue'
     import { Bottom } from '@element-plus/icons'
+    import { useStore } from 'vuex'
 
     export default defineComponent({
         components: {
             Bottom
         },
         setup (props, context) {
-            
+            const store = useStore()
+            const bgState: any = ref(store.state.global.bgState)
+            watchEffect(() => {
+                bgState.value = store.state.global.bgState
+            })
             return {
-                
+                bgState
             }
         }
     })
@@ -76,19 +157,19 @@
 }
 
 .qq:hover {
-    color: #14BAF8;
+    color: #14BAF8 !important;
 }
 
 .wechat:hover {
-    color: #2AAE67;
+    color: #2AAE67 !important;
 }
 
 .github:hover {
-    color: #9266F9;
+    color: #9266F9 !important;
 }
 
 .email:hover {
-    color: #F4B754;
+    color: #F4B754 !important;
 }
 
 .time {
@@ -110,27 +191,26 @@
 .a-soul {
     text-decoration: none;
     margin: 0 5px;
-    color: #333;
     transition: color 0.5s linear;
 }
 .queen:hover {
-    color: #A9BBE3;
+    color: #A9BBE3 !important;
 }
 
 .dianna:hover {
-    color: #F9C7D5;
+    color: #F9C7D5 !important;
 }
 
 .carol:hover {
-    color: #6453BD;
+    color: #6453BD !important;
 }
 
 .kira:hover {
-    color: #FDBEB8;
+    color: #FDBEB8 !important;
 }
 
 .awwaw:hover {
-    color: #28E5FF;
+    color: #28E5FF !important;
 }
 
 </style>

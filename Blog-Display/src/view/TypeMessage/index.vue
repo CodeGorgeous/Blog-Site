@@ -13,6 +13,9 @@
                 <p
                     class="timeline-title"
                     @click="handleClick(item.id)"
+                    :style="{
+                        color: bgState ? 'var(--font-bright)' : 'var(--font-dark)'
+                    }"
                 >
                     {{ item.name }}
                 </p>
@@ -30,6 +33,7 @@
     import { ElMessage } from 'element-plus'
     import Footer from '../../components/Footer/index.vue'
     import NotContent from '../../components/NotContent/index.vue'
+import { useStore } from 'vuex'
 
     export default defineComponent({
         components: {
@@ -68,11 +72,18 @@
                     }
                 })
             }
+        
+            const store = useStore()
+            const bgState: any = ref(store.state.global.bgState)
+            watchEffect(() => {
+                bgState.value = store.state.global.bgState
+            })
 
             return {
                 blogList,
                 handleClick,
-                lock
+                lock,
+                bgState
             }
         }
     })
