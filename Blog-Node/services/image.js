@@ -172,6 +172,14 @@ module.exports = {
         } catch (error) {
             return createResp('fail', '未知错误', error)
         }
+    },
+    // 修改类型
+    async putImageType(id, name, image, ) {
+
+    },
+    // 删除类型
+    async deleteImageType() {
+
     }
 }
 

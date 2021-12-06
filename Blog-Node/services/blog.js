@@ -98,7 +98,7 @@ module.exports = {
         }
     },
     // 修改博客
-    async putBlog(text, id, uid) {
+    async putBlog(text, id, typeId, uid) {
         const newResult = await User.findOne({
             where: {
                 spreadCode: uid
@@ -107,7 +107,7 @@ module.exports = {
         if (!newResult) {
             return createResp('fail', '用户uid不正确', {})
         }
-        const result = await Blog.findOne({
+        let result = await Blog.findOne({
             where: {
                 id
             }
@@ -119,6 +119,14 @@ module.exports = {
             // 则进行更改
             fs.writeFileSync(resolve(__dirname, '..', 'resources', 'markdown', `${result.dataValues.markdownName}`), text)
             fs.writeFileSync(resolve(__dirname, '..', 'resources', 'html', `${result.dataValues.htmlName}`), html)
+            result = await Blog.update({
+                type_id: typeId
+            }, {
+                where: {
+                    id
+                }
+            })
+            if (!result) return createResp('fail', '修改失败', {})
             return createResp('success', '修改成功', {})
         } else {
             // 该数据不存在, 无法进行更改
@@ -203,6 +211,59 @@ module.exports = {
             })
             if (!result) return createResp('fail', '获取失败', {})
             return createResp('success', '获取成功', result)
+        } catch (error) {
+            return createResp('fail', '未知错误', error)
+        }
+    },
+    // 修改博客分类
+    async putBlogType(typeId, name, uid) {
+        try {
+            let result = await User.findOne({
+                where: {
+                    spreadCode: uid
+                }
+            });
+            if (!result) return createResp('fail', '该操作人不存在', {})
+
+            result = await BlogType.update({
+                typeName: name
+            }, {
+                where: {
+                    id: typeId
+                }
+            })
+            if (!result) return createResp('fail', '修改失败', {})
+            return createResp('success', '修改成功', {})
+        } catch (error) {
+            return createResp('fail', '未知错误', error)
+        }
+    },
+    // 删除博客分类
+    async deleteBlogType(id, uid) {
+        try {
+            let result = await User.findOne({
+                where: {
+                    spreadCode: uid
+                }
+            });
+            if (!result) return createResp('fail', '该操作人不存在', {});
+            // 先查询该分类下是否还有文章
+            result = await Blog.findAll({
+                where: {
+                    type_id: id
+                }
+            })
+            if (result.length > 0) {
+                return createResp('fail', '该分类下还有文章, 请处理后在进行尝试!', {})
+            }
+            // 进行删除
+            result = await BlogType.destroy({
+                where: {
+                    id
+                }
+            })
+            if (!result) return createResp('fail', '删除失败', {})
+            return createResp('success', '删除成功', {})
         } catch (error) {
             return createResp('fail', '未知错误', error)
         }
