@@ -10,10 +10,16 @@ router.get('/type', async(req, res) => {
 
 // 增加类型
 router.post('/type', async(req, res) => {
-    console.log(req.body)
     const result = await imageService.createType(req.body.type, req.body.image, req.body.uid)
     res.send(result)
 })
+
+// 修改类型
+router.put('/type', async(req, res) => {
+        const result = await imageService.putImageType(req.body.typeId, req.body.name, req.body.image, req.body.uid);
+        res.send(result)
+    })
+    // 删除类型
 
 // 增加图片
 router.post('/', async(req, res) => {

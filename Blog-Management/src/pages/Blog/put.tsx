@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react'
-import { Input, Row, Col, Card, Button, message } from 'antd'
+import { Input, Row, Col, Card, Button, message, Select } from 'antd'
 import style from './css/put.less'
 import { FileSearchOutlined, CloudUploadOutlined } from '@ant-design/icons'
 import { history, connect } from 'umi' 
-import { putBlog, getBlog } from '@/api/blog'
-import user from '@/models/user'
+import { putBlog, getBlog, getBlogType } from '@/api'
 
 interface Props {
     user?: any
@@ -13,18 +12,30 @@ interface Props {
 
 const Component: React.FC = (props: Props) => {
     const blogMessage: any = history.location.state
-
+    const [typeList, setTypeList] = useState<any>([])
     const [id, setId] = useState('')
     const [text, setText] = useState('')
     const [lock, setLock] = useState(false)
+    const [blogKey, setBlogKey] = useState(1)
 
     useEffect(() => {
         if (blogMessage) {
             setId(blogMessage.id)
-            setText(blogMessage.markdownText),
+            setText(blogMessage.markdownText)
+            setBlogKey(blogMessage.type_id)
             setLock(true)
         }
     }, [])
+
+    useEffect(() => {
+        getBlogType().then(resp => {
+            setTypeList(resp.data.data)
+        })
+    }, [])
+
+    const vNode = typeList.map((item: any) => {
+        return (<Select.Option value={item.id} key={item.id}>{item.typeName}</Select.Option>)
+    })
 
     return (
         <div className={style['put-container']}>
@@ -50,6 +61,7 @@ const Component: React.FC = (props: Props) => {
                                 getBlog(+id).then(resp => {
                                     if (resp.data.state === 'success') {
                                         setText(resp.data.data.markdownText)
+                                        setBlogKey(resp.data.data.type_id)
                                         setLock(true)
                                         message.success('查询成功')
                                     } else {
@@ -74,7 +86,8 @@ const Component: React.FC = (props: Props) => {
                                 putBlog({
                                     id: blogMessage ? blogMessage.id : +id,
                                     uid: props.user.spreadCode,
-                                    text
+                                    text,
+                                    typeId: blogKey
                                 }).then(resp => {
                                     if (resp.data.state === 'success') {
                                         message.success('修改成功')
@@ -94,6 +107,20 @@ const Component: React.FC = (props: Props) => {
                     display: lock ? 'inline-block' : 'flex'
                 }}
             >
+                <Row className={style.row}>
+                    <Col className={style.span}>文章分类:</Col>
+                    <Col >
+                        <Select
+                            value={blogKey}
+                            className={style.input}
+                            onChange={(key) => {
+                                setBlogKey(key)
+                            }}
+                        >
+                            {vNode}
+                        </Select>
+                    </Col>
+                </Row>
                 <Input.TextArea
                     className={style['card-textArea']}
                     value={text}

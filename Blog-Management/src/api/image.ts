@@ -93,3 +93,39 @@ export async function deleteImage(params: DeleteImage) {
         params
     })
 }
+
+interface PutImageType {
+    typeId: number
+    name: string
+    image: string
+    uid: string
+}
+
+/**
+ * 修改分类名称
+ */
+export async function putImageType(data: PutImageType) {
+    return await instance('/image', {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        data
+    })
+}
+
+interface DeleteImageType {
+    id: number
+    uid: string
+}
+
+/**
+ * 删除一种图片类型
+ * @param params 
+ */
+export async function deleteImageType(params: DeleteImageType) {
+    return await instance('/image', {
+        method: 'DELETE',
+        params
+    })
+}

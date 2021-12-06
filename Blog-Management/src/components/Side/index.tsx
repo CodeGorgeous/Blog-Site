@@ -53,7 +53,7 @@ const Component: React.FC = () => {
                     <Menu.Item
                         key="/blog/type"
                         icon={<ToTopOutlined />}
-                    >新增分类</Menu.Item>
+                    >分类管理</Menu.Item>
                 </Menu.SubMenu>
                 <Menu.SubMenu
                     key="image"

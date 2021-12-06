@@ -43,6 +43,7 @@ interface BlogModify {
     id: number
     uid: string
     text: string
+    typeId: number
 }
 
 
@@ -121,4 +122,41 @@ export async function postBlogType(data: BlogType) {
     })
 }
 
+interface PutBlogType {
+    typeId: number
+    name: string
+    uid: string
+}
+
+/**
+ * 修改博客分类名称
+ * @param data 
+ * @returns 
+ */
+export async function putBlogType(data: PutBlogType) {
+    return await instance('/blog/type', {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        data
+    })
+}
+
+interface DeleteBlogType {
+    id: number
+    uid: string
+}
+
+/**
+ * 删除一个博客分类
+ * @param params 
+ * @returns 
+ */
+export async function deleteBlogType(params: DeleteBlogType) {
+    return await instance('/blog/type', {
+        method: 'DELETE',
+        params
+    })
+}
 
