@@ -16,10 +16,14 @@ router.post('/type', async(req, res) => {
 
 // 修改类型
 router.put('/type', async(req, res) => {
-        const result = await imageService.putImageType(req.body.typeId, req.body.name, req.body.image, req.body.uid);
-        res.send(result)
-    })
-    // 删除类型
+    const result = await imageService.putImageType(req.body.typeId, req.body.name, req.body.image, req.body.uid);
+    res.send(result);
+});
+// 删除类型
+router.delete('/type', async(req, res) => {
+    const result = await imageService.deleteImageType(req.query.id, req.query.uid);
+    res.send(result)
+})
 
 // 增加图片
 router.post('/', async(req, res) => {

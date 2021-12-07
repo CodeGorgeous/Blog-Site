@@ -141,8 +141,8 @@ module.exports = {
                     spreadCode: uid
                 }
             })
-            if (!result) return createResp('fail', '该操作人不存在', {})
-                // 找到数据库中对应的数据条目
+            if (!result) return createResp('fail', '该操作人不存在', {});
+            // 找到数据库中对应的数据条目
             result = await Image.findOne({
                 where: {
                     id
@@ -174,12 +174,55 @@ module.exports = {
         }
     },
     // 修改类型
-    async putImageType(id, name, image, ) {
-
+    async putImageType(id, name, image, uid) {
+        try {
+            let result = await User.findOne({
+                where: {
+                    spreadCode: uid
+                }
+            })
+            if (!result) return createResp('fail', '该操作人不存在', {});
+            // 更新数据
+            result = await ImageTypes.update({
+                type: name,
+                coverImage: image,
+                uid
+            }, {
+                where: {
+                    id
+                }
+            })
+            if (!result) return createResp('fail', '修改失败', {})
+            return createResp('success', '修改成功', {})
+        } catch (error) {
+            return createResp('fail', '未知错误', error)
+        }
     },
     // 删除类型
-    async deleteImageType() {
-
+    async deleteImageType(id, uid) {
+        try {
+            let result = await User.findOne({
+                where: {
+                    spreadCode: uid
+                }
+            })
+            if (!result) return createResp('fail', '该操作人不存在', {})
+            result = await Image.findAll({
+                where: {
+                    type_id: id
+                }
+            })
+            if (result.length > 0) return createResp('fail', '该分类下存在有图片, 请转移后重新尝试!', {})
+            result = await ImageTypes.destroy({
+                where: {
+                    id
+                }
+            })
+            if (!result) return createResp('fail', '删除失败', {})
+            return createResp('success', '删除成功', {})
+        } catch (error) {
+            return createResp('fail', '未知错误', error)
+        }
     }
 }
 

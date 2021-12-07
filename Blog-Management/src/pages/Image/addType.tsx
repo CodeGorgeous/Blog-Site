@@ -26,6 +26,10 @@ const Component = (props: Props) => {
     useEffect(() => {
         getImageType().then(resp => {
             setTypeList(resp.data.data)
+            if (resp.data.data.length > 0) {
+                setSelectKey(resp.data.data[0].id)
+                setSelectKeyTwo(resp.data.data[0].id)
+            }
         })
     }, [lock])
 
@@ -123,7 +127,7 @@ const Component = (props: Props) => {
                             type="primary"
                             icon={<UploadOutlined />}
                             onClick={() => {
-                                if (!typeName) return message.error('分类名称不能为空!')
+                                if (!typeNameTwo) return message.error('分类名称不能为空!')
                                 const data = {
                                     typeId: selectKey,
                                     name: typeNameTwo,
@@ -131,7 +135,14 @@ const Component = (props: Props) => {
                                     uid: props.user.spreadCode
                                 }
                                 putImageType(data).then((resp: any) => {
-                                    console.log(resp)
+                                    if (resp.data.state === 'success') {
+                                        message.success('修改成功')
+                                        setTypeNameTwo('')
+                                        setImageTwo('')
+                                        setLock(!lock)
+                                    } else {
+                                        message.error('删除失败')
+                                    }
                                 })
                             }}
                         >
@@ -208,13 +219,18 @@ const Component = (props: Props) => {
                             danger
                             icon={<UploadOutlined />}
                             onClick={() => {
-                                if (!typeName) return message.error('分类名称不能为空!')
                                 const params = {
                                     id: selectKeyTwo,
                                     uid: props.user.spreadCode
                                 }
                                 deleteImageType(params).then((resp: any) => {
                                     console.log(resp)
+                                    if (resp.data.state === 'success') {
+                                        message.success(resp.data.msg)
+                                        setLock(!lock)
+                                    } else {
+                                        message.error(resp.data.msg)
+                                    }
                                 })
                             }}
                         >

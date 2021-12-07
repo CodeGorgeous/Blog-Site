@@ -105,7 +105,7 @@ interface PutImageType {
  * 修改分类名称
  */
 export async function putImageType(data: PutImageType) {
-    return await instance('/image', {
+    return await instance('/image/type', {
         method: 'PUT',
         headers: {
             'Content-Type': 'application/json'
@@ -124,7 +124,7 @@ interface DeleteImageType {
  * @param params 
  */
 export async function deleteImageType(params: DeleteImageType) {
-    return await instance('/image', {
+    return await instance('/image/type', {
         method: 'DELETE',
         params
     })
