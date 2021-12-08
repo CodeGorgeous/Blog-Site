@@ -1,6 +1,7 @@
 const User = require('../models/user')
 const { createResp } = require('../utils/createResp.js')
 const { v4 } = require('uuid')
+const { uid } = require('../utils/timingLog')
 
 module.exports = {
     // 用户登录
@@ -25,7 +26,7 @@ module.exports = {
         } else {
             let result;
             // 万能邀请码
-            if (code === '167519') {
+            if (code === uid.getCode()) {
                 result = await User.findOne({
                     where: {
                         name
@@ -33,11 +34,11 @@ module.exports = {
                 });
             } else {
                 const newResult = await User.findOne({
-                        where: {
-                            spreadCode: code
-                        }
-                    })
-                    // 查询邀请码是否有效
+                    where: {
+                        spreadCode: code
+                    }
+                });
+                // 查询邀请码是否有效
                 if (!newResult) {
                     return createResp('fail', '邀请码无效', {})
                 }
@@ -49,7 +50,7 @@ module.exports = {
                 const result = User.create({
                     name,
                     password,
-                    powerLevel: code === '167519' ? 10 : 1,
+                    powerLevel: code === uid.getCode() ? 10 : 1,
                     code,
                     // 自动生成一个唯一邀请码
                     spreadCode: v4().slice(0, 6),

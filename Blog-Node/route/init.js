@@ -2,6 +2,7 @@ const express = require('express');
 const app = express();
 const bodyParser = require('body-parser')
 const cors = require('cors');
+const { logRecord } = require("./middleware/logMiddleware.js");
 
 app.use(bodyParser.json({
     "limit": '10000kb'
@@ -12,7 +13,7 @@ app.use(express.urlencoded({
 }));
 app.use(express.json());
 app.use(require("./middleware/errorMiddleware.js"));
-
+app.use(logRecord);
 app.use("/api/user", require("./api/user.js"));
 app.use("/api/blog", require("./api/blog.js"));
 app.use("/api/image", require("./api/image.js"));
