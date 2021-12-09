@@ -6,13 +6,15 @@ import {
     ToTopOutlined,
     ToolOutlined,
     RestOutlined,
+    FileAddOutlined,
     SearchOutlined,
     TeamOutlined,
     UserOutlined,
     FileImageOutlined,
     FolderOpenOutlined,
     SubnodeOutlined,
-    NotificationOutlined
+    NotificationOutlined,
+    SnippetsOutlined
 } from '@ant-design/icons';
 import { history } from 'umi'
 
@@ -40,7 +42,7 @@ const Component: React.FC = () => {
                     >博客列表</Menu.Item>
                     <Menu.Item
                         key="/blog/add"
-                        icon={<ToTopOutlined />}
+                        icon={<FileAddOutlined />}
                     >新增博客</Menu.Item>
                     <Menu.Item
                         key="/blog/put"
@@ -52,7 +54,7 @@ const Component: React.FC = () => {
                     >查看博客</Menu.Item>
                     <Menu.Item
                         key="/blog/type"
-                        icon={<ToTopOutlined />}
+                        icon={<SnippetsOutlined />}
                     >分类管理</Menu.Item>
                 </Menu.SubMenu>
                 <Menu.SubMenu
@@ -66,12 +68,12 @@ const Component: React.FC = () => {
                     >图片列表</Menu.Item>
                     <Menu.Item
                         key="/image/add"
-                        icon={<ToTopOutlined />}
+                        icon={<FileAddOutlined />}
                     >新增图片</Menu.Item>
                     <Menu.Item
                         key="/image/type"
-                        icon={<ToTopOutlined />}
-                    >新增分类</Menu.Item>
+                        icon={<SnippetsOutlined />}
+                    >分类管理</Menu.Item>
                 </Menu.SubMenu>
                 <Menu.SubMenu
                     key="resources"

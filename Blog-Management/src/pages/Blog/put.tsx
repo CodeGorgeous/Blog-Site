@@ -107,7 +107,12 @@ const Component: React.FC = (props: Props) => {
                     display: lock ? 'inline-block' : 'flex'
                 }}
             >
-                <Row className={style.row}>
+                <Row
+                    className={style.row}
+                    style={{
+                        display: lock ? 'flex' : 'none'
+                    }}
+                >
                     <Col className={style.span}>文章分类:</Col>
                     <Col >
                         <Select
