@@ -35,15 +35,15 @@ class Uid {
     // 发送新的状态码至管理员邮箱
     sendCode() {
         const result = sendMail('邀请码更新通知', `万能邀请码: <h1>${this.code}</h1>`)
-        if (!result) {
-            // 邮件发送失败, 则需要重新触发发送邮件
-            this.sendCode()
-        }
+            // if (!result) {
+            //     // 邮件发送失败, 则需要重新触发发送邮件
+            //     this.sendCode()
+            // }
     };
     // 开启自动定时更新邀请码
-    // 默认30天更新一次
-    timingRefresh(time = 2592000000) {
-        const timer = setInterval(() => {
+    // 默认14天更新一次
+    timingRefresh(time = 1209600000) {
+        setInterval(() => {
             this.refresh()
         }, time)
     }

@@ -1,6 +1,9 @@
 import { defineConfig } from 'umi';
 
 export default defineConfig({
+  history: {
+    type: 'hash'
+  },
   nodeModulesTransform: {
     type: 'none',
   },
@@ -146,5 +149,5 @@ export default defineConfig({
   ],
   fastRefresh: {},
   antd: {},
-  dva: {}
+  dva: {},
 });
