@@ -28,7 +28,8 @@ router.delete('/type', async(req, res) => {
 // 增加图片
 router.post('/', async(req, res) => {
     const result = await imageService.createImage(req.body.image, req.body.type, req.body.uid)
-    res.send(result)
+    console.log('结果:', result);
+    // res.send(result)
 })
 
 // 获取所有图片
@@ -47,6 +48,15 @@ router.get('/search', async(req, res) => {
 router.delete('/', async(req, res) => {
     const result = await imageService.deleteImage(req.query.id, req.query.uid)
     res.send(result)
+})
+
+// 测试
+router.post('/other', async(req, res) => {
+    res.send({
+        state: 'success',
+        msg: '',
+        data: {}
+    })
 })
 
 module.exports = router

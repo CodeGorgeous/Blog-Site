@@ -136,7 +136,7 @@
       // 音频管理
       const audioSwitch = ref(false)
       // 音频资源
-      const audio: any = new Audio('src/assets/music.mp3')
+      const audio: any = new Audio('http://qiniu.codegorgeous.top/a-soul.mp3')
       // 控制播放和暂停
       const handleChangeVideo = () => {
         // 音频音量

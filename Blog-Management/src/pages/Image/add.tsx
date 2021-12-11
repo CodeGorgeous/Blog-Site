@@ -91,6 +91,7 @@ const Component: React.FC = (props: Props) => {
             <Col>
                 <Card className={style['card-container']} hoverable>
                     <Upload
+                        action={'http://localhost:2550/api/image/other'}
                         listType="picture-card"
                         fileList={fileList}
                         onChange={async ({file, fileList, event}) => {
