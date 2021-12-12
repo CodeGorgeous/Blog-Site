@@ -5,6 +5,9 @@ const routes: any[] = [
         path: '/',
         redirect: '/home'
     }, {
+        path: '/index.html',
+        redirect: '/home'
+    }, {
         path: '/home',
         component: asyncLoadComponent(import('../view/Home/index.vue')),
         props: true
