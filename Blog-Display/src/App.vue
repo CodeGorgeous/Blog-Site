@@ -16,21 +16,21 @@
     >
       <div class="icon-container">
         <div class="icon-main">
-          <el-icon
-            class="icon-item"
-            :size="20"
-            @click="handleClick"
-            :style="{
-              opacity: lock ? '1' : '0',
-              cursor: lock ? 'pointer' : 'default',
-              transition: 'transform 0.5s ease-in-out, opacity 0.5s ease-in-out',
-              transform: styleLock ? 'rotate(0deg)' : 'rotate(-135deg)',
-              background: bgState ? 'var(--icon-dark)' : 'var(--icon-bright)',
-              color: bgState ? 'var(--font-dark)' : 'var(--font-bright)'
-            }"
-          >
-            <CloseBold />
-          </el-icon>
+            <el-icon
+              class="icon-item"
+              :size="20"
+              @click="handleClick"
+              :style="{
+                opacity: lock ? '1' : '0',
+                cursor: lock ? 'pointer' : 'default',
+                transition: 'transform 0.5s ease-in-out, opacity 0.5s ease-in-out',
+                transform: styleLock ? 'rotate(0deg)' : 'rotate(-135deg)',
+                background: bgState ? 'var(--icon-dark)' : 'var(--icon-bright)',
+                color: bgState ? 'var(--font-dark)' : 'var(--font-bright)'
+              }"
+            >
+              <CloseBold />
+            </el-icon>
         </div>
         <div class="icon-items">
           <el-icon
@@ -264,6 +264,11 @@
   margin: 5px 0;
   cursor: pointer;
   transition: all 0.5s;
+}
+
+.backtop {
+  position: absolute;
+  z-index: 10001;
 }
 
 @media (max-width: 576px) {

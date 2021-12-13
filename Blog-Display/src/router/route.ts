@@ -2,10 +2,10 @@ import asyncLoadComponent from '../utils/loadComponent';
 
 const routes: any[] = [
     {
-        path: '/',
+        path: '/index.html',
         redirect: '/home'
     }, {
-        path: '/index.html',
+        path: '/',
         redirect: '/home'
     }, {
         path: '/home',

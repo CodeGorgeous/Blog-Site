@@ -1,6 +1,7 @@
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import { visualizer } from 'rollup-plugin-visualizer';
+import externalGlobals from 'rollup-plugin-external-globals'
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -10,7 +11,14 @@ export default defineConfig({
   ],
   build: {
     rollupOptions: {
-      external: ['element-plus', '@element-plus/icons', 'vue', 'axios', 'vue-router']
+      external: ['element-plus', 'vue', 'axios'],
+      plugins: [
+        externalGlobals({
+          vue: 'Vue',
+          'element-plus': 'ElementPlus',
+          'axios': 'axios'
+        })
+      ],
     }
   }
 })

@@ -206,6 +206,9 @@ module.exports = {
     async pageGetBlog(page = 1, limit = 2) {
         try {
             let result = await Blog.findAndCountAll({
+                order: [
+                    ['id', 'DESC']
+                ],
                 offset: (page - 1) * limit,
                 limit: +limit
             })
