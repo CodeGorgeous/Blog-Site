@@ -79,6 +79,7 @@
 
     </div>
   </div>
+  <Loading :lock="loadingLock"/>
 </template>
 
 <script lang="ts">
@@ -86,6 +87,7 @@
   import Header from './components/Header/index.vue'
   import { CloseBold, Briefcase, CaretTop, VideoPlay, VideoPause, Moon, MoonNight } from '@element-plus/icons'
   import { useStore } from 'vuex'
+  import Loading from "./components/Loading/index.vue"
 
   export default defineComponent({
     components: {
@@ -96,7 +98,8 @@
       VideoPlay,
       VideoPause,
       Moon,
-      MoonNight
+      MoonNight,
+      Loading
     },
     setup (props, context) {
       const store = useStore()
@@ -123,13 +126,11 @@
         const distance = main.value.scrollTop/index
         const timing =  setInterval(() => {
           main.value.scrollTop -= distance
-          if (main.value.scrollTop < 0) {
+          if (main.value.scrollTop <= 0) {
             main.value.scrollTop = 0
+            clearInterval(timing)
           }
         }, timer/index)
-        setTimeout(() => {
-          clearInterval(timing)
-        }, timer)
         styleLock.value = false
       }
 
@@ -156,7 +157,6 @@
       }
 
       // 目前想要知道audio什么时候播完完毕, 播放完毕后重新播放音频
-      // ...
       audio.addEventListener('ended', audioEnd)
       // 
       const bgState: any = ref(store.state.global.bgState)
@@ -183,6 +183,10 @@
         app.value = document.querySelector('#app')
       })
 
+      const loadingLock: any = ref(store.state.global.loadingState);
+      watchEffect(() => {
+        loadingLock.value = store.state.global.loadingState
+      })
       return {
         handleScroll,
         main,
@@ -194,7 +198,8 @@
         handleChangeVideo,
         audio,
         handleChangeGlobal,
-        bgState
+        bgState,
+        loadingLock
       }
     }
   })

@@ -28,8 +28,7 @@ router.delete('/type', async(req, res) => {
 // 增加图片
 router.post('/', async(req, res) => {
     const result = await imageService.createImage(req.body.image, req.body.type, req.body.uid)
-    console.log('结果:', result);
-    // res.send(result)
+    res.send(result)
 })
 
 // 获取所有图片

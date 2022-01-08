@@ -5,7 +5,7 @@ const cors = require('cors');
 const { logRecord } = require("./middleware/logMiddleware.js");
 
 app.use(bodyParser.json({
-    "limit": '10000kb'
+    "limit": '1000000kb'
 }))
 app.use(cors());
 app.use(express.urlencoded({

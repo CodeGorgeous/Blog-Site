@@ -192,12 +192,12 @@
 }
 
 .title {
-    position: absolute;
+    width: 100vw;
     font-size: 45px;
     color: #fff;
+    position: absolute;
     top: 40%;
-    left: 50%;
-    transform: translate(-50%, -50%);
+    text-align: center;
 }
 
 .underline {

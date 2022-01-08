@@ -60,7 +60,6 @@
             const store = useStore()
             const route: any = useRoute()
             const id: any = ref(+route.query.id)
-
             const blog: any = ref({})
             
             watchEffect(() => {
