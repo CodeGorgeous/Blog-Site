@@ -1,127 +1,93 @@
 <template>
     <div className="header-container">
-        <el-menu
-            :default-active="router"
-            class="menu-container"
-            mode="horizontal"
-            :router="true"
-            :style="{
-                display: docWidth > 576 ? 'flex' : 'none'
-            }"
-            :text-color="bgState ? 'var(--menu-bright)' : 'var(--menu-dark)'"
-        >
-            
-            <el-menu-item
-                index="/home"
+        <div>
+            <el-popover
+                placement="bottom"
+                title="小程序开发中ing"
+                trigger="hover"
             >
-                <el-icon><HomeFilled /></el-icon>首页
-            </el-menu-item>
-            <el-menu-item
-                index="/type"
+                <template #reference>
+                    <el-icon
+                        :class="['header-icon']"
+                        :size="size"
+                        :color="color"
+                        :style="{
+                            display: maskLock ? 'none': 'inline-block'
+                        }"
+                    >
+                        <Cellphone />
+                    </el-icon>
+                </template>
+            </el-popover>
+        </div>
+        <div>
+            <el-popover
+                placement="bottom"
+                title="搜索功能开发中ing"
+                trigger="hover"
             >
-                <el-icon><Notebook /></el-icon>分类
-            </el-menu-item>
-            <el-menu-item
-                index="/image"
+                <template #reference>
+                    <el-icon
+                        :class="['header-icon']"
+                        :size="size"
+                        :color="color"
+                        :style="{
+                            display: maskLock ? 'none': 'inline-block'
+                        }"
+                    >
+                        <Search />
+                    </el-icon>
+                </template>
+            </el-popover>
+            <el-icon
+                :class="['header-icon']"
+                :size="size"
+                :color="color"
+                :style="{
+                    display: maskLock ? 'none': 'inline-block'
+                }"
+                @click="handleOpenMask"
             >
-                <el-icon><Money /></el-icon>相册
-            </el-menu-item>
-            <el-menu-item
-                index="/about"
-            >
-                <el-icon><Comment /></el-icon>关于
-            </el-menu-item>
-        </el-menu>
-        <el-dropdown
-            class="media-menu-container"
-            :style="{
-                display: docWidth > 576 ? 'none' : 'flex'
-            }"
-        >
-            <span class="el-dropdown-link">
-                <el-icon size="30"><Menu /></el-icon>
-            </span>
-            <template #dropdown>
-                <el-dropdown-menu>
-                    <el-dropdown-item>
-                        <router-link
-                            class="media-link-item"
-                            to="/home"
-                        >
-                            首页
-                        </router-link>
-                    </el-dropdown-item>
-                    <el-dropdown-item>
-                        <router-link
-                            class="media-link-item"
-                            to="/type"
-                        >
-                            分类
-                        </router-link>
-                    </el-dropdown-item>
-                    <el-dropdown-item>
-                        <router-link
-                            class="media-link-item"
-                            to="/image"
-                        >
-                            相册
-                        </router-link>
-                    </el-dropdown-item>
-                    <el-dropdown-item>
-                        <router-link
-                            class="media-link-item"
-                            to="/about"
-                        >
-                            关于
-                        </router-link>
-                    </el-dropdown-item>
-                </el-dropdown-menu>
-            </template>
-        </el-dropdown>
+                <Grid />
+            </el-icon>
+        </div>
     </div>
+    <Mask :show="maskLock" @handleCloseMask="handleCloseMask"/>
 </template>
 
 <script lang='ts'>
-    import { defineComponent, reactive, toRefs, ref, watchEffect, onMounted, onUnmounted, PropType, watch } from 'vue'
-    import * as icons from '@element-plus/icons'
-    import { useRoute } from 'vue-router'
-    import { useStore } from 'vuex'
+    import { defineComponent, ref, watchEffect, Ref } from 'vue'
+    import { Cellphone, Grid, Search } from '@element-plus/icons'
+    import Mask from '../Mask/index.vue'
 
     export default defineComponent({
         components: {
-            ...icons
+            Cellphone,
+            Grid,
+            Search,
+            Mask
         },
         setup (props, context) {
-            const route = useRoute()
-            const router = ref(route.path)
 
-            watchEffect(() => {
-                router.value = route.path
-            })
+            // icon样式
+            const size: Ref<number> = ref(30)
+            const color: Ref<string> = ref('#aaa')
 
-            const docWidth = ref(document.body.clientWidth)
-            const handleSizeChange = (): void => {
-                docWidth.value = document.body.clientWidth
+            // 遮罩层组件
+            const maskLock: Ref<boolean> = ref(false);
+            const handleOpenMask = () => {
+                maskLock.value = true;
+            }
+            const handleCloseMask = () => {
+                maskLock.value = false;
             }
 
-            onMounted((): void => {
-                window.addEventListener('resize', handleSizeChange)
-            })
-
-            onUnmounted((): void => {
-                window.removeEventListener('resize', handleSizeChange)
-            })
-
-            const store = useStore()
-            const bgState: any = ref(store.state.global.bgState)
-            watchEffect(() => {
-                bgState.value = store.state.global.bgState
-            })
-
             return {
-                docWidth,
-                router,
-                bgState
+                size,
+                color,
+                maskLock,
+                handleOpenMask,
+                handleCloseMask
             }
         }
     })
@@ -131,6 +97,15 @@
 .header-container {
     width: 100%;
     height: 100%;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.header-icon {
+    cursor: pointer;
+    margin: 0 5px;
 }
 
 .menu-container {

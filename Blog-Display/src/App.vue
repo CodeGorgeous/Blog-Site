@@ -11,6 +11,7 @@
     <div class="content-container">
       <router-view :main="main"/>
     </div>
+    <Footer />
     <div
       class="menu-container"
     >
@@ -76,7 +77,6 @@
           </el-icon>
         </div>
       </div>
-
     </div>
   </div>
   <Loading :lock="loadingLock"/>
@@ -88,6 +88,7 @@
   import { CloseBold, Briefcase, CaretTop, VideoPlay, VideoPause, Moon, MoonNight } from '@element-plus/icons'
   import { useStore } from 'vuex'
   import Loading from "./components/Loading/index.vue"
+  import Footer from './components/Footer/index.vue'
 
   export default defineComponent({
     components: {
@@ -99,7 +100,8 @@
       VideoPause,
       Moon,
       MoonNight,
-      Loading
+      Loading,
+      Footer
     },
     setup (props, context) {
       const store = useStore()

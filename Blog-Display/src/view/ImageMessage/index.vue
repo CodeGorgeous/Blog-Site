@@ -3,30 +3,28 @@
         <div class="image-items">
             <el-image
                 class="image-item image"
-                v-for="(item) in dataList"
+                v-for="(item, index) in dataList"
                 :key="item.id"
                 :src="item.imgUrl"
                 :all="item.name"
-                :preview-src-list="[item.imgUrl]"
+                :preview-src-list="urlList"
+                :initial-index="index"
                 lazy
             ></el-image>
         </div>
         <NotContent v-if="lock"/>
-        <Footer />
     </div>
 </template>
 
 <script lang='ts'>
     import { ElMessage } from 'element-plus'
-    import { defineComponent, reactive, toRefs, ref, watchEffect } from 'vue'
+    import { defineComponent, Ref, ref } from 'vue'
     import { useRoute } from 'vue-router'
     import { searchTypeImage } from '../../api/index'
-    import Footer from '../../components/Footer/index.vue'
     import NotContent from '../../components/NotContent/index.vue'
 
     export default defineComponent({
         components: {
-            Footer,
             NotContent
         },
         setup (props, context) {
@@ -34,6 +32,7 @@
             const lock = ref(false)
 
             const dataList: any = ref([])
+            const urlList: Ref<string[]> = ref([])
 
             searchTypeImage(route.query.id).then((resp: any) => {
                 if (resp.state !== 'success') { 
@@ -46,11 +45,17 @@
                 if (resp.data.length <= 0) {
                     lock.value = true
                 }
+                let arr: string[] = [];
+                for (const imageData of resp.data) {
+                    arr.push(imageData.imgUrl);
+                }
+                urlList.value = arr;
             })
 
             return {
                 dataList,
-                lock
+                lock,
+                urlList
             }
         }
     })

@@ -6,17 +6,14 @@
                 fit="cover"
             ></el-image>
         </div>
-        <Footer />
     </div>
 </template>
 
 <script lang='ts'>
     import { defineComponent, reactive, toRefs, ref, watchEffect } from 'vue'
-    import Footer from '../../components/Footer/index.vue'
     
     export default defineComponent({
         components: {
-            Footer
         },
         setup (props, context) {
             

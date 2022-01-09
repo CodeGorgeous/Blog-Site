@@ -5,16 +5,6 @@
             :src="bgImage"
         >
         </el-image>
-        <div class="icon-container">
-            <el-icon
-                class="icon"
-                :size="40"
-                @click="handleClick"
-                :style="{
-                    color: bgState ? 'var(--font-bright)' : 'var(--font-dark)'
-                }"
-            ><Mouse /></el-icon>
-        </div>
         <div class="title">
             {{text}}
             <span class="underline">_</span>
@@ -108,19 +98,6 @@
                 window.removeEventListener('resize', handleSizeChange)
             })
 
-            const handleClick = (() => {
-                const oDiv: any = props.main
-                const time = 200
-                const index = 10
-                const distance = document.body.scrollHeight/index
-                const timer = setInterval(() => {
-                    oDiv.scrollTop += distance
-                }, time/index)
-                setTimeout(() => {
-                    clearInterval(timer)
-                }, time)
-            })
-
             // 管理颜色
             const bgState = ref(store.state.global.bgState)
 
@@ -131,7 +108,6 @@
             return {
                 bgImage,
                 text,
-                handleClick,
                 bgState
             }
         }
@@ -153,42 +129,6 @@
     left: 0;
     top: 0;
     box-shadow: 0 5px 10px 0 #777, 0 10px 15px 0 #999;
-}
-
-.icon-container {
-    position: absolute;
-    bottom: 20px;
-    left: 50%;
-    z-index: 100;
-    -moz-user-select:none;/*火狐*/
-    -webkit-user-select:none;/*webkit浏览器*/
-    -ms-user-select:none;/*IE10*/
-    -khtml-user-select:none;/*早期浏览器*/
-    user-select:none;
-}
-
-@media (max-width: 576px) {
-    .icon-container {
-        bottom: 10px;
-    }
-
-    .icon {
-        font-size: 30px;
-    }
-
-}
-
-.icon {
-    cursor: pointer;
-    opacity: 0.7;
-    transform: translate(-50%, 0);
-    transition: all 0.5s ease-in-out;
-}
-
-.icon:hover {
-    transform: translate(-50%, 20%);
-    opacity: 1;
-    color: #abcdef;
 }
 
 .title {

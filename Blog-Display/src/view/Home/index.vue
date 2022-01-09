@@ -64,16 +64,12 @@
                 @currentChange="handleChangePage"
             />
         </div>
-        <div class="footer-container">
-            <Footer />
-        </div>
     </div>
 </template>
 
 <script lang='ts'>
     import { defineComponent, reactive, toRefs, ref, watchEffect, PropType } from 'vue'
     import Diagram from '../../components/Diagram/index.vue'
-    import Footer from '../../components/Footer/index.vue'
     import { UserFilled, Checked } from '@element-plus/icons'
     import { useRouter } from 'vue-router'
     import { pageGetBlog } from '../../api/index'
@@ -83,7 +79,6 @@
     export default defineComponent({
         components: {
             Diagram,
-            Footer,
             UserFilled,
             Checked
         },
@@ -182,7 +177,7 @@
 }
 
 .main {
-    width: 60%;
+    width: 80%;
     margin: 0 auto;
     padding: 50px 10px 0 10px;
     display: flex;

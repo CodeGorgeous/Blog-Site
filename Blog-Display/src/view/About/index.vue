@@ -66,18 +66,15 @@
                 </div>
             </el-card>
         </div>
-        <Footer />
     </div>
 </template>
 
 <script lang='ts'>
     import { defineComponent, reactive, toRefs, ref, watchEffect } from 'vue'
-import { useStore } from 'vuex'
-    import Footer from '../../components/Footer/index.vue'
+    import { useStore } from 'vuex'
 
     export default defineComponent({
         components: {
-            Footer
         },
         setup (props, context) {
 
@@ -101,7 +98,7 @@ import { useStore } from 'vuex'
 }
 
 .about-card-container {
-    width: 40%;
+    width: 50%;
     margin: 0 auto;
 }
 

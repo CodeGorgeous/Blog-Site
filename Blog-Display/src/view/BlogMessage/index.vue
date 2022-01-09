@@ -37,7 +37,6 @@
             >
             </div>
         </el-card>
-        <Footer />
     </div>
 </template>
 
@@ -45,7 +44,6 @@
     import { defineComponent, reactive, toRefs, ref, watchEffect } from 'vue'
     import { useRoute } from 'vue-router'
     import { Checked, UserFilled } from '@element-plus/icons'
-    import Footer from '../../components/Footer/index.vue'
     import { searchIdBlog } from '../../api/index'
     import { ElMessage } from 'element-plus'
     import { useStore } from 'vuex'
@@ -53,8 +51,7 @@
     export default defineComponent({
         components: {
             Checked,
-            UserFilled,
-            Footer
+            UserFilled
         },
         setup (props, context) {
             const store = useStore()
