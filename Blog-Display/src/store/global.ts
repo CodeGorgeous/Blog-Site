@@ -4,7 +4,7 @@ export default {
         // 控制背景色, false为黑夜, true为白天
         bgState: true,
         // 数据加载loading组件控制 true为开启加载动画 false为关闭加载动画
-        loadingState: false
+        loadingState: true
     },
     mutations: {
         // 改变状态

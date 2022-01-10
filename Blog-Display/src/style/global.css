@@ -66,3 +66,25 @@ body #app {
     width: 0px;
     height: 0px;
 }
+
+.el-autocomplete {
+    width: 50vw;
+}
+
+.el-autocomplete input {
+    border-radius: 15px;
+}
+
+.my-autocomplete {
+    border-radius: 15px;
+}
+
+.my-autocomplete .el-popper__arrow::before {
+    display: none;
+}
+
+@media (max-width: 576px) {
+    .el-autocomplete {
+        width: 80vw;
+    }
+}

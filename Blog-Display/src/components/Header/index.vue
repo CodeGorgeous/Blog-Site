@@ -12,60 +12,89 @@
                         :size="size"
                         :color="color"
                         :style="{
-                            display: maskLock ? 'none': 'inline-block'
+                            opacity: maskLock ? 0 : 1  
                         }"
                     >
                         <Cellphone />
                     </el-icon>
                 </template>
             </el-popover>
-        </div>
-        <div>
             <el-popover
                 placement="bottom"
-                title="搜索功能开发中ing"
+                title="二维码在线查看网页"
                 trigger="hover"
             >
+                <img ref="dom" :src="qrCodeBase64" />
                 <template #reference>
                     <el-icon
                         :class="['header-icon']"
                         :size="size"
                         :color="color"
                         :style="{
-                            display: maskLock ? 'none': 'inline-block'
+                            opacity: maskLock ? 0 : 1
                         }"
                     >
-                        <Search />
+                        <Share />
                     </el-icon>
                 </template>
             </el-popover>
+            <el-icon
+            :class="['header-icon']"
+            :size="size"
+            :color="color"
+            @click="handleChangeGlobal"
+          >
+            <Moon v-if="!bgState"/>
+            <MoonNight v-if="bgState"/>
+          </el-icon>
+        </div>
+        <div>
             <el-icon
                 :class="['header-icon']"
                 :size="size"
                 :color="color"
                 :style="{
-                    display: maskLock ? 'none': 'inline-block'
+                    opacity: maskLock ? 0 : 1
                 }"
-                @click="handleOpenMask"
+                @click="searchLock = true"
+            >
+                <Search />
+            </el-icon>
+            <el-icon
+                :class="['header-icon']"
+                :size="size"
+                :color="color"
+                :style="{
+                    opacity: maskLock ? 0 : 1
+                }"
+                @click="maskLock = true"
             >
                 <Grid />
             </el-icon>
         </div>
     </div>
-    <Mask :show="maskLock" @handleCloseMask="handleCloseMask"/>
+    <Mask :show="maskLock" @handleCloseMask="maskLock = false"/>
+    <SearchMask :show="searchLock" @handleCloseMask="searchLock = false"/>
 </template>
 
 <script lang='ts'>
-    import { defineComponent, ref, watchEffect, Ref } from 'vue'
-    import { Cellphone, Grid, Search } from '@element-plus/icons'
+    import { defineComponent, ref, Ref, onMounted, watchEffect } from 'vue'
+    import { Cellphone, Grid, Search, Share, MoonNight, Moon } from '@element-plus/icons'
     import Mask from '../Mask/index.vue'
+    import QRCode from 'qrcode'
+    import SearchMask from '../SearchMask/index.vue'
+    import { useStore } from 'vuex'
 
     export default defineComponent({
         components: {
             Cellphone,
             Grid,
             Search,
-            Mask
+            Mask,
+            Share,
+            SearchMask,
+            MoonNight,
+            Moon
         },
         setup (props, context) {
 
@@ -75,19 +104,55 @@
 
             // 遮罩层组件
             const maskLock: Ref<boolean> = ref(false);
-            const handleOpenMask = () => {
-                maskLock.value = true;
+
+            // 二维码
+            const dom: Ref<Element | null> = ref(null)
+            // 二维码图片base64格式
+            const qrCodeBase64: Ref<string> = ref('')
+            // 当页面url变化时重新生成二维码
+            watchEffect(() => {
+                QRCode.toDataURL(window.location.href).then(resp => {
+                    qrCodeBase64.value = resp;
+                }).catch(err => {
+                    console.log(err);
+                })
+            })
+
+            // search
+            const searchLock: Ref<boolean> = ref(false)
+
+            // 背景色状态
+            const store = useStore();
+            const bgState: any = ref(store.state.global.bgState)
+            watchEffect(() => {
+                bgState.value = store.state.global.bgState
+            })
+            // 根节点
+            const app: any = ref(null)
+            // 控制全局的颜色改变
+            const handleChangeGlobal = () => {
+                store.commit('global/changeBg')
+                if (app.value) {
+                    if (store.state.global.bgState) {
+                        app.value.style.background = 'var(--bg-bright)'
+                    } else {
+                        app.value.style.background = 'var(--bg-dark)'
+                    }
+                }
             }
-            const handleCloseMask = () => {
-                maskLock.value = false;
-            }
+            onMounted(() => {
+                app.value = document.querySelector('#app')
+            })
 
             return {
                 size,
                 color,
                 maskLock,
-                handleOpenMask,
-                handleCloseMask
+                dom,
+                qrCodeBase64,
+                searchLock,
+                handleChangeGlobal,
+                bgState
             }
         }
     })
@@ -106,6 +171,7 @@
 .header-icon {
     cursor: pointer;
     margin: 0 5px;
+    transition: opacity 0.6s ease-out;
 }
 
 .menu-container {

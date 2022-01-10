@@ -60,6 +60,10 @@
             const blog: any = ref({})
             
             watchEffect(() => {
+                id.value = +route.query.id
+            })
+
+            watchEffect(() => {
                 searchIdBlog(id.value).then((resp: any) => {
                     if (resp.state === 'success') {
                         blog.value = resp.data
@@ -94,7 +98,7 @@
 }
 
 .card-container {
-    width: 40%;
+    width: 50%;
     margin: 0 auto;
     min-width: 500px;
     border: none !important;
