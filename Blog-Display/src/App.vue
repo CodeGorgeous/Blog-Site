@@ -70,7 +70,7 @@
 </template>
 
 <script lang="ts">
-  import { defineComponent, ref, watchEffect, onMounted, onUnmounted } from 'vue'
+  import { defineComponent, ref, watchEffect } from 'vue'
   import Header from './components/Header/index.vue'
   import { CloseBold, Briefcase, CaretTop, VideoPlay, VideoPause, Moon, MoonNight } from '@element-plus/icons'
   import { useStore } from 'vuex'
