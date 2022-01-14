@@ -63,17 +63,15 @@
                 id.value = +route.query.id
             })
 
-            watchEffect(() => {
-                searchIdBlog(id.value).then((resp: any) => {
-                    if (resp.state === 'success') {
-                        blog.value = resp.data
-                    } else {
-                        ElMessage({
-                            type: 'error',
-                            message: '获取数据失败, 请刷新页面重新尝试!'
-                        })
-                    }
-                })
+            searchIdBlog(id.value).then((resp: any) => {
+                if (resp.state === 'success') {
+                    blog.value = resp.data
+                } else {
+                    ElMessage({
+                        type: 'error',
+                        message: '获取数据失败, 请刷新页面重新尝试!'
+                    })
+                }
             })
 
             const bgState: any = ref(store.state.global.bgState)
