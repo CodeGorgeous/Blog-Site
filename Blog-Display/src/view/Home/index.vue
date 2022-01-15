@@ -55,25 +55,21 @@
                     </div>
                 </el-card>
             </div>
-            <el-pagination
-                class="pagination-container"
-                :page-size="limit"
-                background
-                layout="prev, pager, next"
-                :total="total"
-                @currentChange="handleChangePage"
-            />
         </div>
-        <div class="footer-container">
-            <Footer />
-        </div>
+        <el-pagination
+            class="pagination-container"
+            :page-size="limit"
+            background
+            layout="prev, pager, next"
+            :total="total"
+            @currentChange="handleChangePage"
+        />
     </div>
 </template>
 
 <script lang='ts'>
     import { defineComponent, reactive, toRefs, ref, watchEffect, PropType } from 'vue'
     import Diagram from '../../components/Diagram/index.vue'
-    import Footer from '../../components/Footer/index.vue'
     import { UserFilled, Checked } from '@element-plus/icons'
     import { useRouter } from 'vue-router'
     import { pageGetBlog } from '../../api/index'
@@ -83,7 +79,6 @@
     export default defineComponent({
         components: {
             Diagram,
-            Footer,
             UserFilled,
             Checked
         },
@@ -175,19 +170,22 @@
 
 .home-content-container {
     width: 100vw;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .pagination-container {
+    margin: 20px 0 0 0;
     text-align: center;
 }
 
 .main {
-    width: 60%;
-    margin: 0 auto;
-    padding: 50px 10px 0 10px;
+    width: 80%;
+    padding: 50px 0 0 0;
     display: flex;
     flex-wrap: wrap;
-    justify-content: flex-start;
+    align-content: flex-start;
 }
 
 .card-item {
@@ -197,10 +195,12 @@
     margin: 15px 10px;
     cursor: pointer;
     border: none !important;
+    flex: 0 0 31%;
+    min-width: 340px;
 }
 
 .card-item:hover {
-    transform: translateY(15px) rotate(1deg);
+    transform: scale(1.05);
 }
 
 .card-image {
@@ -277,7 +277,11 @@
 @media (max-width: 576px) {
     .main {
         width: 95%;
-        justify-content: center;
+    }
+
+    .card-item {
+        flex: 0 0 100%;
+        margin: 15px 0;
     }
 }
 

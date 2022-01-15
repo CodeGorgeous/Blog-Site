@@ -24,6 +24,9 @@ const Component: React.FC = (props: Props) => {
     useEffect(() => {
         getImageType().then(resp => {
             setTypeList(resp.data.data)
+            if (resp.data.data.length > 0) {
+                setSelectType(resp.data.data[0].id)
+            }
         })
     }, [])
 

@@ -14,21 +14,16 @@
             </div>
         </p>
     </div>
-    <div>
-        <Footer />
-    </div>
 </template>
 
 <script lang='ts'>
     import { defineComponent, reactive, toRefs, ref, watchEffect } from 'vue'
     import { getAllBlogType } from '../../api/index'
     import { ElMessage } from 'element-plus'
-    import Footer from '../../components/Footer/index.vue'
     import { useRouter } from 'vue-router'
 
     export default defineComponent({
         components: {
-            Footer
         },
         setup (props, context) {
             const router = useRouter()

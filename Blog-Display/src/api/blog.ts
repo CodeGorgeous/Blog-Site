@@ -54,3 +54,13 @@ export async function searchIdBlog(id: number) {
         }
     })
 }
+
+/**
+ * 获取所有博客
+ * @returns 
+ */
+export async function getAllBlogs() {
+    return await instance('/blog', {
+        method: 'GET'
+    })
+}

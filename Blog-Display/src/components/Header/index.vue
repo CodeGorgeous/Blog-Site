@@ -1,127 +1,165 @@
 <template>
     <div className="header-container">
-        <el-menu
-            :default-active="router"
-            class="menu-container"
-            mode="horizontal"
-            :router="true"
-            :style="{
-                display: docWidth > 576 ? 'flex' : 'none'
-            }"
-            :text-color="bgState ? 'var(--menu-bright)' : 'var(--menu-dark)'"
-        >
-            
-            <el-menu-item
-                index="/home"
+        <div>
+            <el-popover
+                placement="bottom"
+                title="小程序开发中ing"
+                trigger="hover"
             >
-                <el-icon><HomeFilled /></el-icon>首页
-            </el-menu-item>
-            <el-menu-item
-                index="/type"
+                <template #reference>
+                    <el-icon
+                        :class="['header-icon']"
+                        :size="size"
+                        :color="color"
+                        :style="{
+                            opacity: maskLock ? 0 : 1  
+                        }"
+                    >
+                        <Cellphone />
+                    </el-icon>
+                </template>
+            </el-popover>
+            <el-popover
+                placement="bottom"
+                title="二维码在线查看网页"
+                trigger="hover"
             >
-                <el-icon><Notebook /></el-icon>分类
-            </el-menu-item>
-            <el-menu-item
-                index="/image"
+                <img ref="dom" :src="qrCodeBase64" />
+                <!-- <p class="url">{{url}}</p> -->
+                <template #reference>
+                    <el-icon
+                        :class="['header-icon']"
+                        :size="size"
+                        :color="color"
+                        :style="{
+                            opacity: maskLock ? 0 : 1
+                        }"
+                    >
+                        <Share />
+                    </el-icon>
+                </template>
+            </el-popover>
+            <el-icon
+            :class="['header-icon']"
+            :size="size"
+            :color="color"
+            @click="handleChangeGlobal"
+          >
+            <Moon v-if="!bgState"/>
+            <MoonNight v-if="bgState"/>
+          </el-icon>
+        </div>
+        <div>
+            <el-icon
+                :class="['header-icon']"
+                :size="size"
+                :color="color"
+                :style="{
+                    opacity: maskLock ? 0 : 1
+                }"
+                @click="searchLock = true"
             >
-                <el-icon><Money /></el-icon>相册
-            </el-menu-item>
-            <el-menu-item
-                index="/about"
+                <Search />
+            </el-icon>
+            <el-icon
+                :class="['header-icon']"
+                :size="size"
+                :color="color"
+                :style="{
+                    opacity: maskLock ? 0 : 1
+                }"
+                @click="maskLock = true"
             >
-                <el-icon><Comment /></el-icon>关于
-            </el-menu-item>
-        </el-menu>
-        <el-dropdown
-            class="media-menu-container"
-            :style="{
-                display: docWidth > 576 ? 'none' : 'flex'
-            }"
-        >
-            <span class="el-dropdown-link">
-                <el-icon size="30"><Menu /></el-icon>
-            </span>
-            <template #dropdown>
-                <el-dropdown-menu>
-                    <el-dropdown-item>
-                        <router-link
-                            class="media-link-item"
-                            to="/home"
-                        >
-                            首页
-                        </router-link>
-                    </el-dropdown-item>
-                    <el-dropdown-item>
-                        <router-link
-                            class="media-link-item"
-                            to="/type"
-                        >
-                            分类
-                        </router-link>
-                    </el-dropdown-item>
-                    <el-dropdown-item>
-                        <router-link
-                            class="media-link-item"
-                            to="/image"
-                        >
-                            相册
-                        </router-link>
-                    </el-dropdown-item>
-                    <el-dropdown-item>
-                        <router-link
-                            class="media-link-item"
-                            to="/about"
-                        >
-                            关于
-                        </router-link>
-                    </el-dropdown-item>
-                </el-dropdown-menu>
-            </template>
-        </el-dropdown>
+                <Grid />
+            </el-icon>
+        </div>
     </div>
+    <Mask :show="maskLock" @handleCloseMask="maskLock = false"/>
+    <SearchMask :show="searchLock" @handleCloseMask="searchLock = false"/>
 </template>
 
 <script lang='ts'>
-    import { defineComponent, reactive, toRefs, ref, watchEffect, onMounted, onUnmounted, PropType, watch } from 'vue'
-    import * as icons from '@element-plus/icons'
-    import { useRoute } from 'vue-router'
+    import { defineComponent, ref, Ref, onMounted, watchEffect } from 'vue'
+    import { Cellphone, Grid, Search, Share, MoonNight, Moon } from '@element-plus/icons'
+    import Mask from '../Mask/index.vue'
+    import QRCode from 'qrcode'
+    import SearchMask from '../SearchMask/index.vue'
     import { useStore } from 'vuex'
+    import { useRoute } from 'vue-router'
 
     export default defineComponent({
         components: {
-            ...icons
+            Cellphone,
+            Grid,
+            Search,
+            Mask,
+            Share,
+            SearchMask,
+            MoonNight,
+            Moon
         },
         setup (props, context) {
-            const route = useRoute()
-            const router = ref(route.path)
 
+            // icon样式
+            const size = ref<number>(30)
+            const color = ref<string>('#aaa')
+
+            // 遮罩层组件
+            const maskLock = ref<boolean>(false);
+
+            // 二维码
+            const dom = ref<Element | null>(null)
+            // 二维码图片base64格式
+            const qrCodeBase64 = ref<string>('')
+            // 路由配置信息
+            const route = useRoute();
+            // 完整路由信息
+            const url = ref<string>(window.location.href);
+            // 当页面url变化时重新生成二维码
             watchEffect(() => {
-                router.value = route.path
+                const u: string = route.path;
+                QRCode.toDataURL(url.value).then(resp => {
+                    qrCodeBase64.value = resp;
+                }).catch(err => {})
+                url.value = window.location.href;
             })
 
-            const docWidth = ref(document.body.clientWidth)
-            const handleSizeChange = (): void => {
-                docWidth.value = document.body.clientWidth
-            }
+            // search
+            const searchLock: Ref<boolean> = ref(false)
 
-            onMounted((): void => {
-                window.addEventListener('resize', handleSizeChange)
-            })
-
-            onUnmounted((): void => {
-                window.removeEventListener('resize', handleSizeChange)
-            })
-
-            const store = useStore()
-            const bgState: any = ref(store.state.global.bgState)
+            // 背景色状态
+            const store = useStore();
+            const bgState = ref<boolean>(store.state.global.bgState)
             watchEffect(() => {
                 bgState.value = store.state.global.bgState
             })
+            // 根节点
+            const app = ref<any>(null)
+            // 控制全局的颜色改变
+            const handleChangeGlobal = () => {
+                store.commit('global/changeBg')
+                if (app.value) {
+                    if (store.state.global.bgState) {
+                        app.value.style.background = 'var(--bg-bright)'
+                    } else {
+                        app.value.style.background = 'var(--bg-dark)'
+                    }
+                }
+            }
+            onMounted(() => {
+                app.value = document.querySelector('#app')
+            })
 
             return {
-                docWidth,
-                router,
-                bgState
+                size,
+                color,
+                maskLock,
+                dom,
+                qrCodeBase64,
+                searchLock,
+                handleChangeGlobal,
+                bgState,
+                url
             }
         }
     })
@@ -131,6 +169,16 @@
 .header-container {
     width: 100%;
     height: 100%;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.header-icon {
+    cursor: pointer;
+    margin: 0 5px;
+    transition: opacity 0.6s ease-out;
 }
 
 .menu-container {
@@ -155,6 +203,12 @@
 
 .el-dropdown-link {
     color: #ccc;
+}
+
+.url {
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
 }
 
 </style>

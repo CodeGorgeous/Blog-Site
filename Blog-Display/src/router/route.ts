@@ -9,6 +9,7 @@ const routes: any[] = [
         redirect: '/home'
     }, {
         path: '/home',
+        name: 'Home',
         component: asyncLoadComponent(import('../view/Home/index.vue')),
         props: true
     }, {
@@ -17,6 +18,7 @@ const routes: any[] = [
         component: asyncLoadComponent(import('../view/BlogMessage/index.vue'))
     }, {
         path: '/image',
+        name: 'Image',
         component: asyncLoadComponent(import('../view/Image/index.vue'))
     }, {
         path: '/imageMessage',
@@ -24,9 +26,11 @@ const routes: any[] = [
         component: asyncLoadComponent(import('../view/ImageMessage/index.vue'))
     }, {
         path: '/about',
+        name: 'About',
         component: asyncLoadComponent(import('../view/About/index.vue')) 
     }, {
         path: '/type',
+        name: 'Type',
         component: asyncLoadComponent(import('../view/Type/index.vue'))
     }, {
         path: '/typeMessage',

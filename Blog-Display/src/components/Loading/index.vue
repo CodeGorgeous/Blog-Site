@@ -1,5 +1,5 @@
 <template>
-    <div class="loading-container">
+    <div class="loading-container" v-if="lock">
         <img class="loading-img" src="http://qiniu.codegorgeous.top/cLoading.gif" alt="">
     </div>
 </template>
@@ -9,6 +9,11 @@
 
     export default defineComponent({
         components: {},
+        props: {
+            lock: {
+                type: Boolean
+            }
+        },
         setup (props, context) {
             
             return {
@@ -22,9 +27,11 @@
 .loading-container {
     width: 100vw;
     height: 100vh;
-    position: relative;
+    position: absolute;
     z-index: 1000;
     background: #fff;
+    left: 0;
+    top: 0;
 }
 
 .loading-img {

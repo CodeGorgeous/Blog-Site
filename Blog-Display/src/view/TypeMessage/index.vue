@@ -22,7 +22,6 @@
             </el-timeline-item>
         </el-timeline>
         <NotContent v-if="lock"/>
-        <Footer />
     </div>
 </template>
 
@@ -31,13 +30,11 @@
     import { useRoute, useRouter } from 'vue-router'
     import { searchTypeBlog } from '../../api/index'
     import { ElMessage } from 'element-plus'
-    import Footer from '../../components/Footer/index.vue'
     import NotContent from '../../components/NotContent/index.vue'
-import { useStore } from 'vuex'
+    import { useStore } from 'vuex'
 
     export default defineComponent({
         components: {
-            Footer,
             NotContent
         },
         setup (props, context) {

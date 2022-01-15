@@ -1,9 +1,10 @@
 <template>
   <div class="main-container" @scroll="handleScroll" ref="main">
     <div
-      class="header-container"
-      :style="{
-        opacity: lock ? '0' : '1'
+      :class="{
+        'header-container': true,
+        'show-animation': !lock,
+        'hide-animation': lock
       }"
     >
       <Header/>
@@ -11,6 +12,7 @@
     <div class="content-container">
       <router-view :main="main"/>
     </div>
+    <Footer />
     <div
       class="menu-container"
     >
@@ -60,32 +62,20 @@
             <VideoPause v-if="audeoSwitch"/>
             <VideoPlay v-if="!audeoSwitch"/>
           </el-icon>
-          <el-icon
-            class="icon-item icon-show"
-            :size="20"
-            :style="{
-              bottom: styleLock ? '135px' : '0',
-              opacity: styleLock ? 1 : 0,
-              background: bgState ? 'var(--icon-dark)' : 'var(--icon-bright)',
-              color: bgState ? 'var(--font-dark)' : 'var(--font-bright)'
-            }"
-            @click="handleChangeGlobal"
-          >
-            <Moon v-if="!bgState"/>
-            <MoonNight v-if="bgState"/>
-          </el-icon>
         </div>
       </div>
-
     </div>
   </div>
+  <Loading :lock="loadingLock"/>
 </template>
 
 <script lang="ts">
-  import { defineComponent, reactive, toRefs, ref, watchEffect, onMounted, onUnmounted } from 'vue'
+  import { defineComponent, ref, watchEffect } from 'vue'
   import Header from './components/Header/index.vue'
   import { CloseBold, Briefcase, CaretTop, VideoPlay, VideoPause, Moon, MoonNight } from '@element-plus/icons'
   import { useStore } from 'vuex'
+  import Loading from "./components/Loading/index.vue"
+  import Footer from './components/Footer/index.vue'
 
   export default defineComponent({
     components: {
@@ -96,7 +86,9 @@
       VideoPlay,
       VideoPause,
       Moon,
-      MoonNight
+      MoonNight,
+      Loading,
+      Footer
     },
     setup (props, context) {
       const store = useStore()
@@ -117,30 +109,28 @@
         styleLock.value = !styleLock.value
       }
 
+      // backTop回到顶部事件
       const handleChangScroll = () => {
         const timer = 100;
         const index = 10;
         const distance = main.value.scrollTop/index
         const timing =  setInterval(() => {
           main.value.scrollTop -= distance
-          if (main.value.scrollTop < 0) {
+          if (main.value.scrollTop <= 0) {
             main.value.scrollTop = 0
+            clearInterval(timing)
           }
         }, timer/index)
-        setTimeout(() => {
-          clearInterval(timing)
-        }, timer)
         styleLock.value = false
       }
 
       // 音频管理
       const audioSwitch = ref(false)
-      // 音频资源
       const audio: any = new Audio('http://qiniu.codegorgeous.top/a-soul.mp3')
       // 控制播放和暂停
       const handleChangeVideo = () => {
         // 音频音量
-        audio.volume = 0.1
+        audio.volume = 0.2
         if (audioSwitch.value) {
           audio.pause()
         } else {
@@ -154,35 +144,20 @@
         audio.load()
         audio.play()
       }
-
-      // 目前想要知道audio什么时候播完完毕, 播放完毕后重新播放音频
-      // ...
+      // 监控音频是否播放完毕
       audio.addEventListener('ended', audioEnd)
-      // 
+      
+      // 背景色状态
       const bgState: any = ref(store.state.global.bgState)
       watchEffect(() => {
         bgState.value = store.state.global.bgState
       })
-      // 根节点
-      const app: any = ref(null)
-      // 控制全局的颜色改变
-      const handleChangeGlobal = () => {
-        store.commit('global/changeBg')
-        
-        if (app.value) {
-          if (store.state.global.bgState) {
-            app.value.style.background = 'var(--bg-bright)'
-          } else {
-            app.value.style.background = 'var(--bg-dark)'
-          }
-          styleLock.value = false
-        }
-      }
 
-      onMounted(() => {
-        app.value = document.querySelector('#app')
+      const loadingLock: any = ref(store.state.global.loadingState);
+
+      watchEffect(() => {
+        loadingLock.value = store.state.global.loadingState
       })
-
       return {
         handleScroll,
         main,
@@ -193,8 +168,8 @@
         handleChangScroll,
         handleChangeVideo,
         audio,
-        handleChangeGlobal,
-        bgState
+        bgState,
+        loadingLock
       }
     }
   })
@@ -213,7 +188,7 @@
   height: 60px;
   position: fixed;
   z-index: 1;
-  transition: opacity 0.5s ease-in-out;
+  transition: top 0.5s ease-in-out;
 }
 
 .content-container {
@@ -278,5 +253,33 @@
   }
 }
 
+.show-animation {
+  top: 0;
+}
+
+.hide-animation {
+  top: -70px;
+}
+
+
+@keyframes show {
+  0% {
+    display: block;
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes hide {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    display: none;
+  }
+}
 
 </style>

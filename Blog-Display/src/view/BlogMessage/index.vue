@@ -37,7 +37,6 @@
             >
             </div>
         </el-card>
-        <Footer />
     </div>
 </template>
 
@@ -45,7 +44,6 @@
     import { defineComponent, reactive, toRefs, ref, watchEffect } from 'vue'
     import { useRoute } from 'vue-router'
     import { Checked, UserFilled } from '@element-plus/icons'
-    import Footer from '../../components/Footer/index.vue'
     import { searchIdBlog } from '../../api/index'
     import { ElMessage } from 'element-plus'
     import { useStore } from 'vuex'
@@ -53,27 +51,27 @@
     export default defineComponent({
         components: {
             Checked,
-            UserFilled,
-            Footer
+            UserFilled
         },
         setup (props, context) {
             const store = useStore()
             const route: any = useRoute()
             const id: any = ref(+route.query.id)
-
             const blog: any = ref({})
             
             watchEffect(() => {
-                searchIdBlog(id.value).then((resp: any) => {
-                    if (resp.state === 'success') {
-                        blog.value = resp.data
-                    } else {
-                        ElMessage({
-                            type: 'error',
-                            message: '获取数据失败, 请刷新页面重新尝试!'
-                        })
-                    }
-                })
+                id.value = +route.query.id
+            })
+
+            searchIdBlog(id.value).then((resp: any) => {
+                if (resp.state === 'success') {
+                    blog.value = resp.data
+                } else {
+                    ElMessage({
+                        type: 'error',
+                        message: '获取数据失败, 请刷新页面重新尝试!'
+                    })
+                }
             })
 
             const bgState: any = ref(store.state.global.bgState)
@@ -98,7 +96,7 @@
 }
 
 .card-container {
-    width: 40%;
+    width: 50%;
     margin: 0 auto;
     min-width: 500px;
     border: none !important;

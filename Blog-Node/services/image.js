@@ -52,66 +52,54 @@ module.exports = {
     },
     // 增加一张图片
     async createImage(data, typeId, uid) {
-        // try {
-        let result = await User.findOne({
-            where: {
-                spreadCode: uid
-            }
-        })
-        if (!result) return createResp('fail', '该操作人不存在', {});
-        // 用于记录上传图片时发生的错误
-        let uploadedMessage = []
-        return Promise.all(data.map(async(item) => {
-            // 拿到存储在七牛云上的文件名称
-            const fileName = getFileName(item.imageBase64);
-            // 文件暂时转储到/resources/image文件夹下
-            imageStorage(fileName, item.imageBase64);
-            // 文件路径
-            const filePath = resolve(__dirname, '..', 'resources', 'image', fileName);
-            // 上传至七牛云
-            await fileUpload(fileName, filePath, async(error, body, info) => {
-                if (error) {
-                    return uploadedMessage.push({
-                        file: item.name,
-                        msg: '七牛云上传错误',
-                        error
-                    })
+        try {
+            let result = await User.findOne({
+                where: {
+                    spreadCode: uid
                 }
-                if (info.statusCode == 200) {
-                    // 表示上传成功
-                    console.log('上传成功');
-                    const imgUrl = url + fileName
-                    const result = await Image.create({
-                        name: item.name,
-                        qiniuName: fileName,
-                        imgUrl,
-                        type_id: typeId
-                    })
-                    if (!result) return uploadedMessage.push({
-                        file: item.name,
-                        msg: '数据库新增数据失败'
-                    })
-                    resolve('true')
-                } else {
-                    return uploadedMessage.push({
-                        file: item.name,
-                        msg: '七牛云上传失败',
-                        error: info.statusCode
-                    })
-                }
-            });
-            // 把暂时转储的文件删除, 避免文件积累
-            fs.unlinkSync(filePath)
-        })).then(resp => {
-            return createResp('success', '新增成功', {})
-        }).catch(err => {
-            if (uploadedMessage.length !== 0) return createResp('fail', '新增失败', uploadedMessage)
-        })
-
-        // 总结是否循环上传发生错误
-        // } catch (error) {
-        //     return createResp('fail', '未知错误', error)
-        // }
+            })
+            if (!result) return createResp('fail', '该操作人不存在', {});
+            // 用于记录上传图片时发生的错误
+            let uploadedMessage = []
+            return Promise.all(data.map((item) => {
+                return new Promise(async(resolves, reject) => {
+                    // 拿到存储在七牛云上的文件名称
+                    const fileName = getFileName(item.imageBase64);
+                    // 文件暂时转储到/resources/image文件夹下
+                    await imageStorage(fileName, item.imageBase64);
+                    // 文件路径
+                    const filePath = resolve(__dirname, '..', 'resources', 'image', fileName);
+                    // 上传至七牛云
+                    fileUpload(fileName, filePath, async(error, body, info) => {
+                        if (error) {
+                            reject();
+                        }
+                        if (info.statusCode == 200) {
+                            // 表示上传成功
+                            const imgUrl = url + fileName
+                            const result = await Image.create({
+                                name: item.name,
+                                qiniuName: fileName,
+                                imgUrl,
+                                type_id: typeId
+                            })
+                            if (!result) reject();
+                            resolves();
+                        } else {
+                            reject();
+                        }
+                    });
+                })
+            })).then(resp => {
+                // 把暂时转储的文件删除, 避免文件积累
+                fs.unlinkSync(filePath)
+                return createResp('success', '新增成功', {})
+            }).catch(err => {
+                if (uploadedMessage.length !== 0) return createResp('fail', '新增失败', uploadedMessage)
+            })
+        } catch (error) {
+            return createResp('fail', '未知错误', error)
+        }
     },
     // 获取所有图片
     async getAllImage() {

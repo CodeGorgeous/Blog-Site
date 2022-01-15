@@ -2,7 +2,7 @@
     <div class="image-container">
         <div class="image-items">
             <el-card
-                v-for="item in typeList"
+                v-for="(item, index) in typeList"
                 :key="item.id"
                 class="image-item"
                 shadow="always"
@@ -12,30 +12,29 @@
                     class="image"
                     :src="item.coverImage"
                     fit="cover"
+                    :lazy="true"
                 ></el-image>
                 <div class="image-text">
                     {{ item.type }}
                 </div>
             </el-card>
         </div>
-        <Footer />
     </div>
 </template>
 
 <script lang='ts'>
-    import { defineComponent, reactive, toRefs, ref, watchEffect } from 'vue'
+    import { defineComponent, Ref, ref } from 'vue'
     import { getImageType } from '../../api/index'
     import { ElMessage } from 'element-plus'
-    import Footer from '../../components/Footer/index.vue'
     import { useRouter } from 'vue-router'
 
     export default defineComponent({
         components: {
-            Footer
         },
         setup (props, context) {
             const router = useRouter()
             const typeList: any = ref([])
+            const urlList: Ref<string[]> = ref([])
 
             getImageType().then((resp: any) => {
                 if (resp.state !== 'success') { 
@@ -58,6 +57,7 @@
 
             return {
                 typeList,
+                urlList,
                 handleClick
             }
         }
