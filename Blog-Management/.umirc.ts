@@ -147,6 +147,8 @@ export default defineConfig({
     },
   ],
   fastRefresh: {},
+  // 路由静态化
+  exportStatic: {},
   antd: {},
   dva: {},
   chainWebpack: (config, { webpack }) => {
@@ -157,12 +159,12 @@ export default defineConfig({
   // 項目優化
   externals: {
     'moment': 'window.moment',
-    'react': 'window.React',
-    'react-dom': 'window.ReactDOM',
+    // 'react': 'window.React',
+    // 'react-dom': 'window.ReactDOM',
   },
   scripts: [
     'https://cdn.jsdelivr.net/npm/moment@2.29.1',
-    'https://cdn.jsdelivr.net/npm/react@17.x',
-    'https://cdn.jsdelivr.net/npm/react-dom@17.x'
+    // 'https://cdn.jsdelivr.net/npm/react@17.x',
+    // 'https://cdn.jsdelivr.net/npm/react-dom@17.x'
   ]
 });
