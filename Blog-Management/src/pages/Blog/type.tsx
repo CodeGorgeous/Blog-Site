@@ -1,41 +1,253 @@
 import React, { useState, useEffect } from 'react'
 import style from './css/type.less'
-import { Col, Card, Button, Input, message, Select, Modal } from 'antd'
+import { Table, Typography, Popconfirm, Input, Form, Switch, message, Modal, Row, Col, Button } from 'antd'
 import { postBlogType, getBlogType, putBlogType, deleteBlogType } from '../../api/index'
 import { connect } from 'umi'
-import { UploadOutlined } from '@ant-design/icons'
+import { ToolOutlined, DeleteOutlined, HighlightOutlined } from '@ant-design/icons'
+import { IRenderData, IUser } from '@/types/interfaces'
+import ManageHeader from '@/components/ManageHeader'
 
-interface Props {
-    user?: any
-    children?: any
+
+interface IProps {
+    user: IUser
 }
 
-const Component = (props: Props) => {
-
+const Component: React.FC<IProps> = (props) => {
+    const [form] = Form.useForm();
     const [typeList, setTypeList] = useState<any>([])
     const [typeName, setTypeName] = useState('')
-    const [typeNameTwo, setTypeNameTwo] = useState('')
-    const [blogKey, setBlogKey] = useState(1)
-    const [blogKeyTwo, setBlogKeyTwo] = useState(1)
-    const [lock, setLock] = useState(false)
+    const [modalShow, setModalShow] = useState(false);
+    // 控制数据是否重新获取
+    const [lock, setLock] = useState(false);
+    const [loading, setLoading] = useState(false);
 
     useEffect(() => {
+        setLoading(true);
         getBlogType().then(resp => {
-            setTypeList(resp.data.data)
-            if (resp.data.data.length > 0) {
-                setBlogKey(resp.data.data[0].id)
-                setBlogKeyTwo(resp.data.data[0].id)
-            }
+            const newData = resp.data.map((item: any) => {
+                return {
+                    ...item,
+                    key: item.id
+                }
+            })
+            setTypeList(newData);
+            setLoading(false);
         })
     }, [lock])
 
-    const vNode = typeList.map((item: any) => {
-        return (<Select.Option value={item.id} key={item.id}>{item.typeName}</Select.Option>)
+    // 头部
+    const renderData: IRenderData[]= [
+        {
+            path: '',
+            name: '增添分类',
+            icon: <HighlightOutlined/>,
+            onClick: () => {
+                setModalShow(true);
+            }
+        }
+    ]
+
+    // 表格相关操作
+    const [editingKey, setEditingKey] = useState<string>('');
+    const isEditing = (record: any) => record.key === editingKey;
+    const columns = [
+        {
+            title: 'ID',
+            dataIndex: 'id',
+            fixed: true,
+            width: 50,
+        }, {
+            title: '分类名称',
+            dataIndex: 'typeName',
+            editable: true
+        }, {
+            title: '置顶',
+            dataIndex: 'ifTop',
+            width: 50,
+            render: () => {
+                return (
+                    <Switch checkedChildren="开启" unCheckedChildren="关闭" />
+                )
+            }
+        }, {
+            title: 'operation',
+            dataIndex: 'operation',
+            width: 150,
+            render: (text: string, record: any) => {
+                const editable = isEditing(record);
+                return editable ? (
+                  <span>
+                    <Typography.Link
+                        onClick={async () => {
+                            const row = await form.validateFields();
+                            const newData = [...typeList];
+                            const index = newData.findIndex(item => record.key === item.key);
+                            if (index > -1) {
+                                newData[index] = {
+                                    ...newData[index],
+                                    ...row
+                                }
+                            }
+                            const data = newData[index];
+                            putBlogType({
+                                typeId: data.id,
+                                name: data.typeName,
+                                uid: props.user.spreadCode
+                            }).then((resp: any) => {
+                                if (resp.state == 'success') {
+                                    message.success('修改成功');
+                                    setLock(!lock);
+                                } else {
+                                    message.error('修改失败, 请稍后进行尝试!');
+                                }
+                            })
+                            setEditingKey('');
+                        }}
+                        style={{ marginRight: 8 }}
+                    >
+                        保存
+                    </Typography.Link>
+                    <Popconfirm
+                        title="要放弃这次修改?"
+                        okText="确认"
+                        cancelText="取消"
+                        onConfirm={() => {
+                            setEditingKey('');
+                        }}
+                    >
+                      <a>取消</a>
+                    </Popconfirm>
+                  </span>
+                ) : (
+                    <span>
+                        <Button
+                            className={style.btn}
+                            icon={<ToolOutlined/>}
+                            disabled={editingKey !== ''}
+                            onClick={() => {
+                                setEditingKey(record.key);
+                            }}
+                        />
+                        <Button
+                            className={style.btn}
+                            danger
+                            icon={<DeleteOutlined/>}
+                            disabled={editingKey !== ''}
+                            onClick={() => {
+                                Modal.confirm({
+                                    title: `是否删除${record.typeName}?`,
+                                    cancelText: '取消',
+                                    okText: '确认',
+                                    onOk: () => {
+                                        deleteBlogType({
+                                            id: record.id,
+                                            uid: props.user.spreadCode
+                                        }).then((resp: any) => {
+                                            if (resp.state == 'success') {
+                                                message.success('删除成功');
+                                                setLock(!lock);
+                                            } else {
+                                                message.error(resp.msg);
+                                            }
+                                        })
+                                    }
+                                })
+                            }}
+                        />
+                  </span>
+                );
+            }
+        }
+    ]
+
+    const newColumns = columns.map(col => {
+        if (!col.editable) {
+            return col;
+        }
+        return {
+            ...col,
+            onCell: (record: any) => ({
+              record,
+              dataIndex: col.dataIndex,
+              title: col.title,
+              editing: isEditing(record),
+            }),
+        };
     })
 
     return (
         <div>
-            <Card className={style['card-box']}>
+            <ManageHeader renderData={renderData}/>
+            <Form form={form} component={false}>
+                <Table
+                    loading={loading}
+                    bordered
+                    components={{
+                        body: {
+                        cell: EditableCell,
+                        },
+                    }}
+                    dataSource={typeList}
+                    columns={newColumns}
+                    pagination={{
+                        pageSize: 10,
+                        // onChange: cancel,
+                    }}
+                />
+            </Form>
+            <Modal
+                title="新增分类"
+                visible={modalShow}
+                onOk={() => {
+                    if (!typeName) return message.warning('请填写分类名称');
+                    postBlogType({
+                        typeName: typeName,
+                        uid: props.user.spreadCode
+                    }).then((resp: any) => {
+                        if (resp.state == 'success') {
+                            message.success('新增成功');
+                            setLock(!lock);
+                            setTypeName('');
+                            setModalShow(false);
+                        } else {
+                            message.error('新增失败, 请稍后进行尝试!');
+                        }
+                    })
+                }}
+                onCancel={() => {
+                    setModalShow(false);
+                }}
+                cancelText="取消"
+                okText="确认"
+            >
+                <Row>
+                    <Col
+                        className={style.span}
+                    >
+                        分类名称:
+                    </Col>
+                    <Input
+                        value={typeName}
+                        onChange={e => setTypeName(e.target.value)}
+                        style={{
+                            width: '70%',
+                            display: 'inline-block'
+                        }}
+                    />
+                </Row>
+            </Modal>
+        </div>
+    )
+}
+
+export default connect((store: any) => {
+    return {
+        user: store.user
+    }
+}, () => ({}))(Component);
+
+/*
+<Card className={style['card-box']}>
                 <Col>
                     <Card
                         className={style['card-container']}
@@ -210,12 +422,39 @@ const Component = (props: Props) => {
                     </Card>
                 </Col>
             </Card>
-        </div>
-    )
+ */
+
+interface IPropsTwo {
+    editing: boolean
+    dataIndex: string
+    title: string
 }
 
-export default connect((store: any) => {
-    return {
-        user: store.user
-    }
-}, () => ({}))(Component);
+const EditableCell: React.FC<IPropsTwo> = ({
+    dataIndex,
+    title,
+    editing,
+    children,
+    ...args
+}) => {
+return (
+    <td {...args}>
+    {editing ? (
+        <Form.Item
+            name={dataIndex}
+            style={{ margin: 0 }}
+            rules={[
+                {
+                required: true,
+                message: `请填写分类名称`,
+                },
+            ]}
+        >
+            <Input />
+        </Form.Item>
+    ) : (
+        children
+    )}
+    </td>
+);
+};

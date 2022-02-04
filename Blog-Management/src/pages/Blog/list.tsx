@@ -1,116 +1,180 @@
 import React, { useState, useEffect } from 'react'
-import { Card, Row, Col, Image, Tag, Button, Modal, Tooltip, message } from 'antd'
+import { Table, Image, Tag, Button, Modal, message, Switch } from 'antd'
 import style from './css/list.less'
-import { DeleteOutlined, SearchOutlined, ToolOutlined } from '@ant-design/icons'
+import { DeleteOutlined, SearchOutlined, ToolOutlined, HighlightOutlined } from '@ant-design/icons'
 import { getAllBlogs, deleteBlog } from '@/api/blog'
 import { history, connect } from 'umi'
+import { imageFall } from '../../utils/base64Imgs';
+import ManageHeader from '../../components/ManageHeader';
+import { IRenderData, IUser } from '../../types/interfaces';
 
-const { confirm } = Modal;
-
-interface Props {
-    user?: any
-    children?: any
+interface IProps {
+    user: IUser
 }
 
-const Component: React.FC = (props: Props) => {
+const Component: React.FC<IProps> = (props) => {
 
-    const [data, setData] = useState([])
-    const [lock, setLock] = useState(false)
-
+    const [dataList, setDataList] = useState<any>([]);
+    const [dataListTotal, setDataListTotal] = useState<number>(0);
+    const [loadingLock, setLoadingLock] = useState(false);
+    const renderData: IRenderData[] = [
+        {
+            name: '新增博客',
+            path: '/blog/add',
+            icon: <HighlightOutlined />,
+            onClick: () => {
+                history.push('/blog/add');
+            }
+        }
+    ];
+    const [lock, setLock] = useState(false);
+    
     useEffect(() => {
-        getAllBlogs().then(resp => {
-            setData(resp.data.data.list)
+        setLoadingLock(true);
+        getAllBlogs().then((resp: any) => {
+            setLoadingLock(false);
+            const data = resp.data.list.map((item: any) => {
+                return {
+                    ...item,
+                    key: item.id
+                }
+            });
+            setDataList(data);
+            setDataListTotal(resp.data.total);
         })
     }, [lock])
 
-    // 这里需要拿到列表数据
-    const list = data.map((item: any, index: number) => {
+    const columns = [
+        {
+            title: 'ID',
+            dataIndex: 'id',
+            fixed: true,
+            width: 50,
+        }, {
+            title: '封面',
+            dataIndex: 'occupyImg',
+            render: (url: string) => {
+                return (
+                    <Image
+                        width={100}
+                        height={90}
+                        alt="图片加载失败..."
+                        src={url}
+                        fallback={imageFall}
+                    />
+                )
+            }
+        }, {
+            title: '文章名称',
+            dataIndex: 'name',
+            width: 200
+        }, {
+            title: '创建时间',
+            dataIndex: 'createTimer',
+            width: 150
+        }, {
+            title: '简介',
+            dataIndex: 'introduce',
+            width: 500,
+            render: (text: string) => {
+                return (
+                    <div className={style['text-introduce']}>
+                        {text}
+                    </div>
+                )
+            }
+        }, {
+            title: '置顶',
+            dataIndex: 'ifTop',
+            render: () => {
+                return (
+                    <Switch checkedChildren="开启" unCheckedChildren="关闭" />
+                )
+            }
+        }, {
+            title: '标签',
+            dataIndex: 'tags',
+            render: (text: string) => {
+                const nodes = text.split('|').map((item: string, index: number) => {
+                    return (
+                        <Tag
+                            key={index}
+                        >
+                            {item}
+                        </Tag>
+                    )
+                })
+                return (
+                    <div className={style['tag']}>
+                        {nodes}
+                    </div>
+                );
+            }
+        }, {
+            title: '操作',
+            dataIndex: 'options',
+            fixed: false,
+            width: 200,
+            render: (text: any, record: any) => {
+                return (<div>
+                    <Button
+                        className={style.btn}
+                        icon={<SearchOutlined />}
+                        onClick={() => {
 
-        const newTags = item.tags.split('|').map((it: any, index: number) => {
-            return <Tag key={index}>{it}</Tag>
-        })
-        return (<Card key={item.id} hoverable className={style.card}>
-            <Row className={style.row}>
-                <Col className={style['card-left']}>
-                    <Image className={style['card-image']} width={200} height={200} src={item.occupyImg}/>
-                </Col>
-                <Col className={style['card-right']}>
-                    <Row>
-                        <Col className={`${style['card-col']} ${style['card-title']}`}>{item.name}</Col>
-                        <Col className={`${style['card-col']} ${style['card-id']}`}>文章编号: {item.id}</Col>
-                        <Col className={`${style['card-col']} ${style['card-timer']}`}>发布时间: {item.createTimer}</Col>
-                        <Col className={`${style['card-col']} ${style['card-author']}`}>作者: {item.author}</Col>
-                        <Col className={`${style['card-col']} ${style['card-codeUrl']}`}>源码地址: <a href={item.githubUrl === '暂无' ? '#' : item.githubUrl}>{item.githubUrl}</a></Col>
-                        <Col className={`${style['card-col']} ${style['card-tags']}`}>
-                            标签: {newTags}
-                        </Col>
-                        <Col className={`${style['card-col']}`}>
-                            操作: <Tooltip placement="top" title="查看">
-                                <Button
-                                    className={style['card-button']}
-                                    icon={<SearchOutlined />}
-                                    type={"primary"}
-                                    ghost
-                                    size="small"
-                                    onClick={() => {
-                                        history.push('/blog/lock', item)
-                                    }}
-                                />
-                            </Tooltip>
-                            <Tooltip placement="top" title="修改">
-                                <Button
-                                    className={style['card-button']}
-                                    icon={<ToolOutlined />}
-                                    type="primary"
-                                    ghost
-                                    size="small"
-                                    onClick={() => {
-                                        history.push('/blog/put', item)
-                                    }}
-                                />
-                            </Tooltip>
-                            <Tooltip placement="top" title="删除">
-                                <Button
-                                    className={style['card-button']}
-                                    icon={<DeleteOutlined />}
-                                    type={"primary"}
-                                    ghost
-                                    danger
-                                    size="small"
-                                    onClick={() => {
-                                        if (props.user.powerLevel <= 1) return message.error('删除失败: 用户权限不足')
-                                        confirm({
-                                            title: '删除确认',
-                                            content: `是否确定删除${item.name}这篇文章?`,
-                                            onOk() {
-                                                deleteBlog({
-                                                    id: item.id,
-                                                    uid: props.user.spreadCode
-                                                }).then(resp => {
-                                                    if (resp.data.state === 'success') {
-                                                        setLock(!lock)
-                                                        message.success('删除成功')
-                                                    } else {
-                                                        message.error(resp.data.msg)
-                                                    }
-                                                })
-                                            },
-                                            cancelText: '取消',
-                                            okText: '确定'
-                                        })
-                                    }}
-                                />
-                            </Tooltip>
-                        </Col>
-                    </Row>
-                </Col>
-            </Row>
-        </Card>)
-    })
+                            history.push('/blog/lock', record);
+                        }}
+                    />
+                    <Button
+                        className={style.btn}
+                        icon={<ToolOutlined/>}
+                        onClick={() => {
+                            message.info('当前正在修改文章');
+                            history.push('/blog/put', record);
+                        }}
+                    />
+                    <Button
+                        className={style.btn}
+                        icon={<DeleteOutlined />}
+                        danger
+                        onClick={() => {
+                            Modal.confirm({
+                                title: `确定删除${record.name}这篇文章?`,
+                                centered: true,
+                                cancelText: '取消',
+                                okText: '确定',
+                                onOk: () => {
+                                    deleteBlog({
+                                        id: record.id,
+                                        uid: props.user.spreadCode
+                                    }).then((resp: any) => {
+                                        if (resp.state == 'success') {
+                                            message.success('删除文章成功!');
+                                            setLock(!lock);
+                                        } else {
+                                            message.error('删除文章失败, 请稍后重新尝试!');
+                                        }
+                                    })
+                                }
+                            })
+                        }}
+                    />
+                </div>)
+            }
+        },
+    ]
 
     return (
         <div className={style['list-container']}>
-            {list}
+            <ManageHeader renderData={renderData}/>
+            <Table
+                loading={loadingLock}
+                columns={columns}
+                dataSource={dataList}
+                pagination={{
+                    pageSize: 5
+                }}
+            />
         </div>
     )
 }

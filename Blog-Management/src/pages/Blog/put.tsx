@@ -1,22 +1,23 @@
 import React, { useState, useEffect } from 'react'
-import { Input, Row, Col, Card, Button, message, Select } from 'antd'
-import style from './css/put.less'
-import { FileSearchOutlined, CloudUploadOutlined } from '@ant-design/icons'
-import { history, connect } from 'umi' 
-import { putBlog, getBlog, getBlogType } from '@/api'
+import { Input, Row, Col, Card, message, Select } from 'antd'
+import style from './css/put.less';
+import { RollbackOutlined, CloudUploadOutlined } from '@ant-design/icons'
+import { history, connect } from 'umi' ;
+import { putBlog, getBlog, getBlogType } from '@/api';
+import { IUser, IRenderData } from '@/types/interfaces';
+import ManageHeader from '@/components/ManageHeader';
 
-interface Props {
-    user?: any
-    children?: any
+interface IProps {
+    user: IUser
 }
 
-const Component: React.FC = (props: Props) => {
+const Component: React.FC<IProps> = (props) => {
     const blogMessage: any = history.location.state
     const [typeList, setTypeList] = useState<any>([])
-    const [id, setId] = useState('')
-    const [text, setText] = useState('')
-    const [lock, setLock] = useState(false)
-    const [blogKey, setBlogKey] = useState(1)
+    const [id, setId] = useState<string>('')
+    const [text, setText] = useState<string>('')
+    const [lock, setLock] = useState<boolean>(false)
+    const [blogKey, setBlogKey] = useState<number>(1)
 
     useEffect(() => {
         if (blogMessage) {
@@ -29,7 +30,7 @@ const Component: React.FC = (props: Props) => {
 
     useEffect(() => {
         getBlogType().then(resp => {
-            setTypeList(resp.data.data)
+            setTypeList(resp.data)
         })
     }, [])
 
@@ -37,81 +38,44 @@ const Component: React.FC = (props: Props) => {
         return (<Select.Option value={item.id} key={item.id}>{item.typeName}</Select.Option>)
     })
 
+    const renderData: IRenderData[] = [
+        {
+            path: '',
+            name: '返回',
+            icon: <RollbackOutlined />,
+            onClick: () => {
+                history.push('/blog/list');
+            }
+        },
+        {
+            path: '',
+            name: '保存',
+            icon: <CloudUploadOutlined />,
+            onClick: () => {
+                const blog = {
+                    id: blogMessage ? blogMessage.id : + id,
+                    uid: props.user.spreadCode,
+                    text,
+                    typeId: blogKey
+                }
+                putBlog(blog).then((resp: any) => {
+                    if (resp.state === 'success') {
+                        message.success('修改成功')
+                        history.push('/blog/list')
+                    } else {
+                        message.error(resp.msg)
+                    }
+                })
+            }
+        }
+    ];
+
     return (
         <div className={style['put-container']}>
-            <Card className={style['card']}>
-                <Row>
-                    <Col>
-                        <Input
-                            className={style['card-input']}
-                            value={id}
-                            onChange={e => setId(e.target.value)}
-                            placeholder="请输入博客Id"
-                        />
-                    </Col>
-                    <Col>
-                        <Button
-                            className={style['card-button']}
-                            type={"primary"}
-                            icon={<FileSearchOutlined />}
-                            onClick={() => {
-                                if (typeof +id !== 'number') {
-                                    message.error('请输入正确的博客id')
-                                }
-                                getBlog(+id).then(resp => {
-                                    if (resp.data.state === 'success') {
-                                        setText(resp.data.data.markdownText)
-                                        setBlogKey(resp.data.data.type_id)
-                                        setLock(true)
-                                        message.success('查询成功')
-                                    } else {
-                                        message.error(resp.data.msg)
-                                    }
-                                })
-                            }}
-                        >查询</Button>
-                    </Col>
-                    <Col style={{
-                        display: lock ? 'flex' : 'none'
-                    }}>
-                        <Button
-                            className={style['card-button']}
-                            type={"primary"}
-                            icon={<CloudUploadOutlined />}
-                            onClick={() => {
-                                // 判断权限
-                                if (props.user.powerLevel <= 1) { // 权限等级不满足
-                                    return message.error('无法进行修改: 当前用户权限不足')
-                                }
-                                putBlog({
-                                    id: blogMessage ? blogMessage.id : +id,
-                                    uid: props.user.spreadCode,
-                                    text,
-                                    typeId: blogKey
-                                }).then(resp => {
-                                    if (resp.data.state === 'success') {
-                                        message.success('修改成功')
-                                        history.push('/blog/list')
-                                    } else {
-                                        message.error(resp.data.msg)
-                                    }
-                                })
-                            }}
-                        >保存</Button>
-                    </Col>
-                </Row>
-            </Card>
-            <Card
-                className={`${style['card']} ${style['card-text-container']}`}
-                style={{
-                    display: lock ? 'inline-block' : 'flex'
-                }}
-            >
+            <ManageHeader renderData={renderData}/>
+            <Card>
                 <Row
                     className={style.row}
-                    style={{
-                        display: lock ? 'flex' : 'none'
-                    }}
                 >
                     <Col className={style.span}>文章分类:</Col>
                     <Col >
@@ -126,23 +90,19 @@ const Component: React.FC = (props: Props) => {
                         </Select>
                     </Col>
                 </Row>
-                <Input.TextArea
-                    className={style['card-textArea']}
-                    value={text}
-                    showCount={true}
-                    style={{
-                        display: lock ? 'block' : 'none'
-                    }}
-                    onChange={e => setText(e.target.value)}
-                />
-                <span
-                    className={style['card-text']}
-                    style={{
-                        display: !lock ? 'inline-block' : 'none'
-                    }}
-                >
-                    请先搜索博客
-                </span>
+                <Row>
+                    <Col
+                        className={style.span}
+                        style={{
+                            display: 'inline-block',
+                        }}
+                    >文章内容:</Col>
+                    <Input.TextArea
+                        className={style['textarea']}
+                        value={text}
+                        onChange={e => setText(e.target.value)}
+                    />
+                </Row>
             </Card>
         </div>
     )

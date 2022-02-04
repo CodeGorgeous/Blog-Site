@@ -1,20 +1,22 @@
 import axios from 'axios'
+import { IResponse } from '@/types/interfaces'
 
 const instance = axios.create({
-    baseURL: 'http://codegorgeous.top:2550/api',
+    baseURL: 'http://localhost:2550/api',
 })
 
 instance.interceptors.request.use((config) => {
     if (config.method === 'POST' || config.method === 'PUT') {
         config.data = JSON.stringify(config.data)
     }
-    return config
+    return config;
 }, (err) => {
     return Promise.reject(err)
 })
 
 instance.interceptors.response.use((response) => {
-    return response
+    const data: IResponse = response.data;
+    return data;
 }, (err) => {
     return Promise.reject(err)
 })

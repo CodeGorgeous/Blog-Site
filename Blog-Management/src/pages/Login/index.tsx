@@ -3,7 +3,7 @@ import { Input, Button, message } from 'antd'
 import style from './index.less'
 import { UserOutlined, LockOutlined, ContainerOutlined } from '@ant-design/icons'
 import { history, connect } from 'umi'
-import { userSignIn, userRegister } from '@/api/user'
+import { userRegister } from '@/api/user'
 
 interface Props {
     onSignIn?: (payload: User) => void
@@ -119,8 +119,8 @@ const Component: React.FC = (props: Props) => {
                                     userName,
                                     userPassword,
                                     invitationCode: invitation
-                                }).then(resp => {
-                                    if (resp.data.state === 'success') {
+                                }).then((resp: any) => {
+                                    if (resp.state === 'success') {
                                         message.success('注册成功')
                                         setState('login')
                                     } else {

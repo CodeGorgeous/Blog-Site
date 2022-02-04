@@ -1,27 +1,113 @@
-import React, { useState, useEffect} from 'react'
-import { Menu } from 'antd';
+import React from 'react'
+import { Menu, Button } from 'antd';
 import {
     BarsOutlined,
     ReadOutlined,
-    ToTopOutlined,
-    ToolOutlined,
-    RestOutlined,
-    FileAddOutlined,
-    SearchOutlined,
     TeamOutlined,
-    UserOutlined,
     FileImageOutlined,
-    FolderOpenOutlined,
-    SubnodeOutlined,
     NotificationOutlined,
-    SnippetsOutlined
+    SnippetsOutlined,
+    MenuUnfoldOutlined,
+    MenuFoldOutlined,
+    ApartmentOutlined
 } from '@ant-design/icons';
-import { history } from 'umi'
+import { history } from 'umi';
+import { IRoutes } from '@/types/interfaces';
+import style from './index.less';
 
-const Component: React.FC = () => {
-    
+interface IProps {
+    toggle: boolean
+    onChangeToggle: () => void
+}
+
+const { SubMenu, Item } = Menu;
+const Component: React.FC<IProps> = (props) => {
+
+    const routesSide: IRoutes[] = [
+        {
+            key: 'blog',
+            title: '管理中心',
+            icon: <BarsOutlined />,
+            children: [
+                {
+                    key: '/blog/list',
+                    title: '博客管理',
+                    icon: <ReadOutlined />
+                },
+                {
+                    key: '/blog/type',
+                    title: '博客分类管理',
+                    icon: <ApartmentOutlined />
+                },
+                {
+                    key: '/image/list',
+                    title: '图片管理',
+                    icon: <FileImageOutlined />
+                },
+                {
+                    key: '/image/type',
+                    title: '图片分类管理',
+                    icon: <ApartmentOutlined />
+                },
+                {
+                    key: '/other/title',
+                    title: '标语管理',
+                    icon: <NotificationOutlined />
+                },
+                {
+                    key: '/user/list',
+                    title: '用户管理',
+                    icon: <TeamOutlined />
+                }
+            ]
+        }
+    ];
+
+    const vNodes = routesSide.map(item => {
+        if (item.children) {
+            const vChildrenNodes = item.children.map(cItem => {
+                return (
+                    <Item
+                        key={cItem.key}
+                        icon={cItem.icon}
+                    >
+                        {cItem.title}
+                    </Item>
+                )
+            })
+            return (
+                <SubMenu
+                    key={item.key}
+                    title={item.title}
+                    icon={item.icon}
+                >
+                    {vChildrenNodes}
+                </SubMenu>
+            )
+        } else {
+            return (
+                <Item
+                        key={item.key}
+                        icon={item.icon}
+                    >
+                        {item.title}
+                    </Item>
+            )
+        }
+        
+    })
+
     return (
         <div>
+            <div className={style['btn-container']}>
+                <Button
+                    className={style['btn']}
+                    icon={props.toggle ? <MenuUnfoldOutlined/> : <MenuFoldOutlined/>}
+                    type="primary"
+                    onClick={props.onChangeToggle}
+                    style={{ marginBottom: 16 }}
+                />
+            </div>
             <Menu
                 defaultSelectedKeys={['/blog/list']}
                 defaultOpenKeys={['blog']}
@@ -30,8 +116,17 @@ const Component: React.FC = () => {
                 onSelect={({key}) => {
                     history.push(key)
                 }}
-                >
-                <Menu.SubMenu
+            >
+                {vNodes}
+            </Menu>
+        </div>
+    )
+}
+
+export default Component;
+
+/*
+<Menu.SubMenu
                     key="blog"
                     title="博客管理"
                     icon={<ReadOutlined />}
@@ -40,18 +135,6 @@ const Component: React.FC = () => {
                         key="/blog/list"
                         icon={<BarsOutlined />}
                     >博客列表</Menu.Item>
-                    <Menu.Item
-                        key="/blog/add"
-                        icon={<FileAddOutlined />}
-                    >新增博客</Menu.Item>
-                    <Menu.Item
-                        key="/blog/put"
-                        icon={<ToolOutlined />}
-                    >修改博客</Menu.Item>
-                    <Menu.Item
-                        key="/blog/lock"
-                        icon={<SearchOutlined />}
-                    >查看博客</Menu.Item>
                     <Menu.Item
                         key="/blog/type"
                         icon={<SnippetsOutlined />}
@@ -117,9 +200,4 @@ const Component: React.FC = () => {
                         icon={<NotificationOutlined />}
                     >标语管理</Menu.Item>
                 </Menu.SubMenu>
-            </Menu>
-        </div>
-    )
-}
-
-export default Component
+ */

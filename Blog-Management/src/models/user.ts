@@ -57,22 +57,22 @@ export default {
         }, effect: any): Generator<any,any,any> {
             let result
             result = yield effect.call(userSignIn, action.payload)
-            if (result.data.state === 'success') {
+            if (result.state === 'success') {
                 yield effect.put({
                     type: 'signIn',
                     payload: {
-                        id: result.data.data.id,
-                        name: result.data.data.name,
-                        password: result.data.data.password,
-                        spreadCode: result.data.data.spreadCode,
-                        powerLevel: result.data.data.powerLevel,
-                        imgUrl: result.data.data.occupyImgUrl
+                        id: result.data.id,
+                        name: result.data.name,
+                        password: result.data.password,
+                        spreadCode: result.data.spreadCode,
+                        powerLevel: result.data.powerLevel,
+                        imgUrl: result.data.occupyImgUrl
                     }
                 })
                 yield effect.call(history.push, '/')
-                yield effect.call(message.success, result.data.msg)
+                yield effect.call(message.success, result.msg)
             } else {
-                yield effect.call(message.error, result.data.msg)
+                yield effect.call(message.error, result.msg)
             }
         },
         *asyncSignOut(action: {
