@@ -1,156 +1,175 @@
 import React, { useState, useEffect }from 'react'
 import style from './css/title.less'
 import { getAllTitle, postTitle, deleteTitle } from '@/api'
-import { Col, Card, Tag, Tooltip, Button, Select, Modal, Input, message } from 'antd'
+import { Table, Switch, Button, Modal, Input, message } from 'antd'
 import { connect } from 'umi'
-import { DeleteOutlined, UploadOutlined } from '@ant-design/icons'
+import { CloudUploadOutlined, DeleteOutlined } from '@ant-design/icons'
+import { IRenderData, IUser, ITitleData, IResponse } from '@/types/interfaces';
+import ManageHeader from '@/components/ManageHeader';
 
-interface Props {
-    children?: any
-    user?: any
+interface IProps {
+    user: IUser
 }
 
-const Component = (props: Props) => {
+const Component: React.FC<IProps> = (props) => {
 
-    const [titleList, setTitleList] = useState([])
-    const [titleKey, setTitleKey] = useState(1)
-    const [titleText, setTitleText] = useState('')
-    const [lock, setLock] = useState(false)
+    const [titleList, setTitleList] = useState<ITitleData[]>([]);
+    const [titleText, setTitleText] = useState<string>('');
+    const [lock, setLock] = useState<boolean>(false);
+    const [modalVisible, setModalVisible] = useState<boolean>(false);
+    const [modalLoading, setModalLoading] = useState<boolean>(false);
+    const [loading, setLoading] = useState<boolean>(false);
 
     useEffect(() => {
-        getAllTitle(props.user.spreadCode).then(resp => {
-            setTitleList(resp.data.data.rows)
-            if (resp.data.data.rows.length > 0) {
-                setTitleKey(resp.data.data.rows[0].id)
-            }
+        setLoading(true);
+        getAllTitle(props.user.spreadCode).then((resp: any) => {
+            const result: IResponse = resp;
+            const newTitleList: ITitleData[] = result.data.rows.map((item: any) => {
+                return {
+                    ...item,
+                    key: item.id
+                }
+            })
+            setTitleList(newTitleList);
+            setLoading(false);
         })
     }, [lock])
 
-    const vNode = titleList.map((item: any) => {
-        return (
-            <div className={style['title-item']} key={item.id}>
-                <Tooltip title={`标签ID: ${item.id}`}>
-                    <Tag>{item.title}</Tag>
-                </Tooltip>
-            </div>
-        )
-    })
+    const renderData: IRenderData[] = [
+        {
+            path: '',
+            name: '新增标语',
+            icon: <CloudUploadOutlined />,
+            onClick: () => {
+                setTitleText('');
+                setModalVisible(true);
+            }
+        }
+    ];
 
-    const vOptions = titleList.map((item: any) => {
-        return (
-            <Select.Option value={item.id} key={item.id}>{item.title}</Select.Option>
-        )
-    })
+    const handleOk = () => {
+        // TODO: 拿到input的value值并进行新增请求
+        if (!titleText) return message.error('请填写内容');
+        setModalLoading(true);
+        postTitle({
+            text: titleText,
+            uid: props.user.spreadCode,
+        }).then((resp: any) => {
+            const result: IResponse = resp;
+            if (result.state == 'success') {
+                message.error('新增成功')
+                setModalLoading(false);
+                setModalVisible(false);
+                setLock(!lock);
+            } else {
+                message.error('新增失败')
+            }
+        })
+    };
+    const handleCancel = () => {
+        setModalVisible(false);
+    };
+
+    const columns = [
+        {
+            title: 'ID',
+            align: 'center' as 'center',
+            dataIndex: 'id',
+            width: 30
+        }, {
+            title: '标语内容',
+            dataIndex: 'title',
+        }, {
+            title: '优先',
+            align: 'center' as 'center',
+            dataIndex: 'ifPriority',
+            width: 100,
+            render: () => {
+                return (
+                    <Switch checkedChildren="开启" unCheckedChildren="关闭"/>
+                )
+            }
+        }, {
+            title: '操作',
+            align: 'center' as 'center',
+            dataIndex: 'options',
+            width: 100,
+            render: (text: string, record: any) => {
+                return (
+                    <>
+                        <Button
+                            icon={<DeleteOutlined />}
+                            danger
+                            onClick={() => {
+                                // TODO: 触发删除请求
+                                Modal.confirm({
+                                    title: `是否删除id为${record.id}的这条标语`,
+                                    okText: '确认',
+                                    cancelText: '取消',
+                                    onOk: () => {
+                                        deleteTitle({
+                                            id: record.id,
+                                            uid: props.user.spreadCode
+                                        }).then((resp: any) => {
+                                            const result: IResponse = resp;
+                                            if (result.state === 'success') {
+                                                message.success('删除成功');
+                                                setLock(!lock);
+                                            } else {
+                                                message.error('删除失败')
+                                            }
+                                        })
+                                    }
+                                })
+                            }}
+                        />
+                    </>
+                )
+            }
+        }
+    ];
+
 
     return (
-        <div className={style['card-container']}>
-            <Card
-                className={style['card-left']}
-                hoverable
-                title="标语列表"
-            >
-                {vNode}
-            </Card>
-            <Card
-                className={style['card-right']}
-                hoverable
-                title="标语操作"
-            >
-                <Card
-                    className={style['card']}
-                    hoverable
-                    title="新增标语"
-                >
+        <>
+            <ManageHeader renderData={renderData}/>
+            <Table
+                columns={columns}
+                dataSource={titleList}
+                loading={loading}
+                pagination={{
+                    pageSize: 10
+                }}
+            />
+            <Modal
+                title="新增标语"
+                visible={modalVisible}
+                onCancel={handleCancel}
+                footer={[
                     <Button
-                        className={style['card-button']}
-                        type='primary'
-                        icon={<UploadOutlined />}
-                        onClick={() => {
-                            if (!titleText) return message.error('标语内容不能为空!')
-                            postTitle({
-                                text: titleText,
-                                uid: props.user.spreadCode
-                            }).then((resp: any) => {
-                                if (resp. data.state === 'success') {
-                                    message.success('新增成功')
-                                    setTitleText('')
-                                    setLock(!lock)
-                                } else {
-                                    message.error('新增失败')
-                                }
-                            })
-                        }}
-                    >保存</Button>
-                    <Card
-                        className={style['card']}
-                        hoverable
+                        key="back"
+                        onClick={handleCancel}
                     >
-                        <Col className={style.span}>标语文本:</Col>
-                        <Col className={style['card-col']}>
-                            <Input
-                                className={style.input}
-                                value={titleText}
-                                onChange={(e) => {
-                                    setTitleText(e.target.value)
-                                }}
-                                allowClear
-                            />
-                        </Col>
-                    </Card>
-                </Card>
-                <Card
-                    className={style['card']}
-                    hoverable
-                    title="删除标语"
-                >
+                      取消
+                    </Button>,
                     <Button
-                        className={style['card-button']}
-                        type='primary'
-                        danger
-                        icon={<DeleteOutlined />}
-                        onClick={() => {
-                            Modal.confirm({
-                                title: '删除确认',
-                                content: `是否确定删除该标语?`,
-                                onOk() {
-                                    deleteTitle({
-                                        id: titleKey,
-                                        uid: props.user.spreadCode
-                                    }).then((resp: any) => {
-                                        if (resp. data.state === 'success') {
-                                            message.success('删除成功')
-                                            setTitleText('')
-                                            setLock(!lock)
-                                        } else {
-                                            message.error('删除失败')
-                                        }
-                                    })
-                                },
-                                cancelText: '取消',
-                                okText: '确定'
-                            })
-                        }}
-                    >删除</Button>
-                    <Card
-                        className={style['card']}
-                        hoverable
+                        key="submit"
+                        type="primary"
+                        loading={modalLoading}
+                        onClick={handleOk}
                     >
-                        <Col className={style.span}>目标标语:</Col>
-                        <Col className={style['card-col']}>
-                            <Select
-                                value={titleKey}
-                                className={style.input}
-                                onChange={(key) => {
-                                    setTitleKey(key)
-                                }}
-                            >
-                                {vOptions}
-                            </Select>
-                        </Col>
-                    </Card>
-                </Card>
-            </Card>
-        </div>
+                      提交
+                    </Button>,
+                ]}
+            >
+                <Input
+                    placeholder="请输入标题内容"
+                    allowClear
+                    value={titleText}
+                    onChange={e => setTitleText(e.target.value)}
+                />
+            </Modal>
+        </>
     )
 }
 

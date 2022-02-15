@@ -50,3 +50,14 @@ export async function deleteTitle(params: DeleteTitle) {
         params
     })
 }
+
+/**
+ * 随机拿一个标语
+ * @returns 
+ */
+export async function gerRandomTitle() {
+    return await instance({
+        url: '/other/title/random',
+        method: 'get'
+    })
+}

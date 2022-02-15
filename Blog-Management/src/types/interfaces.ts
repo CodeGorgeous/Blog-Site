@@ -1,3 +1,5 @@
+import { UploadFile } from "antd/lib/upload/interface";
+
 export interface IResponse {
     data: any
     msg: string
@@ -27,4 +29,21 @@ export interface IRoutes {
     title: string
     icon: React.ReactNode
     children?: IRoutes[]
+}
+
+export enum EResponseState {
+    'success',
+    'fail',
+    'error'
+}
+
+export interface IFileData {
+    file: UploadFile
+    fileList: UploadFile[]
+}
+
+export interface ITitleData {
+    id: number
+    title: string
+    createdAt: string
 }

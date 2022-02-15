@@ -1,160 +1,224 @@
-import React, { useState, useEffect } from 'react'
-import { connect } from 'umi'
-import { Col, Card, Select, Image, Button, Tooltip, message, Modal } from 'antd'
-import style from './css/list.less'
-import { getAllImage, getImageType, searchImage, deleteImage } from '@/api'
-import { ToolOutlined, DeleteColumnOutlined } from '@ant-design/icons'
-import ClipboardJS from 'clipboard'
+import React, { useState, useEffect, useRef } from 'react'
+import ManageHeader from '@/components/ManageHeader'
+import { Table, Button, Modal, Upload, message } from 'antd'
+import { getAllFile, deleteFile } from '@/api/index'
+import { EResponseState, IRenderData, IFileData } from '@/types/interfaces'
+import { CloudUploadOutlined, DeleteOutlined, InboxOutlined } from '@ant-design/icons'
+import { UploadFile } from 'antd/lib/upload/interface'
+import Clipboard  from 'clipboard';
 
-interface Props {
-    user?: any
-    children?: any
-}
+interface IProps {}
 
-const { Option } = Select
-const { confirm } = Modal;
+const Component: React.FC<IProps> = (props) => {
+    
+    const [loadingLock, setLoadingLock] = useState<boolean>(false);
+    const [dataList, setDataList] = useState([]);
+    const [typeList, setTypeList] = useState<{text: string, value: string}[]>([])
+    const [doMain, setDoMain] = useState<string>('');
+    const [lock, setLock] = useState<boolean>(false);
+    const [modalVisible, setModalVisible] = useState(false)
+    const [fileList, setFileList] = useState<UploadFile<any>[]>([]);
 
-const Component: React.FC = (props: Props) => {
-    // 图片分类
-    const [typeList, setTypeList] = useState<any>([])
-    // 图片总数
-    const [total, setTotal] = useState(0)
-    // 图片
-    const [dataList, setDataList] = useState<any>([])
-    // 当前选中的分类
-    const [selectType, setSelectType] = useState(0)
-    // 是否重新渲染页面
-    const [lock, setLock] = useState(false)
     useEffect(() => {
-        getImageType().then(resp => {
-            const data = [{
-                id: 0,
-                type: '全部',
-                uid: 'admin'
-            }, ...resp.data.data]
-            setTypeList(data)
+        getAllFile().then((resp: any) => {
+            if (resp.state === EResponseState.success) {
+                const set = new Set<string>();
+                const newFileListData = resp.data.fileData.map((item: any) => {
+                    // 顺路拼凑出一个文件类型数组
+                    set.add(item.fileType);
+                    return {
+                        ...item,
+                        key: item.id
+                    }
+                })
+                const newTypeList = [...set].map((item) => {
+                    return {
+                        text: item,
+                        value: item
+                    }
+                })
+                setDataList(newFileListData);
+                setDoMain(resp.data.domain);
+                setTypeList(newTypeList);
+            }
         })
-    }, [])
-
-    // 根据selectType的变化拿取相应的数据
-    useEffect(() => {
-        if (selectType === 0) {
-            getAllImage().then(resp => {
-                setTotal(resp.data.data.count)
-                setDataList(resp.data.data.rows)
-            })
-        } else {
-            searchImage(selectType).then(resp => {
-                setTotal(resp.data.data.length)
-                setDataList(resp.data.data)
-            })
+    }, [lock, fileList])
+    
+    const renderData: IRenderData[] = [{
+        path: '',
+        name: '上传文件',
+        icon: <CloudUploadOutlined />,
+        onClick: () => {
+            // TODO: 打开一个对话框, 对话框内用于上传文件, 当上传过程中用户关闭窗口则无视关闭操作
+            setModalVisible(true);
         }
-    }, [selectType, lock])
+    }];
 
-    // 根据分类生成节点
-    const vTypeNode = typeList.map((item: any) => {
-        return (
-            <Option key={item.id} value={item.id}>{item.type}</Option>
-        )
-    })
+    const handleOk = () => {
+        setModalVisible(false);
+    };
+    const handleCancel = () => {
+        setModalVisible(false);
+    };
 
-    // 根据图片生成节点
-    const vImageNode = dataList.map((item: any) => {
-        return (
-            <Card
-                className={style['card-image-container']}
-                key={item.id}
-                hoverable
-            >
-                <Image
-                    placeholder
-                    src={item.imgUrl}
-                />
-                <p style={{
-                    'textAlign': 'center'
-                }}>
-                    <Tooltip placement="top" title="复制图片地址">
+    const onChange = (info: IFileData) => {
+        setFileList(info.fileList);
+        const { status } = info.file;
+        if (status == 'done') { // 任务上传结束, 需要根据服务器返回进一步推动结果
+          switch (info.file.response.state) {
+            case EResponseState.success:
+              const newFileList1 = fileList.map(item => {
+                if (item.uid === info.file.uid) {
+                  return {
+                    ...item,
+                    status: 'success' as 'success',
+                    url: info.file.response.data.domain + info.file.response.data.url
+                  }
+                } else {
+                  return item;
+                }
+              })
+              setFileList(newFileList1);
+              break;
+            case EResponseState.fail || EResponseState.error:
+              const newDefaultFileList2 = fileList.map(item => {
+                if (item.uid === info.file.uid) {
+                  return {
+                    ...item,
+                    status: 'error' as 'error',
+                    url: ''
+                  }
+                } else {
+                  return item;
+                }
+              })
+              setFileList(newDefaultFileList2);
+              break;
+          }
+        } else if (status == 'error') {}
+      }
+
+    const columns = [
+        {
+            title: 'ID',
+            dataIndex: 'id',
+            fixed: true,
+            align: 'center' as 'center',
+            width: 50,
+        }, {
+            title: '文件名称',
+            dataIndex: 'fileOriginName',
+            align: 'center' as 'center',
+            width: 300,
+        }, {
+            title: '文件地址',
+            dataIndex: 'fileUrl',
+            align: 'center' as 'center',
+            render: (text: string, record: any) => {
+                const url = `${doMain}${text}`;
+                return (
+                    <>
                         <Button
-                            className={`${style['input-tip']} cli-btn`}
-                            icon={<ToolOutlined />}
+                            type="link"
+                            target="_blank"
+                            href={url}    
+                        >
+                            跳转
+                        </Button>
+                        <Button
+                            className="btn-copy-link"
+                            type="link"
+                            data-url={url}
+                        >
+                            复制
+                        </Button>
+                        {/* TODO: 貌似有点无解, 浏览器策略是能打开就打开, 打不开再执行下载, 网上普遍观察到的是下载压缩后的文件 */}
+                        <Button
+                            type="link"
+                        >
+                            下载
+                        </Button>
+                    </>
+                )
+            }
+        }, {
+            title: "文件类型",
+            dataIndex: 'fileType',
+            align: 'center' as 'center',
+            filters: typeList,
+            onFilter: (value: any, record: any) => {
+                return value === record.fileType;
+            }
+        }, {
+            title: '操作',
+            dataIndex: 'options',
+            align: 'center' as 'center',
+            render: (text: string, record: any) => {
+                return (
+                    <>
+                        <Button
+                            icon={<DeleteOutlined />}
+                            danger
                             onClick={() => {
-                                new ClipboardJS('.cli-btn', {
-                                    text: () => {
-                                        return item.imgUrl
+                                // TODO: 发送删除请求
+                                deleteFile(record.id).then((resp: any) => {
+                                    if (resp.state === EResponseState.success) {
+                                        message.success('删除成功');
+                                        setLock(!lock);
+                                    } else {
+                                        message.error('删除失败, 请稍后重试');
                                     }
                                 })
                             }}
                         />
-                    </Tooltip>
-                    <Tooltip placement="top" title="删除">
-                        <Button
-                            danger
-                            className={style['input-tip']}
-                            icon={<DeleteColumnOutlined />}
-                            onClick={() => {
-                                if (props.user.powerLevel <= 1) return message.error('删除失败: 用户权限不足')
-                                confirm({
-                                    title: '删除确认',
-                                    content: `是否确定删除${item.name}这张图片?`,
-                                    onOk() {
-                                        deleteImage({
-                                            id: item.id,
-                                            uid: props.user.spreadCode
-                                        }).then(resp => {
-                                            if (resp.data.state === 'success') {
-                                                setLock(!lock)
-                                                message.success('删除成功')
-                                            } else {
-                                                message.error(resp.data.msg)
-                                            }
-                                        })
-                                    },
-                                    cancelText: '取消',
-                                    okText: '确定'
-                                })
-                            }}
-                        />
-                    </Tooltip>
-                </p>
-            </Card>
-        )
-    })
+                    </>
+                )
+            }
+        }
+    ];
     
+    const oBtnAll = document.querySelectorAll('.btn-copy-link')
+    for (const oBtn of oBtnAll) {
+        const cli = new Clipboard(oBtn, {
+            text: function(target) {
+                const string: string | null = target.getAttribute('data-url');
+                return string ?? '';
+            }
+        })
+    }
+
     return (
-        <div className={style['list-container']}>
-            <Col>
-                <Card
-                    className={style['card-container']}
-                    hoverable
+        <div>
+            <ManageHeader renderData={renderData}/>
+            <Table
+                loading={loadingLock}
+                columns={columns}
+                dataSource={dataList}
+                pagination={{
+                    pageSize: 10
+                }}
+            />
+            <Modal
+                title="上传文件"
+                visible={modalVisible}
+                onOk={handleOk}
+                onCancel={handleCancel}
+            >
+                <Upload.Dragger
+                    name='file'
+                    action='http://codegorgeous.top:2551/upload'
+                    fileList={fileList}
+                    method={"post" as 'post'}
+                    onChange={onChange}
                 >
-                    <Select
-                        value={selectType}
-                        style={{ width: 120 }}
-                        onChange={(key) => {
-                            setSelectType(key)
-                        }}
-                    >
-                        {vTypeNode}
-                    </Select>
-                </Card>
-            </Col>
-            <Col className={style['card-col']}>
-                <Card
-                    className={style['card-container']}
-                    hoverable
-                >
-                    <p className={style['card-total']}>当前图片总数量: {total}</p>
-                    <Image.PreviewGroup>
-                        {vImageNode}
-                    </Image.PreviewGroup>
-                </Card>
-            </Col>
+                    <p className="ant-upload-drag-icon">
+                        <InboxOutlined />
+                    </p>
+                    <p>点击上传文件或者拖拽文件到这里</p>
+                </Upload.Dragger>
+            </Modal>
         </div>
     )
 }
 
-export default connect((store: any) => {
-    return {
-        user: store.user
-    }
-}, () =>({}))(Component)
+export default Component;

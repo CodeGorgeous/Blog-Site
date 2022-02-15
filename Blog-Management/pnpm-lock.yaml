@@ -3,6 +3,7 @@ lockfileVersion: 5.3
 specifiers:
   '@ant-design/icons': ^4.7.0
   '@ant-design/pro-layout': ^6.5.0
+  '@types/clipboard': ^2.0.7
   '@types/react': ^17.0.0
   '@types/react-dom': ^17.0.0
   '@umijs/preset-react': 1.x
@@ -20,11 +21,13 @@ specifiers:
   umi: ^3.5.20
   umi-plugin-gh-pages: ^1.0.1
   umi-webpack-bundle-analyzer: ^4.4.2
+  web-downloadfile: ^0.0.1
   yorkie: ^2.0.0
 
 dependencies:
   '@ant-design/icons': 4.7.0_react-dom@17.0.2+react@17.0.2
   '@ant-design/pro-layout': 6.27.1_cb15c3fd8cfa79dfc1ac8043488ce288
+  '@types/clipboard': 2.0.7
   antd: 4.16.13_react-dom@17.0.2+react@17.0.2
   axios: 0.24.0
   clipboard: 2.0.8
@@ -34,6 +37,7 @@ dependencies:
   react-dom: 17.0.2_react@17.0.2
   umi: 3.5.20
   umi-plugin-gh-pages: 1.0.1_umi@3.5.20
+  web-downloadfile: 0.0.1
 
 devDependencies:
   '@types/react': 17.0.33
@@ -872,6 +876,13 @@ packages:
     dependencies:
       '@babel/types': 7.15.6
     dev: true
+
+  /@types/clipboard/2.0.7:
+    resolution: {integrity: sha512-VwVFUHlneOsWfv/GaaY7Kwk4XasDqkAlyFQtsHxnOw0yyBYWTrlEXtmb9RtC+VFBCdtuOeIXECmELNd5RrKp/g==}
+    deprecated: This is a stub types definition. clipboard provides its own type definitions, so you do not need this installed.
+    dependencies:
+      clipboard: 2.0.8
+    dev: false
 
   /@types/graceful-fs/4.1.5:
     resolution: {integrity: sha512-anKkLmZZ+xm4p8JWBf4hElkM4XR+EZeA2M9BAkkTldmcyDY4mbdIJnRghDJH3Ov5ooY7/UAoENtmdMSkaAd7Cw==}
@@ -3959,6 +3970,11 @@ packages:
     engines: {node: '>=8'}
     dependencies:
       binary-extensions: 2.2.0
+
+  /is-blob/1.0.0:
+    resolution: {integrity: sha1-o9fZb+HD/wZex84nwsIea6ksGDI=}
+    engines: {node: '>=0.10.0'}
+    dev: false
 
   /is-boolean-object/1.1.2:
     resolution: {integrity: sha512-gDYaKHJmnj4aWxyj6YHyXVpdQawtVLHU5cb+eztPGczf6cjuTdwve5ZIEfgXqH4e57An1D1AKf8CZ3kYrQRqYA==}
@@ -8493,6 +8509,13 @@ packages:
     resolution: {integrity: sha512-rpJyN222KWIvHJ/F53XSZv0Zl/accqHR8et1kpaMTD/fLCRxtV8iX8czMzY7sVZupTI3zcUTg8eycS2kNF9l6w==}
     dependencies:
       loose-envify: 1.4.0
+
+  /web-downloadfile/0.0.1:
+    resolution: {integrity: sha512-fQNp6WzQTrGf82v1qBmTrP/Rl9fchWF7OwLwUJD42uve+56PebNIH4i7QhDebB9AnPKY2ZXxHU/xhCKXwv4MIg==}
+    dependencies:
+      is-blob: 1.0.0
+      moment: 2.29.1
+    dev: false
 
   /webidl-conversions/4.0.2:
     resolution: {integrity: sha512-YQ+BmxuTgd6UXZW3+ICGfyqRyHXVlD5GtQr5+qjiNW7bF0cqrzX500HVXPBOvgXb5YnzDd+h0zqyv61KUD7+Sg==}

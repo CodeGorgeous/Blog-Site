@@ -68,14 +68,6 @@ export default defineConfig({
               component: '@/pages/Image/list',
               title: '图片列表'
             }, {
-              path: '/image/add',
-              component: '@/pages/Image/add',
-              title: '新增图片'
-            }, {
-              path: '/image/type',
-              component: '@/pages/Image/addType',
-              title: '新增类型'
-            }, {
               redirect: '/404'
             }
           ]

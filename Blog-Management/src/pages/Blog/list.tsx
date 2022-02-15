@@ -48,11 +48,13 @@ const Component: React.FC<IProps> = (props) => {
         {
             title: 'ID',
             dataIndex: 'id',
-            fixed: true,
+            fixed: 'left' as 'left',
+            align: 'center' as 'center',
             width: 50,
         }, {
             title: '封面',
             dataIndex: 'occupyImg',
+            align: 'center' as 'center',
             render: (url: string) => {
                 return (
                     <Image
@@ -67,14 +69,17 @@ const Component: React.FC<IProps> = (props) => {
         }, {
             title: '文章名称',
             dataIndex: 'name',
+            align: 'center' as 'center',
             width: 200
         }, {
             title: '创建时间',
             dataIndex: 'createTimer',
+            align: 'center' as 'center',
             width: 150
         }, {
             title: '简介',
             dataIndex: 'introduce',
+            align: 'center' as 'center',
             width: 500,
             render: (text: string) => {
                 return (
@@ -86,6 +91,7 @@ const Component: React.FC<IProps> = (props) => {
         }, {
             title: '置顶',
             dataIndex: 'ifTop',
+            align: 'center' as 'center',
             render: () => {
                 return (
                     <Switch checkedChildren="开启" unCheckedChildren="关闭" />
@@ -94,6 +100,7 @@ const Component: React.FC<IProps> = (props) => {
         }, {
             title: '标签',
             dataIndex: 'tags',
+            align: 'center' as 'center',
             render: (text: string) => {
                 const nodes = text.split('|').map((item: string, index: number) => {
                     return (
@@ -113,7 +120,8 @@ const Component: React.FC<IProps> = (props) => {
         }, {
             title: '操作',
             dataIndex: 'options',
-            fixed: false,
+            fixed: 'right' as 'right',
+            align: 'center' as 'center',
             width: 200,
             render: (text: any, record: any) => {
                 return (<div>

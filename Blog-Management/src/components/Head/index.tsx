@@ -2,28 +2,21 @@ import React, { useState } from 'react'
 import { Avatar, Button, Drawer } from 'antd';
 import { history, connect } from 'umi'
 import style from './index.less'
+import { gerRandomTitle } from '@/api/index';
 
-interface Props {
-    user?: any
+interface IProps {
+    user: any
     onSignOut?: any
-    children?: any
 }
 
-const Component:React.FC = (props: Props) => {
+const Component:React.FC<IProps> = (props) => {
 
     const [Lock, setLock] = useState(false)
 
     return (
         <div className={style['header-container']}>
             <span className={style['title-container']}>
-                <Avatar
-                    className={style['title-avatar']}
-                    src={'http://qiniu.codegorgeous.top/Avatar.jpg'}
-                    size={40}
-                />
-                <span className={style['title-text']}>
-                    个人管理后台中心
-                </span>
+                <h1 className={style['title']}>后台数据中心</h1>
             </span>
             <span>
                 <Button
