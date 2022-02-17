@@ -7,7 +7,7 @@
             <div class="main">
                 <el-card
                     class="card-item"
-                    shadow="always"
+                    shadow="hover"
                     v-for="item in blogList"
                     :key="item.id"
                     @click="handleClick(item)"
@@ -16,43 +16,7 @@
                         color: bgState ? 'var(--font-bright)' : 'var(--font-dark)'
                     }"
                 >
-                    
-                    <div class="card-image">
-                        <el-image
-                            style="width: 100%; height: 100%"
-                            :src="item.occupyImg"
-                            fit="cover"
-                        ></el-image>
-                    </div>
-                    <div class="card-text">
-                        <div class="card-content">
-                            <p class="card-title">{{item.name}}</p>
-                            <p class="card-tags">
-                                <el-tag
-                                    v-for="(item, index) in item.tags"
-                                    :key="index"
-                                    class="card-tag"
-                                    size="mini"
-                                    
-                                >
-                                    {{ item }}
-                                </el-tag>
-                            </p>
-                            <p class="card-introduce">{{item.introduce}}</p>
-                        </div>
-                        <div class="card-icon">
-                            <span class="card-time">
-                                <el-icon>
-                                    <Checked />
-                                </el-icon>
-                                {{item.createTimer}}
-                            </span>
-                            <span class="card-author">
-                                <el-icon><UserFilled /></el-icon>
-                                {{item.author}}
-                            </span>
-                        </div>
-                    </div>
+                    <h1 class="title">{{item.name}}</h1>
                 </el-card>
             </div>
         </div>
@@ -68,7 +32,7 @@
 </template>
 
 <script lang='ts'>
-    import { defineComponent, reactive, toRefs, ref, watchEffect, PropType } from 'vue'
+    import { defineComponent, ref, watchEffect, PropType } from 'vue'
     import Diagram from '../../components/Diagram/index.vue'
     import { UserFilled, Checked } from '@element-plus/icons'
     import { useRouter } from 'vue-router'
@@ -103,11 +67,11 @@
             }
 
             // 当前页
-            const current = ref(1)
+            const current = ref(1);
             // 页容量
-            const limit = ref(6)
+            const limit = ref(6);
             // 总页数
-            const total = ref(0)
+            const total = ref(0);
             // 当前页变化
             const handleChangePage = (key: number) => {
                 current.value = key
@@ -119,7 +83,7 @@
                     limit: limit.value
                 }).then((resp: any) => {
                     if (resp.state === 'success') {
-                        
+                        console.log(resp);
                         blogList.value = resp.data.rows.map((item: any) => {
                             return {
                                 ...item,
@@ -185,92 +149,24 @@
     padding: 50px 0 0 0;
     display: flex;
     flex-wrap: wrap;
-    align-content: flex-start;
+    justify-content: center;
 }
 
 .card-item {
     display: inline-block;
-    width: 360px;
+    width: 80%;
     height: 400px;
-    margin: 15px 10px;
+    margin: 7px 0;
     cursor: pointer;
-    border: none !important;
-    flex: 0 0 31%;
-    min-width: 340px;
 }
 
-.card-item:hover {
-    transform: scale(1.05);
+.title {
+    text-align: center;
+    margin: 15px 0;
 }
 
-.card-image {
-    width: 100%;
-    height: 240px;
-    display: inline-block;
-    overflow: hidden;
-}
-
-.card-text {
-    width: 100%;
-    height: 152px;
-    display: flex;
-    flex-wrap: wrap;
-    padding: 0 5px;
-}
-
-.card-content {
-    width: 100%;
-    height: 120px;
-    display: block;
-}
-
-.card-title {
-    font-size: 25px;
-    font-weight: 500;
-    margin: 5px 0;
-}
-
-.card-tags {
-    display:-webkit-box;/**对象作为伸缩盒子模型展示**/
-    -webkit-box-orient:vertical;/**设置或检索伸缩盒子对象的子元素的排列方式**/
-    -webkit-line-clamp: 1;/**显示的行数**/
-    overflow:hidden;
-    margin: 5px 0;
-}
-
-.card-tag {
-    margin: 0 5px 0 0;
-    border: none;
-}
-
-.card-introduce {
-    display:-webkit-box;/**对象作为伸缩盒子模型展示**/
-    -webkit-box-orient:vertical;/**设置或检索伸缩盒子对象的子元素的排列方式**/
-    -webkit-line-clamp:2;/**显示的行数**/
-    overflow:hidden;
-    margin: 5px 0;
-    font-size: 14px;
-    padding: 0 5px 0 0;
-}
-
-.card-icon {
-    font-size: 12px;
-    display: flex;
-    align-items: center;
-    color: #888;
-}
-
-.card-time {
-    height: 100%;
-    display: flex;
-    align-items: center;
-    margin: 0 10px 0 0;
-}
-
-.card-author {
-    height: 100%;
-    display: flex;
-    align-items: center;
+.title:hover {
+    color: #fff;
 }
 
 /* 移动端响应式 */

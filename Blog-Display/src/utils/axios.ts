@@ -3,7 +3,7 @@ import store from "../store/index"
 
 
 const instance = axios.create({
-    baseURL: 'http://localhost:2550/api',
+    baseURL: 'http://codegorgeous.top:2550/api',
 })
 
 instance.interceptors.request.use((config) => {
