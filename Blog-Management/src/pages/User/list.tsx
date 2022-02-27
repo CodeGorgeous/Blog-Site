@@ -1,117 +1,128 @@
 import React, { useState, useEffect } from 'react'
-import { Row, Col, Card, message, Image, Input, Button } from 'antd'
+import { message, Table, Image, Switch } from 'antd'
 import style from './css/list.less'
-import { getAllUser, searchUser } from '@/api/user'
-import { history, connect } from 'umi'
-import { SearchOutlined } from '@ant-design/icons'
+import { getAllUser } from '@/api/user'
+import { AlertOutlined } from '@ant-design/icons'
+import { connect } from 'umi'
+import { IResponseUserData, IRenderData } from '../../types/interfaces'
+import ManageHeader from '../../components/ManageHeader/index'
+import { imageFall } from '../../utils/base64Imgs';
 
-interface Props {
-    children?: any
-    user?: any
+interface IProps {
+    user: any
 }
 
-const Component: React.FC = (props: Props) => {
+const Component: React.FC<IProps> = (props) => {
 
-    const [lock, setLock] = useState(false)
-    const [list, setList] = useState([])
-    const [keyWord, setKeyWord] = useState('')
+    const [lock, setLock] = useState<boolean>(false);
+    const [list, setList] = useState<IResponseUserData[]>([]);
+    const [loading, setLoading] = useState<boolean>(false);
 
     useEffect(() => {
-        getAllUser(props.user.spreadCode).then(resp => {
-            if (resp.data.state === 'success') {
-                setList(resp.data.data.list)
-            } else {
-                message.error(`查询失败: ${resp.data.msg}`)
+      setLoading(true);
+      getAllUser(props.user.spreadCode).then((resp: any) => {
+        setLoading(false);
+        if (resp.state == 'success') {
+          const list: IResponseUserData[] = resp.data.list.map((item: any) => {
+            return {
+              ...item,
+              key: item.id
             }
-        })
+          });
+          setList(list);
+        } else {
+          message.error('获取数据失败, 请稍后重新进行尝试');
+        }
+      });
     }, [])
 
-    const newList = list.map((item: any, index) => {
-        return (
-            <Card className={style['card-container']} key={index} hoverable>
-                <Row>
-                    <Col className={style['card-left']}>
-                        <Image className={style['card-image']} width={150} height={150} src={item.occupyImgUrl}/>
-                    </Col>
-                    <Col className={style['card-right']}>
-                        <Row>
-                            <Col className={`${style['card-col']}`}>用户名: {item.name}</Col>
-                            <Col className={`${style['card-col']}`}>用户编号: {item.id}</Col>
-                            <Col className={`${style['card-col']}`}>创建时间: {item.createdAt.slice(0, 10)}</Col>
-                            <Col className={`${style['card-col']}`}>权限等级: {item.powerLevel}</Col>                            
-                            <Col
-                                className={`${style['card-col']}`}
-                                style={{
-                                    display: item.code ? 'block' : 'none'
-                                }}
-                            >注册邀请码: {item.code}</Col>
-                            <Col
-                                className={`${style['card-col']}]}`}
-                                style={{
-                                    display: item.spreadCode ? 'block' : 'none'
-                                }}
-                            >专属邀请码: {item.spreadCode}</Col>
-                        </Row>
-                    </Col>
-                </Row>
-            </Card>
-        )
-    })
+    // 头部
+    const renderData: IRenderData[] = [
+      {
+        path: '',
+        name: '图一乐按钮',
+        icon: <AlertOutlined />,
+        onClick: () => {
+          message.info('呜呜呜~~~, 你不要再按了...')
+        }
+      }
+    ];
+
+    // 表格
+    const columns = [
+      {
+        title: 'ID',
+        align: 'center' as 'center',
+        dataIndex: 'id',
+        width: 30,
+        fixed: 'left' as 'left',
+      }, {
+        title: '用户名',
+        align: 'center' as 'center',
+        dataIndex: 'name',
+        width: 100
+      }, {
+        title: '邀请码',
+        align: 'center' as 'center',
+        dataIndex: 'spreadCode',
+        width: 50
+      }, {
+        title: '占位图',
+        align: 'center' as 'center',
+        dataIndex: 'occupyImgUrl',
+        width: 300,
+        render: (url: string) => {
+          return (
+              <Image
+                  width={100}
+                  height={90}
+                  alt="图片加载失败..."
+                  src={url}
+                  fallback={imageFall}
+              />
+          )
+      }
+      }, {
+        title: '创建时间',
+        align: 'center' as 'center',
+        dataIndex: 'createdAt',
+        width: 100
+      }, {
+        title: '渠道邀请码',
+        align: 'center' as 'center',
+        dataIndex: 'code',
+        width: 50
+      },{
+        title: '封禁',
+        align: 'center' as 'center',
+        dataIndex: 'ban',
+        width: 100,
+        render: () => {
+          return (<Switch checkedChildren="开启" unCheckedChildren="关闭" />)
+        }
+      }, {
+        title: '操作',
+        align: 'center' as 'center',
+        dataIndex: 'options',
+        width: 100,
+        fixed: false,
+        render: () => {
+          return (<>操作</>)
+        }
+      },
+    ];
 
     return (
-        <div className={style['user-list-container']}>
-            <Row>
-                <Card className={style['search-card']} hoverable>
-                    <Col className={`${style['search-card-col']}`}>
-                        <Input
-                            className={style['search-input']}
-                            placeholder={"请输入用户编号"}
-                            value={keyWord}
-                            onChange={e => {
-                                setKeyWord(e.target.value)
-                            }}
-                        />
-                    </Col>
-                    <Col className={`${style['search-card-col']}`}>
-                        <Button
-                            type={"primary"}
-                            icon={<SearchOutlined />}
-                            className={`${style['search-btn']}`}
-                            onClick={() => {
-                                // 当输入框内容为''是则代表查找全部的用户
-                                if (keyWord === '') {
-                                    getAllUser(props.user.spreadCode).then(resp => {
-                                        if (resp.data.state === 'success') {
-                                            setList(resp.data.data.list)
-                                        } else {
-                                            message.error(`查询失败: ${resp.data.msg}`)
-                                        }
-                                    })
-                                } else {
-                                    // 当输入框有值时需要判断值是否是合法数字
-                                    if (!keyWord) {
-                                        message.warning('请输入用户编号')
-                                    } else if(typeof +keyWord !== 'number') {
-                                        message.error('请输入正确的用户编号')
-                                    } else {
-                                        searchUser({
-                                            id: +keyWord,
-                                            uid: props.user.spreadCode
-                                        }).then(resp => {
-                                            if (resp.data.state === 'success') {
-                                                setList(resp.data.data)
-                                            } else {
-                                                message.error(`查询失败: ${resp.data.msg}`)
-                                            }
-                                        })
-                                    }
-                                }
-                            }}
-                        >搜索</Button>
-                    </Col>
-                </Card>
-            </Row>
-            {newList}
+        <div>
+          <ManageHeader renderData={renderData} />
+          <Table
+                columns={columns}
+                dataSource={list}
+                loading={loading}
+                pagination={{
+                    pageSize: 10
+                }}
+            />
         </div>
     )
 }

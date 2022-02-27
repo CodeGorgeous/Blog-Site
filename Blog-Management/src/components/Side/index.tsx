@@ -6,10 +6,10 @@ import {
     TeamOutlined,
     FileImageOutlined,
     NotificationOutlined,
-    SnippetsOutlined,
     MenuUnfoldOutlined,
     MenuFoldOutlined,
-    ApartmentOutlined
+    ApartmentOutlined,
+    HomeOutlined,
 } from '@ant-design/icons';
 import { history } from 'umi';
 import { IRoutes } from '@/types/interfaces';
@@ -25,6 +25,10 @@ const Component: React.FC<IProps> = (props) => {
 
     const routesSide: IRoutes[] = [
         {
+            key: '/serverView',
+            title: '服务信息',
+            icon: <HomeOutlined />
+        }, {
             key: 'blog',
             title: '管理中心',
             icon: <BarsOutlined />,

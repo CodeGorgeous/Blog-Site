@@ -2,16 +2,17 @@ import React, { useState, useEffect } from 'react'
 import { Input, Button, message } from 'antd'
 import style from './index.less'
 import { UserOutlined, LockOutlined, ContainerOutlined } from '@ant-design/icons'
-import { history, connect } from 'umi'
+import { connect } from 'umi'
 import { userRegister } from '@/api/user'
+import Cookies from 'js-cookie'
+import { ICookieUserData } from '../../types/interfaces'
 
-interface Props {
+interface IProps {
     onSignIn?: (payload: User) => void
-    children?: any
 }
 
-const Component: React.FC = (props: Props) => {
-    
+const Component: React.FC<IProps> = (props) => {
+
     const [state, setState] = useState('login')
     const [userName, setUserName] = useState('')
     const [userPassword, setUserPassword] = useState('')
@@ -31,6 +32,17 @@ const Component: React.FC = (props: Props) => {
         })
     }
 
+    useEffect(() => {
+      //TODO: 用户登录时查看一下cookie内是否存储有账户, 如果有则自动进行登入
+      const result: any = Cookies.get('user');
+      const user: ICookieUserData | undefined = result ? JSON.parse(result) : result;
+      if (user) {
+        props.onSignIn && props.onSignIn({
+          userName: user.userName,
+          userPassword: user.userPassword
+        })
+      }
+    }, [])
 
     useEffect(() => {
         setUserName('')
@@ -38,7 +50,7 @@ const Component: React.FC = (props: Props) => {
         setInvitation('')
         return () => {
             // 组件销毁时调用自动该函数
-            
+
         }
     }, [state])
 
@@ -90,7 +102,7 @@ const Component: React.FC = (props: Props) => {
                             }}
                         >
                             { state === 'login' ? '还没有账号? 点击这里进行注册' : '已经有账号? 点击这里进行登录' }
-                            
+
                         </span>
                     </p>
                     <p className={style['login-buttons']}>

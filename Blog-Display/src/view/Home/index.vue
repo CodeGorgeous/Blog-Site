@@ -16,7 +16,7 @@
                         color: bgState ? 'var(--font-bright)' : 'var(--font-dark)'
                     }"
                 >
-                    <h1 class="title">{{item.name}}</h1>
+                    
                 </el-card>
             </div>
         </div>

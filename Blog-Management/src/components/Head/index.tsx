@@ -1,8 +1,7 @@
 import React, { useState } from 'react'
-import { Avatar, Button, Drawer } from 'antd';
-import { history, connect } from 'umi'
+import { Button, Drawer } from 'antd';
+import { connect } from 'umi'
 import style from './index.less'
-import { gerRandomTitle } from '@/api/index';
 
 interface IProps {
     user: any
@@ -16,7 +15,7 @@ const Component:React.FC<IProps> = (props) => {
     return (
         <div className={style['header-container']}>
             <span className={style['title-container']}>
-                <h1 className={style['title']}>后台数据中心</h1>
+                <span className={style['title']}>后台数据中心</span>
             </span>
             <span>
                 <Button

@@ -47,3 +47,28 @@ export interface ITitleData {
     title: string
     createdAt: string
 }
+
+export interface IServerData {
+    systemIdleMemory: number
+    systemOperationHours: number
+    systemTotalMemory: number
+    systemType: string
+    systemVersion: string
+}
+
+export interface IResponseUserData {
+  id: number
+  name: string
+  password: string
+  spreadCode: string
+  powerLevel: number
+  occupyImgUrl: string
+  createdAt: string
+  code: string
+  key: number
+}
+
+export interface ICookieUserData {
+  userName: string
+  userPassword: string
+}

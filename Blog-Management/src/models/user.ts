@@ -1,6 +1,7 @@
 import { userSignIn, userRegister } from '@/api/user'
 import { message } from 'antd'
 import { history } from 'umi'
+import Cookies from 'js-cookie'
 
 interface User {
     id: string
@@ -51,6 +52,7 @@ export default {
         }
     },
     effects: {
+      // TODO: 登录记录用户的账户密码信息到用户的cookie中
         *asyncSignIn(action: {
             type: string,
             payload: UserLogin
@@ -58,6 +60,7 @@ export default {
             let result
             result = yield effect.call(userSignIn, action.payload)
             if (result.state === 'success') {
+                yield effect.call(Cookies.set, 'user', JSON.stringify(action.payload), { expires: 7 })
                 yield effect.put({
                     type: 'signIn',
                     payload: {
@@ -75,10 +78,12 @@ export default {
                 yield effect.call(message.error, result.msg)
             }
         },
+        // TODO: 登出删除cookie中用户的账户和密码
         *asyncSignOut(action: {
             type: string
         }, effect: any): Generator<any,any,any> {
             yield effect.put({type: 'signOut'})
+            yield effect.call(Cookies.remove, 'user')
             yield effect.call(history.push, '/login')
             yield effect.call(message.success, '登出成功')
         }

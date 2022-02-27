@@ -1,6 +1,14 @@
 <template>
     <div className="header-container">
         <div>
+            <el-icon
+                :class="['header-icon']"
+                :size="size"
+                :color="color"
+                @click="sideLock = true"
+            >
+                <UserFilled/>
+            </el-icon>
             <el-popover
                 placement="bottom"
                 title="小程序开发中ing"
@@ -25,7 +33,6 @@
                 trigger="hover"
             >
                 <img ref="dom" :src="qrCodeBase64" />
-                <!-- <p class="url">{{url}}</p> -->
                 <template #reference>
                     <el-icon
                         :class="['header-icon']"
@@ -76,16 +83,18 @@
     </div>
     <Mask :show="maskLock" @handleCloseMask="maskLock = false"/>
     <SearchMask :show="searchLock" @handleCloseMask="searchLock = false"/>
+    <Side :lock="sideLock" @handleSideClose="sideLock = false"/>
 </template>
 
 <script lang='ts'>
     import { defineComponent, ref, Ref, onMounted, watchEffect } from 'vue'
-    import { Cellphone, Grid, Search, Share, MoonNight, Moon } from '@element-plus/icons'
+    import { Cellphone, Grid, Search, Share, MoonNight, Moon, UserFilled } from '@element-plus/icons'
     import Mask from '../Mask/index.vue'
     import QRCode from 'qrcode'
     import SearchMask from '../SearchMask/index.vue'
     import { useStore } from 'vuex'
-    import { useRoute } from 'vue-router'
+    import { useRoute } from 'vue-router';
+    import Side from '../Side/index.vue';
 
     export default defineComponent({
         components: {
@@ -96,9 +105,13 @@
             Share,
             SearchMask,
             MoonNight,
-            Moon
+            Moon,
+            Side,
+            UserFilled
         },
         setup (props, context) {
+            // 侧边栏开关
+            const sideLock = ref<boolean>(false);
 
             // icon样式
             const size = ref<number>(30)
@@ -159,7 +172,8 @@
                 searchLock,
                 handleChangeGlobal,
                 bgState,
-                url
+                url,
+                sideLock
             }
         }
     })
