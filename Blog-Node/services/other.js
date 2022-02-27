@@ -1,7 +1,7 @@
 const Title = require('../models/title')
 const User = require('../models/user')
 const { createResp } = require('../utils/createResp.js')
-
+const system = require('../utils/serverMessage.js');
 
 module.exports = {
     // 新增标语
@@ -65,6 +65,24 @@ module.exports = {
             if (!result) return createResp('fail', '获取失败', {})
             const random = Math.floor(Math.random() * result.length)
             return createResp('success', '获取成功', result[random])
+        } catch (error) {
+            return createResp('fail', '未知错误', error)
+        }
+    },
+    // 获取服务器相关信息
+    async getServer(uid) {
+        try {
+            let result = await User.findOne({
+                where: {
+                    spreadCode: uid
+                }
+            });
+            let r = {}
+            for (const key in system) {
+                r[key] = system[key]();
+            }
+            if (!result) return createResp('fail', '该操作人不存在', {});
+            return createResp('success', '', r)
         } catch (error) {
             return createResp('fail', '未知错误', error)
         }

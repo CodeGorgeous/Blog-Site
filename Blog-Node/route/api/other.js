@@ -26,4 +26,10 @@ router.get('/title/random', async(req, res) => {
     res.send(result)
 })
 
+// 服务器相关信息
+router.get('/server', async(req, res) => {
+    const result = await otherService.getServer(req.query.uid);
+    res.send(result);
+})
+
 module.exports = router
