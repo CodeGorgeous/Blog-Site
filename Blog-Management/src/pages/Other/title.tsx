@@ -48,7 +48,6 @@ const Component: React.FC<IProps> = (props) => {
     ];
 
     const handleOk = () => {
-        // TODO: 拿到input的value值并进行新增请求
         if (!titleText) return message.error('请填写内容');
         setModalLoading(true);
         postTitle({
@@ -57,7 +56,7 @@ const Component: React.FC<IProps> = (props) => {
         }).then((resp: any) => {
             const result: IResponse = resp;
             if (result.state == 'success') {
-                message.error('新增成功')
+                message.success('新增成功')
                 setModalLoading(false);
                 setModalVisible(false);
                 setLock(!lock);
@@ -75,7 +74,8 @@ const Component: React.FC<IProps> = (props) => {
             title: 'ID',
             align: 'center' as 'center',
             dataIndex: 'id',
-            width: 30
+            width: 50,
+            fixed: 'left' as 'left',
         }, {
             title: '标语内容',
             dataIndex: 'title',
@@ -91,6 +91,7 @@ const Component: React.FC<IProps> = (props) => {
             }
         }, {
             title: '操作',
+            fixed: 'right' as 'right',
             align: 'center' as 'center',
             dataIndex: 'options',
             width: 100,
@@ -140,6 +141,7 @@ const Component: React.FC<IProps> = (props) => {
                 pagination={{
                     pageSize: 10
                 }}
+                scroll={{ y: window.innerHeight - 310 }}
             />
             <Modal
                 title="新增标语"

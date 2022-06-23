@@ -10,7 +10,16 @@
       <Header/>
     </div>
     <div class="content-container">
-      <router-view :main="main"/>
+      <router-view v-slot="{ Component }">
+            <transition
+              mode="out-in"
+            >
+                <component
+                    :is="Component"
+                    :main="main"
+                ></component>
+            </transition>
+        </router-view>
     </div>
     <Footer />
     <div
@@ -50,7 +59,6 @@
           </el-icon>
           <el-icon
             class="icon-item icon-show"
-            :size="20"
             :style="{
               bottom: styleLock ? '90px' : '0',
               opacity: styleLock ? 1 : 0,
@@ -239,6 +247,7 @@
   margin: 5px 0;
   cursor: pointer;
   transition: all 0.5s;
+  font-size: 20px;
 }
 
 .backtop {

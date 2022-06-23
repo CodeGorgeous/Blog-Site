@@ -42,7 +42,7 @@
                     color: bgState ? 'var(--font-bright)' : 'var(--font-dark)',
                     transition: `color 0.5s linear`
                 }"
-            >by CodeGorgeous | © 2021 - 2021</p>
+            >by CodeGorgeous | © 2021 - 2022</p>
             <p
                 class="record"
                 :style="{
@@ -58,40 +58,16 @@
             ><el-icon><Bottom /></el-icon>欢迎关注A-SOUL<el-icon><Bottom /></el-icon></p>
             <p>
                 <a
-                    href="https://space.bilibili.com/672342685"
-                    class="a-soul queen"
+                    v-for="(item, index) in friend"
+                    :link="index"
+                    :href="item.href"
+                    :class="item.class"
                     :style="{
                         color: bgState ? 'var(--font-bright)' : 'var(--font-dark)'
                     }"
-                >乃琳Queen</a>
-                <a
-                    href="https://space.bilibili.com/672328094"
-                    class="a-soul dianna"
-                    :style="{
-                        color: bgState ? 'var(--font-bright)' : 'var(--font-dark)'
-                    }"
-                >嘉然今天吃什么</a>
-                <a
-                    href="https://space.bilibili.com/351609538"
-                    class="a-soul carol"
-                    :style="{
-                        color: bgState ? 'var(--font-bright)' : 'var(--font-dark)'
-                    }"
-                >珈乐Carol</a>
-                <a
-                    href="https://space.bilibili.com/672353429"
-                    class="a-soul kira"
-                    :style="{
-                        color: bgState ? 'var(--font-bright)' : 'var(--font-dark)'
-                    }"
-                >贝拉kira</a>
-                <a
-                    href="https://space.bilibili.com/672346917"
-                    class="a-soul awwaw"
-                    :style="{
-                        color: bgState ? 'var(--font-bright)' : 'var(--font-dark)'
-                    }"
-                >向晚大魔王</a>
+                >
+                    {{ item.text }}
+                </a>
             </p>
         </div>
     </div>
@@ -112,8 +88,32 @@
             watchEffect(() => {
                 bgState.value = store.state.global.bgState
             })
+
+            // 友链
+            const friend = [{
+                text: '乃琳Queen',
+                class: 'a-soul queen',
+                href: 'https://space.bilibili.com/672342685'
+            }, {
+                text: '嘉然今天吃什么',
+                class: 'a-soul dianna',
+                href: 'https://space.bilibili.com/672328094'
+            }, {
+                text: '珈乐Carol',
+                class: 'a-soul carol',
+                href: 'https://space.bilibili.com/351609538'
+            }, {
+                text: '贝拉kira',
+                class: 'a-soul kira',
+                href: 'https://space.bilibili.com/672353429'
+            }, {
+                text: '向晚大魔王',
+                class: 'a-soul awwaw',
+                href: 'https://space.bilibili.com/672346917'
+            },];
             return {
-                bgState
+                bgState,
+                friend
             }
         }
     })

@@ -9,7 +9,6 @@
         >
             <el-icon
                 class="icon"
-                :size="30"
                 @click="$emit('handleCloseMask')"
             >
                 <Close
@@ -116,6 +115,7 @@
     right: 5px;
     top: 11px;
     cursor: pointer;
+    font-size: 30px;
 }
 
 .mask-search {

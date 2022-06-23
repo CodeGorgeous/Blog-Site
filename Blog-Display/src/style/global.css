@@ -4,8 +4,9 @@
 }
 
 *::selection {
-    background: #abcdef;
+    background: #abcdef87;
     color: #fff;
+    text-shadow: 3px 3px 0.5rem #1E2128;
 }
 
 
@@ -27,6 +28,7 @@
     --menu-dark: #fff;
     --card-message-bright: #fff;
     --card-message-dark: #ddd;
+    --animate-duration: 0.5s;
 }
 
 html,
@@ -63,8 +65,11 @@ body #app {
 }
 
 ::-webkit-scrollbar {
-    width: 0px;
-    height: 0px;
+    width: 0.3rem;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #abcdef;
 }
 
 .el-autocomplete {

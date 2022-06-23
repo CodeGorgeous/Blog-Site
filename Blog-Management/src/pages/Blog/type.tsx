@@ -54,6 +54,7 @@ const Component: React.FC<IProps> = (props) => {
         {
             title: 'ID',
             dataIndex: 'id',
+            align: 'center' as 'center',
             fixed: true,
             width: 50,
         }, {
@@ -63,15 +64,17 @@ const Component: React.FC<IProps> = (props) => {
         }, {
             title: '置顶',
             dataIndex: 'ifTop',
-            width: 50,
+            align: 'center' as 'center',
+            width: 100,
             render: () => {
                 return (
                     <Switch checkedChildren="开启" unCheckedChildren="关闭" />
                 )
             }
         }, {
-            title: 'operation',
+            title: '操作',
             dataIndex: 'operation',
+            align: 'center' as 'center',
             width: 150,
             render: (text: string, record: any) => {
                 const editable = isEditing(record);
@@ -193,6 +196,7 @@ const Component: React.FC<IProps> = (props) => {
                         pageSize: 10,
                         // onChange: cancel,
                     }}
+                    scroll={{ y: window.innerHeight - 320 }}
                 />
             </Form>
             <Modal

@@ -1,14 +1,6 @@
 <template>
     <div className="header-container">
         <div>
-            <el-icon
-                :class="['header-icon']"
-                :size="size"
-                :color="color"
-                @click="sideLock = true"
-            >
-                <UserFilled/>
-            </el-icon>
             <el-popover
                 placement="bottom"
                 title="小程序开发中ing"
@@ -17,8 +9,6 @@
                 <template #reference>
                     <el-icon
                         :class="['header-icon']"
-                        :size="size"
-                        :color="color"
                         :style="{
                             opacity: maskLock ? 0 : 1  
                         }"
@@ -36,8 +26,6 @@
                 <template #reference>
                     <el-icon
                         :class="['header-icon']"
-                        :size="size"
-                        :color="color"
                         :style="{
                             opacity: maskLock ? 0 : 1
                         }"
@@ -47,20 +35,16 @@
                 </template>
             </el-popover>
             <el-icon
-            :class="['header-icon']"
-            :size="size"
-            :color="color"
-            @click="handleChangeGlobal"
-          >
-            <Moon v-if="!bgState"/>
-            <MoonNight v-if="bgState"/>
-          </el-icon>
+                :class="['header-icon']"
+                @click="handleChangeGlobal"
+            >
+                <Moon v-if="!bgState"/>
+                <MoonNight v-if="bgState"/>
+            </el-icon>
         </div>
         <div>
             <el-icon
                 :class="['header-icon']"
-                :size="size"
-                :color="color"
                 :style="{
                     opacity: maskLock ? 0 : 1
                 }"
@@ -70,8 +54,6 @@
             </el-icon>
             <el-icon
                 :class="['header-icon']"
-                :size="size"
-                :color="color"
                 :style="{
                     opacity: maskLock ? 0 : 1
                 }"
@@ -114,7 +96,7 @@
             const sideLock = ref<boolean>(false);
 
             // icon样式
-            const size = ref<number>(30)
+            const size = ref<number>(50)
             const color = ref<string>('#aaa')
 
             // 遮罩层组件
@@ -162,6 +144,7 @@
             onMounted(() => {
                 app.value = document.querySelector('#app')
             })
+            // TODO: 判断当前时间是白天还是晚上
 
             return {
                 size,
@@ -190,6 +173,8 @@
 }
 
 .header-icon {
+    font-size: 30px;
+    color: #ccc;
     cursor: pointer;
     margin: 0 5px;
     transition: opacity 0.6s ease-out;

@@ -10,7 +10,7 @@ import Clipboard  from 'clipboard';
 interface IProps {}
 
 const Component: React.FC<IProps> = (props) => {
-    
+
     const [loadingLock, setLoadingLock] = useState<boolean>(false);
     const [dataList, setDataList] = useState([]);
     const [typeList, setTypeList] = useState<{text: string, value: string}[]>([])
@@ -43,7 +43,7 @@ const Component: React.FC<IProps> = (props) => {
             }
         })
     }, [lock, fileList])
-    
+
     const renderData: IRenderData[] = [{
         path: '',
         name: '上传文件',
@@ -102,7 +102,7 @@ const Component: React.FC<IProps> = (props) => {
         {
             title: 'ID',
             dataIndex: 'id',
-            fixed: true,
+            fixed: 'left' as 'left',
             align: 'center' as 'center',
             width: 50,
         }, {
@@ -114,6 +114,7 @@ const Component: React.FC<IProps> = (props) => {
             title: '文件地址',
             dataIndex: 'fileUrl',
             align: 'center' as 'center',
+            width: 210,
             render: (text: string, record: any) => {
                 const url = `${doMain}${text}`;
                 return (
@@ -121,7 +122,7 @@ const Component: React.FC<IProps> = (props) => {
                         <Button
                             type="link"
                             target="_blank"
-                            href={url}    
+                            href={url}
                         >
                             跳转
                         </Button>
@@ -146,13 +147,16 @@ const Component: React.FC<IProps> = (props) => {
             dataIndex: 'fileType',
             align: 'center' as 'center',
             filters: typeList,
+            width: 200,
             onFilter: (value: any, record: any) => {
                 return value === record.fileType;
             }
         }, {
             title: '操作',
             dataIndex: 'options',
+            fixed: 'right' as 'right',
             align: 'center' as 'center',
+            width: 100,
             render: (text: string, record: any) => {
                 return (
                     <>
@@ -176,7 +180,7 @@ const Component: React.FC<IProps> = (props) => {
             }
         }
     ];
-    
+
     const oBtnAll = document.querySelectorAll('.btn-copy-link')
     for (const oBtn of oBtnAll) {
         const cli = new Clipboard(oBtn, {
@@ -197,6 +201,7 @@ const Component: React.FC<IProps> = (props) => {
                 pagination={{
                     pageSize: 10
                 }}
+                scroll={{ y: window.innerHeight - 320 }}
             />
             <Modal
                 title="上传文件"

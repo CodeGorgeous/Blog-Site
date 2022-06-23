@@ -28,7 +28,7 @@ const Component: React.FC<IProps> = (props) => {
         }
     ];
     const [lock, setLock] = useState(false);
-    
+
     useEffect(() => {
         setLoadingLock(true);
         getAllBlogs().then((resp: any) => {
@@ -52,26 +52,27 @@ const Component: React.FC<IProps> = (props) => {
             align: 'center' as 'center',
             width: 50,
         }, {
-            title: '封面',
-            dataIndex: 'occupyImg',
-            align: 'center' as 'center',
-            render: (url: string) => {
-                return (
-                    <Image
-                        width={100}
-                        height={90}
-                        alt="图片加载失败..."
-                        src={url}
-                        fallback={imageFall}
-                    />
-                )
-            }
-        }, {
             title: '文章名称',
             dataIndex: 'name',
             align: 'center' as 'center',
-            width: 200
+            width: 200,
+            fixed: 'left' as 'left',
         }, {
+          title: '封面',
+          dataIndex: 'occupyImg',
+          align: 'center' as 'center',
+          render: (url: string) => {
+              return (
+                  <Image
+                      width={100}
+                      height={90}
+                      alt="图片加载失败..."
+                      src={url}
+                      fallback={imageFall}
+                  />
+              )
+          }
+      }, {
             title: '创建时间',
             dataIndex: 'createTimer',
             align: 'center' as 'center',
@@ -182,6 +183,7 @@ const Component: React.FC<IProps> = (props) => {
                 pagination={{
                     pageSize: 5
                 }}
+                scroll={{ y: window.innerHeight - 320 }}
             />
         </div>
     )

@@ -6,7 +6,7 @@
         >
         </el-image>
         <div class="title">
-            {{text}}
+            <span>{{text}}</span>
             <span class="underline">_</span>
         </div>
         <!-- 波浪图形 -->
@@ -39,78 +39,57 @@
     </div>
 </template>
 
-<script lang='ts'>
-    import { defineComponent, PropType, ref, watchEffect, onMounted, onUnmounted } from 'vue'
-    import { Mouse } from '@element-plus/icons'  
+<script lang='ts' setup>
+    import { ref, watchEffect, onMounted, onUnmounted } from 'vue' 
     import { getTitle } from '../../api/index'
     import { useStore } from 'vuex'
 
-    export default defineComponent({
-        components: {
-            Mouse
-        },
-        
-        props: {
-            main: {
-                required: true
-            }
-        },
-        setup (props, context) {
-            const store = useStore()
+    const store = useStore()
 
-            const bgImage = ref()
-            let image1: string = 'https://img2.baidu.com/it/u=3492081780,1765429063&fm=26&fmt=auto'
-            let image2: string = 'http://qiniu.codegorgeous.top/login.webp'
-            const text =ref('')
-            getTitle().then(async(resp: any) => {
-                const conent: string = resp.data.title
-                for (let i = 0; i < conent.length; i++) {
-                    const sliceText =  conent.slice(0, i+1)
-                    text.value = sliceText
-                    await delay(100)
-                }
-            })
-
-            const delay = (timer: number) => {
-                return new Promise((resolve, reject) => {
-                    setTimeout(() => {
-                        resolve(true)
-                    }, timer)
-                })
-            }
-            
-            const docWidth = ref(document.body.clientWidth)
-
-            const handleSizeChange = () => {
-                docWidth.value = document.body.clientWidth
-                    if (docWidth.value < 576) {
-                        bgImage.value = image1
-                    } else {
-                        bgImage.value = image2
-                    }
-            }
-            handleSizeChange()
-            onMounted(() => {
-                window.addEventListener('resize', handleSizeChange)
-            })
-
-            onUnmounted(() => {
-                window.removeEventListener('resize', handleSizeChange)
-            })
-
-            // 管理颜色
-            const bgState = ref(store.state.global.bgState)
-
-            watchEffect(() => {
-                bgState.value = store.state.global.bgState
-            })
-
-            return {
-                bgImage,
-                text,
-                bgState
-            }
+    const bgImage = ref()
+    let image1: string = 'https://img2.baidu.com/it/u=3492081780,1765429063&fm=26&fmt=auto'
+    let image2: string = 'http://qiniu.codegorgeous.top/login.webp'
+    const text =ref('');
+    getTitle().then(async(resp: any) => {
+        const conent: string = resp.data.title
+        for (let i = 0; i < conent.length; i++) {
+            const sliceText =  conent.slice(0, i+1);
+            text.value = sliceText;
+            await delay(100);
         }
+    })
+    const delay = (timer: number) => {
+        return new Promise((resolve, reject) => {
+            setTimeout(() => {
+                resolve(true)
+            }, timer)
+        })
+    }
+    
+    const docWidth = ref(document.body.clientWidth)
+
+    const handleSizeChange = () => {
+        docWidth.value = document.body.clientWidth
+            if (docWidth.value < 576) {
+                bgImage.value = image1
+            } else {
+                bgImage.value = image2
+            }
+    }
+    handleSizeChange()
+    onMounted(() => {
+        window.addEventListener('resize', handleSizeChange)
+    })
+
+    onUnmounted(() => {
+        window.removeEventListener('resize', handleSizeChange)
+    })
+
+    // 管理颜色
+    const bgState = ref(store.state.global.bgState)
+
+    watchEffect(() => {
+        bgState.value = store.state.global.bgState
     })
 </script>
 
@@ -133,11 +112,13 @@
 
 .title {
     width: 100vw;
-    font-size: 45px;
+    font-size: 2.5rem;
     color: #fff;
     position: absolute;
     top: 40%;
     text-align: center;
+    box-sizing: border-box;
+    padding: 0 1rem;
 }
 
 .underline {

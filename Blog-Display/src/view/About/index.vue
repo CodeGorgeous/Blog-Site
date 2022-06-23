@@ -19,10 +19,13 @@
                         <p class="text-name">CodeGorgeous</p>
                         <p>一枚前端新人, 软件专业, 目前主要从事前端开发工作. 业余爱好: 看小说、研究一些有趣的第三方库</p>
                     </div>
+                    <!-- TODO: 可以加一个技术栈 -->
                     <div class="text-word">
                         <h2>Work</h2>
                         <p class="text-company">耀友网络科技有限公司(上海)</p>
                         <p>Web前端开发实习生[2021.07 - 2021.09]</p>
+                        <p class="text-company">光潾网络科技有限公司(苏州)</p>
+                        <p>Web前端开发实习生[2022.02 -  至今]</p>
                     </div>
                     <div class="text-project">
                         <h2>Project</h2>
@@ -112,6 +115,7 @@
     height: 100%;
     padding: 0 10px;
     box-sizing: border-box;
+    padding-bottom: 15px;
 }
 
 h2 {

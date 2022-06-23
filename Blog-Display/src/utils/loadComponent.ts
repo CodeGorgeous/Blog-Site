@@ -7,7 +7,7 @@ export default function asyncLoadComponent(Component: any) {
     return defineAsyncComponent({
         loader: () => {
             return new Promise((resolve, reject) => {
-                    resolve(Component);
+                resolve(Component);
             })
         },
         loadingComponent: Loading,

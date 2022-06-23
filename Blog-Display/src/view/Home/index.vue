@@ -5,19 +5,12 @@
         </div>
         <div class="home-content-container">
             <div class="main">
-                <el-card
-                    class="card-item"
-                    shadow="hover"
+                <Card
                     v-for="item in blogList"
                     :key="item.id"
-                    @click="handleClick(item)"
-                    :style="{
-                        background: bgState ? 'var(--card-bright)' : 'var(--card-dark)',
-                        color: bgState ? 'var(--font-bright)' : 'var(--font-dark)'
-                    }"
-                >
-                    
-                </el-card>
+                    :render="item"
+                    :main="main"
+                />
             </div>
         </div>
         <el-pagination
@@ -31,92 +24,62 @@
     </div>
 </template>
 
-<script lang='ts'>
-    import { defineComponent, ref, watchEffect, PropType } from 'vue'
-    import Diagram from '../../components/Diagram/index.vue'
-    import { UserFilled, Checked } from '@element-plus/icons'
-    import { useRouter } from 'vue-router'
-    import { pageGetBlog } from '../../api/index'
-    import { ElMessage } from 'element-plus'
-    import { useStore } from 'vuex'
+<script lang='ts' setup>
+    import { ref, watchEffect } from 'vue';
+    import DiagramVue from '../../components/Diagram/index.vue';
+    import { pageGetBlog } from '../../api/index';
+    import { ElMessage } from 'element-plus';
+    import { useStore } from 'vuex';
+    import CardVue from './components/Card.vue';
+    import asyncLoadComponent from '../../utils/loadComponent';
 
-    export default defineComponent({
-        components: {
-            Diagram,
-            UserFilled,
-            Checked
-        },
-        props: {
-            main: {
-                type: Object as PropType<any>,
-                required: true
-            }
-        },
-        setup (props: any, context) {
-            const router = useRouter()
-            const blogList: any = ref([])
-            const handleClick = (item: any) => {
-                router.push({
-                    name: 'BlogMessage',
-                    query: {
-                        id: item.id
-                    }
-                })
-                
-                props.main.scrollTop = 0
-            }
-
-            // 当前页
-            const current = ref(1);
-            // 页容量
-            const limit = ref(6);
-            // 总页数
-            const total = ref(0);
-            // 当前页变化
-            const handleChangePage = (key: number) => {
-                current.value = key
-            }
-
-            watchEffect(() => {
-                pageGetBlog({
-                    page: current.value,
-                    limit: limit.value
-                }).then((resp: any) => {
-                    if (resp.state === 'success') {
-                        console.log(resp);
-                        blogList.value = resp.data.rows.map((item: any) => {
-                            return {
-                                ...item,
-                                tags: item.tags.split('|')
-                            }
-                        })
-                        total.value = resp.data.count
-                    } else {
-                        ElMessage({
-                            type: 'error',
-                            message: '数据获取失败, 请刷新重新尝试!'
-                        })
-                    }
-                })
-            })
-
-            const store = useStore()
-            const bgState: any = ref(store.state.global.bgState)
-            watchEffect(() => {
-                bgState.value = store.state.global.bgState
-            })
-
-
-            return {
-                blogList,
-                handleClick,
-                main: props.main,
-                total,
-                limit,
-                handleChangePage,
-                bgState
-            }
+    const Card = asyncLoadComponent(CardVue);
+    const Diagram = asyncLoadComponent(DiagramVue);
+    defineProps({
+        main: {
+            type: Object,
+            required: true
         }
+    })
+    const blogList: any = ref([])
+
+    // 当前页
+    const current = ref(1);
+    // 页容量
+    const limit = ref(6);
+    // 总页数
+    const total = ref(0);
+    // 当前页变化
+    const handleChangePage = (key: number) => {
+        current.value = key
+    }
+
+    watchEffect(() => {
+        pageGetBlog({
+            page: current.value,
+            limit: limit.value
+        }).then((resp: any) => {
+            if (resp.state === 'success') {
+                blogList.value = resp.data.rows.map((item: any) => {
+                    return {
+                        ...item,
+                        tags: item.tags.split('|')
+                    }
+                })
+                total.value = resp.data.count
+            } else {
+                ElMessage({
+                    type: 'error',
+                    message: '数据获取失败, 请刷新重新尝试!'
+                })
+            }
+        })
+    })
+
+    const store = useStore()
+    const bgState: any = ref(store.state.global.bgState)
+    watchEffect(() => {
+        bgState.value = store.state.global.bgState
     })
 </script>
 
@@ -152,27 +115,22 @@
     justify-content: center;
 }
 
-.card-item {
-    display: inline-block;
-    width: 80%;
-    height: 400px;
-    margin: 7px 0;
-    cursor: pointer;
-}
-
-.title {
+.card-item-body {
+    width: 100%;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 8rem;
+    background: #ccc;
+    border-radius: 1rem 1rem 0 0;
+    box-shadow: 0 0 3rem 0.5rem rgba(0, 0, 0, 0.2);
     text-align: center;
-    margin: 15px 0;
-}
-
-.title:hover {
-    color: #fff;
 }
 
 /* 移动端响应式 */
 @media (max-width: 576px) {
     .main {
-        width: 95%;
+        width: 90%;
     }
 
     .card-item {
@@ -180,5 +138,5 @@
         margin: 15px 0;
     }
 }
-
 </style>
+

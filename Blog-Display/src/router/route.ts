@@ -10,7 +10,7 @@ const routes: any[] = [
     }, {
         path: '/home',
         name: 'Home',
-        component: asyncLoadComponent(import('../view/Home/index.vue')),
+        component: () => import('../view/Home/index.vue'),
         props: true
     }, {
         path: '/blogMessage',

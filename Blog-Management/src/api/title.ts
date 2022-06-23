@@ -2,8 +2,8 @@ import instance from "@/utils/axios";
 
 /**
  * 获取全部标语
- * @param uid 
- * @returns 
+ * @param uid
+ * @returns
  */
 export async function getAllTitle(uid: string) {
     return await instance({
@@ -22,14 +22,14 @@ interface CreateTitle {
 
 /**
  * 向数据库中增添一条标语
- * @param params 
- * @returns 
+ * @param data
+ * @returns
  */
-export async function postTitle(params: CreateTitle) {
+export async function postTitle(data: CreateTitle) {
     return await instance({
         url: '/other/title',
         method: 'post',
-        params
+        data
     })
 }
 
@@ -40,8 +40,8 @@ interface DeleteTitle {
 
 /**
  * 删除一条标语
- * @param params 
- * @returns 
+ * @param params
+ * @returns
  */
 export async function deleteTitle(params: DeleteTitle) {
     return await instance({
@@ -53,7 +53,7 @@ export async function deleteTitle(params: DeleteTitle) {
 
 /**
  * 随机拿一个标语
- * @returns 
+ * @returns
  */
 export async function gerRandomTitle() {
     return await instance({

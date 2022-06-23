@@ -54,7 +54,7 @@ const Component: React.FC<IProps> = (props) => {
         title: 'ID',
         align: 'center' as 'center',
         dataIndex: 'id',
-        width: 30,
+        width: 50,
         fixed: 'left' as 'left',
       }, {
         title: '用户名',
@@ -65,12 +65,12 @@ const Component: React.FC<IProps> = (props) => {
         title: '邀请码',
         align: 'center' as 'center',
         dataIndex: 'spreadCode',
-        width: 50
+        width: 80
       }, {
         title: '占位图',
         align: 'center' as 'center',
         dataIndex: 'occupyImgUrl',
-        width: 300,
+        width: 200,
         render: (url: string) => {
           return (
               <Image
@@ -91,7 +91,7 @@ const Component: React.FC<IProps> = (props) => {
         title: '渠道邀请码',
         align: 'center' as 'center',
         dataIndex: 'code',
-        width: 50
+        width: 100
       },{
         title: '封禁',
         align: 'center' as 'center',
@@ -122,6 +122,7 @@ const Component: React.FC<IProps> = (props) => {
                 pagination={{
                     pageSize: 10
                 }}
+                scroll={{ y: window.innerHeight - 310 }}
             />
         </div>
     )
